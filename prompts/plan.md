@@ -124,7 +124,7 @@ If issues detected:
 
 ### Upstream Dependencies
 - [ ] Dependency 1 (blocked by: [ticket])
-- [ ] Dependency 2 (ETA: [date])
+- [ ] Dependency 2
 
 ### Downstream Impact
 - Team/System 1: [how they're affected]
@@ -134,16 +134,6 @@ If issues detected:
 
 - [ ] Question 1 requiring decision
 - [ ] Question 2 needing clarification
-
-## Timeline
-
-| Phase | Estimated Duration | Start Date | End Date |
-|-------|-------------------|------------|----------|
-| Phase 1 | 2 days | [date] | [date] |
-| Phase 2 | 3 days | [date] | [date] |
-| Testing | 1 day | [date] | [date] |
-
-**Total Estimate**: [X days/weeks]
 
 ## Success Criteria
 
