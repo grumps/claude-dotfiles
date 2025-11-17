@@ -1,0 +1,27 @@
+# Import shared recipes from claude-dotfiles
+# Uncomment the ones you need
+import? '~/.claude-dotfiles/justfiles/_base.just'
+# import? '~/.claude-dotfiles/justfiles/golang.just'
+# import? '~/.claude-dotfiles/justfiles/python.just'
+# import? '~/.claude-dotfiles/justfiles/k8s.just'
+
+# === Repository-Specific Overrides ===
+
+# Override lint to run actual linters
+lint:
+  golangci-lint run ./...
+  ruff check .
+
+# Override test to run actual tests
+test:
+  go test ./...
+  pytest
+
+# === Custom Recipes ===
+
+# Add your custom recipes below
+build:
+  @echo "Add your build command here"
+
+deploy:
+  @echo "Add your deploy command here"

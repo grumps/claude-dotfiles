@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+set -e
+
+echo "🔍 Running pre-commit validation..."
+
+# Check if just is installed
+if ! command -v just &> /dev/null; then
+    echo "❌ Just is not installed. Install from: https://just.systems"
+    exit 1
+fi
+
+# Check if justfile exists
+if [ ! -f "justfile" ]; then
+    echo "⚠️  No justfile found. Skipping validation."
+    echo "   Run: cd ~/.claude-dotfiles && ./install.sh"
+    exit 0
+fi
+
+# Run validation
+if just validate; then
+    echo "✅ Validation passed"
+    exit 0
+else
+    echo ""
+    echo "❌ Validation failed"
+    echo ""
+    echo "Fix the issues above or skip with: git commit --no-verify"
+    echo ""
+    exit 1
+fi
