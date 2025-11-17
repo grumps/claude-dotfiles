@@ -14,15 +14,28 @@ You are helping create implementation plans for software development tasks.
 ### 1. Understand Requirements
 Ask clarifying questions if the request is vague:
 - What is the goal/outcome?
-- Are there constraints (time, resources, dependencies)?
+- Are there constraints (resources, dependencies)?
 - Are there existing patterns/systems to follow?
 
+**IMPORTANT**: Never estimate time or effort for tasks. Focus on technical approach and implementation details.
+
 ### 2. Gather Context
-Run `just info` to understand:
+If a justfile exists with the `info` recipe, run it to understand:
+```bash
+just info 2>&1 || true
+```
+This provides (if available):
 - Current branch and changes
 - Available Just recipes
 - Recent work
 - Repository structure
+
+Otherwise, gather context manually with:
+```bash
+git branch --show-current
+git status --short
+git log -5 --oneline --decorate
+```
 
 ### 3. Create Structured Plan
 Use the template from `.claude/prompts/plan.md` with this format:
@@ -89,6 +102,7 @@ Save to `.claude/plans/YYYY-MM-DD-short-description.md`
 - Consider backwards compatibility
 - Think about edge cases and error handling
 - Mention relevant existing code/patterns to follow
+- **Never include time estimates or effort estimates** - focus only on what needs to be done and how
 
 ## For Platform Engineering
 - **K8s manifests**: Include resource limits, probes, labels, RBAC
