@@ -199,7 +199,26 @@ else
     echo "⏭️  context.yaml already exists"
 fi
 
-# 8. Summary
+# 8. Optional: Notification hooks setup (Linux only)
+if [ "$(uname)" = "Linux" ]; then
+    echo ""
+    read -p "🔔 Would you like to set up desktop notifications for Claude? (y/N) " -n 1 -r
+    echo ""
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        if [ -f "$DOTFILES_DIR/scripts/install-notification-hooks.sh" ]; then
+            echo ""
+            "$DOTFILES_DIR/scripts/install-notification-hooks.sh"
+        else
+            echo "❌ Notification hooks script not found"
+        fi
+    else
+        echo "⏭️  Skipping notification setup"
+        echo "   You can set it up later by running:"
+        echo "   $DOTFILES_DIR/scripts/install-notification-hooks.sh"
+    fi
+fi
+
+# 9. Summary
 echo ""
 echo "✨ Installation complete!"
 echo ""
@@ -250,4 +269,9 @@ else
     echo "6. Enable auto-commit messages (optional):"
     echo "   chmod +x .git/hooks/prepare-commit-msg"
     echo ""
+    if [ "$(uname)" = "Linux" ]; then
+        echo "7. Set up desktop notifications (optional):"
+        echo "   $DOTFILES_DIR/scripts/install-notification-hooks.sh"
+        echo ""
+    fi
 fi
