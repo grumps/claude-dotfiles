@@ -11,48 +11,48 @@ echo ""
 
 # Detect notification system (prefer SwayNC for Sway users)
 NOTIFICATION_DAEMON="generic"
-if command -v swaync-client &> /dev/null || pgrep -x swaync > /dev/null 2>&1; then
-    NOTIFICATION_DAEMON="swaync"
-    echo "✓ Found SwayNotificationCenter"
-elif command -v notify-send &> /dev/null; then
-    echo "✓ Found notify-send (generic notification support)"
+if command -v swaync-client &>/dev/null || pgrep -x swaync >/dev/null 2>&1; then
+  NOTIFICATION_DAEMON="swaync"
+  echo "✓ Found SwayNotificationCenter"
+elif command -v notify-send &>/dev/null; then
+  echo "✓ Found notify-send (generic notification support)"
 else
-    echo "❌ No notification system found"
-    echo ""
-    echo "For Sway users, install SwayNotificationCenter:"
-    echo "  Arch Linux:    sudo pacman -S sway-notification-center"
-    echo "  Or build from: https://github.com/ErikReider/SwayNotificationCenter"
-    echo ""
-    echo "Alternatively, install libnotify for basic support:"
-    echo "  Ubuntu/Debian: sudo apt install libnotify-bin"
-    echo "  Arch Linux:    sudo pacman -S libnotify"
-    echo "  Fedora:        sudo dnf install libnotify"
-    echo ""
-    exit 1
+  echo "❌ No notification system found"
+  echo ""
+  echo "For Sway users, install SwayNotificationCenter:"
+  echo "  Arch Linux:    sudo pacman -S sway-notification-center"
+  echo "  Or build from: https://github.com/ErikReider/SwayNotificationCenter"
+  echo ""
+  echo "Alternatively, install libnotify for basic support:"
+  echo "  Ubuntu/Debian: sudo apt install libnotify-bin"
+  echo "  Arch Linux:    sudo pacman -S libnotify"
+  echo "  Fedora:        sudo dnf install libnotify"
+  echo ""
+  exit 1
 fi
 
 # Verify notify-send is available (both SwayNC and generic use it)
-if ! command -v notify-send &> /dev/null; then
-    echo "❌ notify-send not found"
-    echo ""
-    echo "Please install libnotify:"
-    echo "  Ubuntu/Debian: sudo apt install libnotify-bin"
-    echo "  Arch Linux:    sudo pacman -S libnotify"
-    echo "  Fedora:        sudo dnf install libnotify"
-    echo ""
-    exit 1
+if ! command -v notify-send &>/dev/null; then
+  echo "❌ notify-send not found"
+  echo ""
+  echo "Please install libnotify:"
+  echo "  Ubuntu/Debian: sudo apt install libnotify-bin"
+  echo "  Arch Linux:    sudo pacman -S libnotify"
+  echo "  Fedora:        sudo dnf install libnotify"
+  echo ""
+  exit 1
 fi
 
 # Check for jq
-if ! command -v jq &> /dev/null; then
-    echo "❌ jq not found (required for JSON configuration)"
-    echo ""
-    echo "Please install jq:"
-    echo "  Ubuntu/Debian: sudo apt install jq"
-    echo "  Arch Linux:    sudo pacman -S jq"
-    echo "  Fedora:        sudo dnf install jq"
-    echo ""
-    exit 1
+if ! command -v jq &>/dev/null; then
+  echo "❌ jq not found (required for JSON configuration)"
+  echo ""
+  echo "Please install jq:"
+  echo "  Ubuntu/Debian: sudo apt install jq"
+  echo "  Arch Linux:    sudo pacman -S jq"
+  echo "  Fedora:        sudo dnf install jq"
+  echo ""
+  exit 1
 fi
 
 echo "✓ Found jq"
@@ -60,8 +60,8 @@ echo "✓ Found jq"
 # Make context script executable
 CONTEXT_SCRIPT="${DOTFILES_ROOT}/scripts/get-notification-context.sh"
 if [ ! -f "$CONTEXT_SCRIPT" ]; then
-    echo "❌ Context detection script not found at: $CONTEXT_SCRIPT"
-    exit 1
+  echo "❌ Context detection script not found at: $CONTEXT_SCRIPT"
+  exit 1
 fi
 chmod +x "$CONTEXT_SCRIPT"
 echo "✓ Context detection script ready"
@@ -79,12 +79,12 @@ echo "  $NOTIFICATION_CMD"
 echo ""
 
 if [ "$NOTIFICATION_DAEMON" = "swaync" ]; then
-    echo "💡 SwayNC Tips:"
-    echo "   - Configure notification sounds in: ~/.config/swaync/config.json"
-    echo "   - Add sound for 'Claude Code' app under 'scripts' section"
-    echo "   - Example: add sound alert for category 'im.received'"
-    echo "   - See: https://github.com/ErikReider/SwayNotificationCenter#scripting"
-    echo ""
+  echo "💡 SwayNC Tips:"
+  echo "   - Configure notification sounds in: ~/.config/swaync/config.json"
+  echo "   - Add sound for 'Claude Code' app under 'scripts' section"
+  echo "   - Example: add sound alert for category 'im.received'"
+  echo "   - See: https://github.com/ErikReider/SwayNotificationCenter#scripting"
+  echo ""
 fi
 
 # Create config directory if it doesn't exist
@@ -92,8 +92,8 @@ mkdir -p "${CLAUDE_CONFIG_DIR}"
 
 # Create or update settings.json
 if [ ! -f "$SETTINGS_FILE" ]; then
-    echo "Creating new settings.json..."
-    echo '{}' > "$SETTINGS_FILE"
+  echo "Creating new settings.json..."
+  echo '{}' >"$SETTINGS_FILE"
 fi
 
 # Backup existing settings
@@ -102,20 +102,21 @@ cp "$SETTINGS_FILE" "$BACKUP_FILE"
 echo "✓ Backed up existing settings to: $BACKUP_FILE"
 
 # Create the hook configuration
-HOOK_CONFIG=$(cat <<EOF
+HOOK_CONFIG=$(
+  cat <<EOF
 {
   "hooks": {
-    "Notification": [
+  "Notification": [
+    {
+    "matcher": "waiting for input|awaiting input",
+    "hooks": [
       {
-        "matcher": "waiting for input|awaiting input",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$NOTIFICATION_CMD"
-          }
-        ]
+      "type": "command",
+      "command": "$NOTIFICATION_CMD"
       }
     ]
+    }
+  ]
   }
 }
 EOF
@@ -123,7 +124,7 @@ EOF
 
 # Merge with existing settings using jq
 # This preserves all existing settings and adds/updates the Notification hook
-echo "$HOOK_CONFIG" | jq -s '.[0] * .[1]' "$SETTINGS_FILE" - > "${SETTINGS_FILE}.tmp"
+echo "$HOOK_CONFIG" | jq -s '.[0] * .[1]' "$SETTINGS_FILE" - >"${SETTINGS_FILE}.tmp"
 mv "${SETTINGS_FILE}.tmp" "$SETTINGS_FILE"
 
 echo "✓ Updated settings.json with notification hooks"
@@ -135,13 +136,13 @@ echo "The notification will include your project context (tmux window/pane or gi
 echo ""
 
 if [ "$NOTIFICATION_DAEMON" = "swaync" ]; then
-    echo "🔊 To add sound alerts in SwayNC:"
-    echo "   Edit ~/.config/swaync/config.json and add to 'scripts':"
-    echo '   {'
-    echo '     "app-name": "Claude Code",'
-    echo '     "exec": "mpv /usr/share/sounds/freedesktop/stereo/message.oga"'
-    echo '   }'
-    echo ""
+  echo "🔊 To add sound alerts in SwayNC:"
+  echo "   Edit ~/.config/swaync/config.json and add to 'scripts':"
+  echo '   {'
+  echo '     "app-name": "Claude Code",'
+  echo '     "exec": "mpv /usr/share/sounds/freedesktop/stereo/message.oga"'
+  echo '   }'
+  echo ""
 fi
 
 echo "To test, run Claude Code and trigger a prompt that requires input."

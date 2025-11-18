@@ -1,0 +1,9 @@
+# ShellCheck configuration for claude-dotfiles
+# See: https://github.com/koalaman/shellcheck/wiki/
+
+# Shell dialect (auto-detect, but default to bash)
+shell=bash
+
+# Severity threshold (error, warning, info, style)
+# We enforce warnings and above
+severity=warning

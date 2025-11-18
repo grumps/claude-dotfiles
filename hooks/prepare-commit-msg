@@ -8,24 +8,24 @@ COMMIT_SOURCE=$2
 
 # Only run for regular commits (not merge, squash, etc.)
 if [ "$COMMIT_SOURCE" = "message" ] || [ "$COMMIT_SOURCE" = "merge" ]; then
-    exit 0
+  exit 0
 fi
 
 # Check if message already exists
 if [ -s "$COMMIT_MSG_FILE" ]; then
-    exit 0
+  exit 0
 fi
 
 echo "# Auto-generating commit message..."
 echo "# (This is an optional feature - edit as needed)"
 
 # Check if just is installed and has commit-msg recipe
-if command -v just &> /dev/null && just --list 2>/dev/null | grep -q "commit-msg"; then
-    # Generate commit message using Just
-    just commit-msg > "$COMMIT_MSG_FILE" 2>/dev/null || true
+if command -v just &>/dev/null && just --list 2>/dev/null | grep -q "commit-msg"; then
+  # Generate commit message using Just
+  just commit-msg >"$COMMIT_MSG_FILE" 2>/dev/null || true
 else
-    # Provide template
-    cat > "$COMMIT_MSG_FILE" << 'EOF'
+  # Provide template
+  cat >"$COMMIT_MSG_FILE" <<'EOF'
 # <type>(<scope>): <subject>
 #
 # <body>

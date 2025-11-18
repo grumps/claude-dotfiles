@@ -50,6 +50,78 @@ Thanks for your interest in contributing!
 - Update examples if workflows change
 - Keep TESTING.md current
 
+### Shell Scripts
+- Run `just lint-shell` before committing
+- ShellCheck validates scripts for common issues
+- shfmt ensures consistent formatting
+- Fix all warnings before submitting PR
+
+## CI/CD and Local Validation
+
+This repository uses **Just recipes** for all CI/CD tasks, ensuring local-CI parity. You can run the same validations locally that run in GitHub Actions.
+
+### Available Validation Commands
+
+**Shell Script Validation:**
+```bash
+just lint-shell        # Run ShellCheck + shfmt on all shell scripts
+just format-shell      # Auto-format shell scripts with shfmt
+```
+
+**Full Validation:**
+```bash
+just validate          # Run all linters and tests (same as CI)
+```
+
+### CI/CD Architecture
+
+- **Justfile-First**: All CI logic lives in Just recipes, not workflow YAML
+- **Local-CI Parity**: Run `just <command>` locally to reproduce CI results
+- **GitHub Actions**: Thin orchestration layer that calls Just recipes
+
+### Fixing CI Failures
+
+If GitHub Actions fails:
+
+1. Check the workflow logs for the specific failure
+2. Run the same Just command locally: `just lint-shell`
+3. Fix the issues shown in the output
+4. Re-run locally to verify the fix
+5. Commit and push the fixes
+
+**Example workflow:**
+```bash
+# CI failed on shell linting
+just lint-shell                    # Reproduce the failure locally
+# Fix the issues in your editor
+just lint-shell                    # Verify the fix
+git add .
+git commit -m "fix: resolve shellcheck warnings"
+git push
+```
+
+### Required Tools for Local Development
+
+To run all validations locally, install:
+
+- **Just** (task runner): https://just.systems
+- **ShellCheck** (shell script linter): https://www.shellcheck.net
+- **shfmt** (shell formatter): https://github.com/mvdan/sh
+
+Installation:
+```bash
+# macOS
+brew install just shellcheck shfmt
+
+# Linux (Arch)
+pacman -S just shellcheck shfmt
+
+# Linux (Ubuntu/Debian)
+apt-get install shellcheck
+snap install just --classic
+# For shfmt, download from: https://github.com/mvdan/sh/releases
+```
+
 ## Testing
 
 Run through TESTING.md checklist:
