@@ -1,14 +1,45 @@
 # Claude Dotfiles
 
-Supercharge your development workflow with Claude Code! This repository provides Just-based task orchestration, slash commands for planning/reviewing, and git hooks for quality enforcement.
+**Supercharge Claude Code with Just task runner integration.**
 
-## What You Get
+This repository provides:
+- Shared Just recipes for consistent linting and testing across projects
+- Claude Code slash commands that run Just tasks and generate structured outputs
+- Git hooks that enforce quality standards via Just validation
 
-- 🎯 **Just Recipes**: Consistent commands across all projects (`just lint`, `just test`, etc.)
-- ⚡ **Slash Commands**: Built-in Claude Code commands (`/plan`, `/review-code`, `/commit`)
-- 🪝 **Git Hooks**: Automatic validation before commits
-- 📋 **Prompt Templates**: Structured outputs for plans and reviews
-- ⚙️ **Easy Setup**: One command to set up any repository
+## Why This Exists
+
+**Problem**: Every project has different commands for linting, testing, and validation. Claude Code can't know if it's `npm test`, `pytest`, `go test`, etc.
+
+**Solution**: Define a common protocol using Just recipes. Claude uses slash commands that call `just` tasks, which you implement for your project's specific tools.
+
+**Value**: Claude Code can now `/review-code` (runs `just lint` + `just test`), `/plan` features, and `/commit` with proper validation - regardless of your tech stack.
+
+## How It Works
+
+1. You define `lint` and `test` recipes in your project's `justfile`
+2. Claude's slash commands call standardized Just recipes
+3. Git hooks run `just validate` before commits
+4. Everything works together seamlessly
+
+```mermaid
+sequenceDiagram
+    participant You
+    participant Claude as Claude Code
+    participant Just
+    participant Tools as Your Tools
+
+    You->>Claude: /review-code
+    Claude->>Just: just lint
+    Just->>Tools: golangci-lint, ruff, etc.
+    Tools-->>Just: Results
+    Just-->>Claude: Lint output
+    Claude->>Just: just test
+    Just->>Tools: go test, pytest, etc.
+    Tools-->>Just: Results
+    Just-->>Claude: Test output
+    Claude-->>You: Code review with results
+```
 
 ## Quick Start
 
@@ -45,10 +76,10 @@ cd your-project
 ```
 
 This creates:
-- `justfile` - Imports shared recipes (lint and test must be implemented)
-- `.claude/commands/` - Slash commands for Claude Code
-- `.claude/prompts/` - Output templates
-- Git hooks - Pre-commit validation
+- `justfile` - Imports shared recipes from `~/.claude-dotfiles/justfiles/`
+- `.claude/` directory in your project (for plans and local customization)
+- Git hooks that run `just validate` before commits
+- Symlinks `~/.claude-dotfiles/commands/` → `~/.claude/commands/` (global Claude Code integration)
 
 ### 4. Configure Your Project
 
@@ -150,13 +181,9 @@ git commit
 
 ```
 In Claude: /plan add rate limiting to API
-
-Claude:
-- Runs `just info`
-- Asks clarifying questions
-- Generates plan
-- Saves to .claude/plans/
 ```
+
+Claude runs `just info` to understand your project, asks clarifying questions, then generates a structured plan saved to `.claude/plans/`.
 
 ### Reviewing Code
 
@@ -166,29 +193,17 @@ git add .
 
 ```
 In Claude: /review-code
-
-Claude:
-- Runs `just lint-for-claude`
-- Runs `just test-for-claude`
-- Reviews git diff
-- Provides feedback
 ```
+
+Claude runs `just lint` and `just test`, reviews your `git diff`, and provides feedback on code quality, test coverage, and potential issues.
 
 ### Committing Changes
 
 ```
 In Claude: /commit
-
-Claude:
-- Analyzes staged changes
-- Generates conventional commit
-- You copy and use it
 ```
 
-Or with hook enabled:
-```bash
-git commit  # Message generated automatically
-```
+Claude analyzes your staged changes and generates a conventional commit message. Copy and use it, or enable the `prepare-commit-msg` hook to auto-generate.
 
 See [examples/workflows.md](examples/workflows.md) for more.
 
@@ -272,48 +287,34 @@ Fork this repository and add:
 
 ## Directory Structure
 
+**Global installation** (symlinked to ~/.claude for Claude Code):
 ```
-~/.claude-dotfiles/          # Clone to your home directory
-├── justfiles/               # Base protocol
-│   └── _base.just          # Core recipes (validate, info, check-clean)
-├── commands/                # Claude Code slash commands
-│   ├── plan.md             # /plan command
-│   ├── review-code.md      # /review-code command
-│   ├── review-plan.md      # /review-plan command
-│   ├── commit.md           # /commit command
-│   ├── prepare-pr.md       # /prepare-pr command
-│   └── just-help.md        # /just-help command
-├── prompts/                 # Output templates
+~/.claude-dotfiles/          # Cloned repository
+├── commands/                # Symlinked to ~/.claude/commands/
 │   ├── plan.md
 │   ├── review-code.md
-│   ├── review-plan.md
-│   ├── prepare-pr.md
 │   └── commit.md
-├── scripts/                 # Automation scripts
-│   └── git-linear-history.sh  # Linear history workflow automation
-├── hooks/                   # Git hooks
-│   ├── pre-commit
-│   └── prepare-commit-msg
-├── examples/                # Examples and docs
-│   ├── justfiles/          # Example language-specific recipes
-│   │   ├── golang.just
-│   │   ├── python.just
-│   │   ├── terraform.just
-│   │   └── k8s.just
-│   └── workflows.md
-└── install.sh               # Setup script
-
-your-project/                # After installation
-├── justfile                 # Imports from ~/.claude-dotfiles
-├── .claude/
-│   ├── commands/           # Copied slash commands (customize if needed)
-│   ├── prompts/            # Copied templates (customize here)
-│   ├── plans/              # Generated plans saved here
-│   └── context.yaml        # Project-specific context
-└── .git/hooks/
-    ├── pre-commit          # Symlink to shared hook
-    └── prepare-commit-msg  # Copied hook (optional)
+├── justfiles/               # Shared Just recipes
+│   ├── _base.just          # Core: validate, info, check-clean
+│   └── plans.just          # Plan & worktree management
+├── hooks/                   # Git hook templates
+├── prompts/                 # Output format templates
+├── skills/                  # AI skill guides
+└── install.sh
 ```
+
+**Per-project** (created by install.sh):
+```
+your-project/
+├── justfile                 # Imports ~/.claude-dotfiles/justfiles/_base.just
+├── .claude/
+│   ├── plans/              # Generated plans stored here
+│   └── context.yaml        # Optional project context
+└── .git/hooks/
+    └── pre-commit          # Runs just validate
+```
+
+**How Claude Code finds commands**: Reads from `~/.claude/commands/` (symlinked from repo)
 
 ## Requirements
 
