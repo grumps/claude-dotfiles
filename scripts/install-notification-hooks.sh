@@ -101,29 +101,16 @@ BACKUP_FILE="${SETTINGS_FILE}.backup.$(date +%Y%m%d_%H%M%S)"
 cp "$SETTINGS_FILE" "$BACKUP_FILE"
 echo "✓ Backed up existing settings to: $BACKUP_FILE"
 
-# Create the hook configuration
-HOOK_CONFIG=$(cat <<EOF
-{
-  "hooks": {
-    "Notification": [
-      {
-        "matcher": "waiting for input|awaiting input",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$NOTIFICATION_CMD"
-          }
-        ]
-      }
-    ]
-  }
-}
-EOF
-)
-
-# Merge with existing settings using jq
-# This preserves all existing settings and adds/updates the Notification hook
-echo "$HOOK_CONFIG" | jq -s '.[0] * .[1]' "$SETTINGS_FILE" - > "${SETTINGS_FILE}.tmp"
+# Create the hook configuration using jq to properly escape the command
+# This ensures all quotes and special characters are properly handled in JSON
+jq --arg cmd "$NOTIFICATION_CMD" \
+  '.hooks.Notification = [{
+    "matcher": "waiting for input|awaiting input",
+    "hooks": [{
+      "type": "command",
+      "command": $cmd
+    }]
+  }]' "$SETTINGS_FILE" > "${SETTINGS_FILE}.tmp"
 mv "${SETTINGS_FILE}.tmp" "$SETTINGS_FILE"
 
 echo "✓ Updated settings.json with notification hooks"
