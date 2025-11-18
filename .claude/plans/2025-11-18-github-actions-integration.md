@@ -962,29 +962,43 @@ changelog:
   git-cliff --config cliff.toml --output CHANGELOG.md
   echo "✅ Changelog generated"
 
-# Create a release (validate tag, generate notes, create GitHub release)
-release TAG:
+# Generate release notes for a specific tag (Argo-compatible: no GitHub dependency)
+release-notes TAG:
   #!/usr/bin/env bash
   set -euo pipefail
 
   # Validate semantic version tag format
   if [[ ! "{{TAG}}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-    echo "❌ Invalid tag format: {{TAG}}"
-    echo "Expected format: v1.2.3"
+    echo "❌ Invalid tag format: {{TAG}}" >&2
+    echo "Expected format: v1.2.3" >&2
     exit 1
   fi
-  echo "✅ Valid tag format: {{TAG}}"
-
-  # Extract version without 'v' prefix
-  VERSION="${{TAG}#v}"
 
   # Generate changelog for this version only
-  echo "📝 Generating release notes with git-cliff..."
-  NOTES=$(git-cliff --config cliff.toml --unreleased --tag "{{TAG}}" --strip all)
+  git-cliff --config cliff.toml --unreleased --tag "{{TAG}}" --strip all
 
-  echo "✅ Release notes generated"
-  echo "Creating GitHub release..."
-  # Note: In CI, this would use GitHub API; locally it's a dry-run
+# Create GitHub release using gh CLI (works locally and in any CI)
+github-release TAG:
+  #!/usr/bin/env bash
+  set -euo pipefail
+
+  # Validate tag format first
+  just release-notes "{{TAG}}" > /dev/null
+
+  echo "📝 Generating release notes with git-cliff..."
+  NOTES=$(just release-notes "{{TAG}}")
+
+  echo "🚀 Creating GitHub release for {{TAG}}..."
+  gh release create "{{TAG}}" \
+    --title "Release {{TAG}}" \
+    --notes "$NOTES" \
+    install.sh uninstall.sh
+
+  echo "✅ Release {{TAG}} created with assets"
+
+# Full release workflow (for local testing)
+release TAG: (release-notes TAG) (github-release TAG)
+  @echo "✅ Release {{TAG}} complete"
 ```
 
 **git-cliff Configuration (`cliff.toml`)**:
@@ -1048,55 +1062,47 @@ jobs:
           sudo mv git-cliff-*/git-cliff /usr/local/bin/
           chmod +x /usr/local/bin/git-cliff
 
-      - name: Validate tag and generate release notes
-        id: release
+      - name: Install GitHub CLI
         run: |
-          VERSION="${GITHUB_REF#refs/tags/v}"
-          NOTES=$(git-cliff --config cliff.toml --unreleased --tag "$GITHUB_REF_NAME" --strip all)
-          echo "notes<<EOF" >> $GITHUB_OUTPUT
-          echo "$NOTES" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          type -p gh > /dev/null || (
+            curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+            echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+            sudo apt update
+            sudo apt install gh -y
+          )
 
-      - name: Create Release
-        uses: softprops/action-gh-release@v2
-        with:
-          name: Release ${{ github.ref_name }}
-          body: ${{ steps.release.outputs.notes }}
-          files: |
-            install.sh
-            uninstall.sh
-          draft: false
-          prerelease: false
+      - name: Create GitHub release using Just recipe
+        run: just github-release "$GITHUB_REF_NAME"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Release created
-        run: |
-          echo "✅ Release ${{ github.ref_name }} created"
-          echo "📦 Assets: install.sh, uninstall.sh"
 ```
 
 #### Validation
 - [ ] `just changelog` generates CHANGELOG.md locally using git-cliff
-- [ ] `just release <tag>` validates tag format
+- [ ] `just release-notes <tag>` validates tag format and generates notes
+- [ ] `just release-notes <tag>` works without GitHub dependency (Argo-compatible)
+- [ ] `just github-release <tag>` creates release using gh CLI
+- [ ] `just release <tag>` runs full workflow (notes + GitHub release)
 - [ ] git-cliff generates proper release notes from conventional commits
 - [ ] GitHub Actions workflow triggers on valid version tags
-- [ ] Tag format validation works in CI
 - [ ] GitHub release created successfully with changelog content
 - [ ] Release includes install.sh and uninstall.sh as assets
-- [ ] Invalid tags are rejected
+- [ ] Invalid tags are rejected by `just release-notes`
+- [ ] Can test releases locally with gh CLI and personal repo
 
 #### TODO for Stage 6
-- [ ] Add `changelog` and `release` recipes to `justfiles/ci.just`
+- [ ] Add `changelog`, `release-notes`, `github-release`, and `release` recipes to `justfiles/ci.just`
 - [ ] Create `cliff.toml` for git-cliff configuration
 - [ ] Align cliff.toml with cog.toml commit types
 - [ ] Test `just changelog` locally with git-cliff
-- [ ] Create `.github/workflows/release.yml`
+- [ ] Test `just release-notes v0.0.1` locally (no GitHub dependency)
+- [ ] Test `just github-release v0.0.1` locally with gh CLI (optional, needs GITHUB_TOKEN)
+- [ ] Create `.github/workflows/release.yml` with gh CLI installation
 - [ ] Test release workflow with test tag
 - [ ] Verify release assets are attached correctly
 - [ ] Document release process in CONTRIBUTING.md
-- [ ] Document `just changelog` usage for maintainers
+- [ ] Document `just changelog` and `just release-notes` usage for maintainers
+- [ ] Note: `release-notes` recipe is Argo-compatible (no GitHub-specific dependencies)
 
 ---
 
@@ -1237,6 +1243,181 @@ If issues detected:
 - [ ] Documentation updated with Just recipe usage and CI/CD requirements
 - [ ] Status badges added to README.md
 - [ ] CONTRIBUTING.md explains how to run Just recipes locally and fix CI failures
+
+## Future Migration Path: Argo Workflows
+
+### Overview
+
+The Justfile-centric architecture enables future migration to Argo Workflows (Kubernetes-native CI/CD) with minimal changes to core logic. All CI tasks are Just recipes, with GitHub Actions providing only thin orchestration. This design minimizes vendor lock-in.
+
+**Migration Risk**: ✅ **LOW** - All CI logic is in portable Just recipes
+
+### Migration Readiness
+
+**Already Argo-Compatible** ✅:
+- All CI logic in Just recipes (not workflow YAML)
+- Container-based integration testing (archlinux:latest)
+- Standard CLI tools (shellcheck, ruff, lychee, git-cliff, etc.)
+- GitHub releases abstracted to `gh` CLI in `github-release` recipe
+- Release notes generation (`release-notes`) has zero GitHub dependencies
+- CI contract documented (`.claude/ci-contract.md`)
+
+**Will Require Adaptation** ⚠️:
+- Workflow orchestration syntax (GitHub Actions YAML → Argo Workflow templates)
+- Trigger mechanisms (GitHub webhooks → Argo Events)
+- Secrets management (GitHub Actions secrets → Kubernetes secrets)
+- PR auto-labeling (GitHub Actions labeler → custom webhook handler)
+- Status checks integration (GitHub native → custom reporting)
+
+### Argo Workflow Conceptual Mapping
+
+**Current GitHub Actions** (`.github/workflows/validate.yml`):
+```yaml
+jobs:
+  lint-shell:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Just
+        uses: extractions/setup-just@v2
+      - name: Install ShellCheck
+        run: sudo apt-get install -y shellcheck
+      - name: Run validation
+        run: just lint-shell
+```
+
+**Future Argo Workflow** (`argo-workflows/validate.yaml`):
+```yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: validate-
+spec:
+  entrypoint: lint-shell
+  templates:
+  - name: lint-shell
+    container:
+      image: myorg/ci-tools:latest  # Pre-installed: just, shellcheck, shfmt
+      command: [just, lint-shell]
+      workingDir: /workspace
+      volumeMounts:
+      - name: source
+        mountPath: /workspace
+  volumes:
+  - name: source
+    # Source code from git clone init container or artifact
+```
+
+**Key Point**: Same `just lint-shell` command runs identically in both systems.
+
+**Benefits of Current Architecture for Argo**:
+1. ✅ Just recipes are 100% portable between CI systems
+2. ✅ Can create custom container images with all tools pre-installed
+3. ✅ Container-based testing already proven with BATS tests
+4. ✅ No GitHub Actions-specific logic in core CI tasks
+5. ✅ `release-notes` recipe works in any environment (no GitHub API)
+6. ✅ Local testing matches CI exactly (`just <task>`)
+
+### Migration Timeline Estimate
+
+**Phase 1: Preparation** (Already included in this plan)
+- **Duration**: Included in current implementation (2-4 hours for Argo-specific improvements)
+- **Tasks**:
+  - ✅ Abstract GitHub releases to `gh` CLI (Stage 6)
+  - ✅ Split release logic: `release-notes` (portable) + `github-release` (GitHub-specific)
+  - ✅ Document CI contract in `.claude/ci-contract.md`
+  - ✅ Keep all CI logic in Just recipes
+- **Deliverables**:
+  - Argo-ready Just recipes
+  - CI contract documentation
+  - Migration review documents
+
+**Phase 2: Argo Implementation** (Future, when ready for migration)
+- **Duration**: 1-2 weeks
+- **Tasks**:
+  - Set up Argo Workflows in Kubernetes cluster
+  - Create custom CI tools container image (Dockerfile with just, shellcheck, ruff, etc.)
+  - Translate GitHub Actions workflows to Argo Workflow templates
+  - Configure Argo Events for GitHub webhook triggers
+  - Set up Kubernetes secrets for GITHUB_TOKEN
+  - Implement custom PR status reporting
+  - Migrate path filtering logic to Argo event filters
+- **Deliverables**:
+  - Argo Workflow templates for all stages
+  - Custom container image published to registry
+  - Argo Events sensors configured
+
+**Phase 3: Parallel Running** (Future, validation phase)
+- **Duration**: 1-2 weeks
+- **Tasks**:
+  - Run both GitHub Actions and Argo Workflows in parallel
+  - Validate Argo results match GitHub Actions results
+  - Compare performance and reliability
+  - Build team confidence in Argo system
+  - Document any differences or issues
+- **Deliverables**:
+  - Validation report comparing both systems
+  - Team confidence in Argo Workflows
+
+**Phase 4: Migration** (Future, cutover phase)
+- **Duration**: 1 week
+- **Tasks**:
+  - Switch primary CI to Argo Workflows
+  - Keep GitHub Actions as backup/fallback
+  - Monitor Argo performance and reliability
+  - Decommission GitHub Actions after confidence period
+- **Deliverables**:
+  - Primary CI running on Argo Workflows
+  - Documentation updated for new system
+
+**Total Future Migration Effort**: 2-4 weeks (excluding preparation already in current plan)
+
+### Argo-Specific Improvements Already in This Plan
+
+This GitHub Actions plan includes specific improvements for Argo compatibility:
+
+1. **Separated release concerns** (Stage 6):
+   - `release-notes` - Pure git-cliff logic (works anywhere, including Argo)
+   - `github-release` - GitHub API interaction via `gh` CLI
+   - When migrating to Argo: Keep `release-notes`, replace `github-release` with Kubernetes API
+
+2. **Tool abstraction**:
+   - All GitHub interactions use `gh` CLI (not Actions-specific APIs)
+   - Easy to replace `gh` CLI with other tools in Argo
+
+3. **Container-first testing**:
+   - Integration tests already use containers (Arch Linux)
+   - Pattern maps directly to Argo's container-native approach
+
+4. **CI contract documentation**:
+   - `.claude/ci-contract.md` explicitly defines orchestrator requirements
+   - Serves as specification for both GitHub Actions and future Argo implementation
+
+### Migration References
+
+- **Full migration analysis**: `.claude/plans/2025-11-18-argo-workflows-migration-review.md`
+- **Specific improvements**: `.claude/plans/2025-11-18-argo-migration-plan-improvements.md`
+- **CI contract**: `.claude/ci-contract.md`
+- **Argo Workflows**: https://argoproj.github.io/argo-workflows/
+- **Argo Events**: https://argoproj.github.io/argo-events/
+
+### Anti-Patterns to Avoid (Would Hurt Argo Migration)
+
+During implementation of this plan, do NOT:
+
+1. ❌ Put business logic in workflow YAML files (keep it in Just recipes)
+2. ❌ Use GitHub Actions expressions heavily (`${{ }}` syntax for logic)
+3. ❌ Rely on GitHub Actions cache/artifacts for critical paths
+4. ❌ Use GitHub Actions composite actions for core CI logic
+5. ❌ Hard-code GitHub-specific APIs in shell scripts (use `gh` CLI abstraction)
+6. ❌ Make Just recipes depend on GitHub Actions environment variables
+
+**Follow these principles instead**:
+1. ✅ All logic in Just recipes
+2. ✅ Workflows only orchestrate (setup → invoke Just → report)
+3. ✅ Use standard tools available in any Linux environment
+4. ✅ Test all Just recipes locally with `just <task>`
+5. ✅ Document orchestrator contracts explicitly
 
 ## Overall TODO List
 

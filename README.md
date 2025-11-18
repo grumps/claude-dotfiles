@@ -348,8 +348,8 @@ Language-specific (optional):
 - **golangci-lint** - For Go projects
 - **ruff** - For Python projects
 - **terraform** + **tflint** + **tfsec** - For Terraform projects
-- **kustomize** + **kubectl** + **kubeconform** - For Kubernetes/Kustomize projects
 - **yamllint** - For YAML validation
+- **kubectl** - For Kubernetes validation
 
 ## Troubleshooting
 
@@ -399,7 +399,6 @@ Slash commands are automatically available in Claude Code after installation. Th
 - **[Git Workflow](docs/git-workflow.md)** - Linear history workflow with rebase and squash
 - **[Python Style Guide](docs/python-style-guide.md)** - Comprehensive Python coding standards
 - **[Terraform Style Guide](docs/terraform-style-guide.md)** - Comprehensive Terraform coding standards and tooling
-- **[Kustomize Style Guide](docs/kustomize-style-guide.md)** - Comprehensive Kustomize coding standards and patterns
 - **[Notification Hooks](docs/notification-hooks.md)** - Desktop notifications setup and configuration
 - **[Contributing](CONTRIBUTING.md)** - Development setup and guidelines
 - **[Testing](TESTING.md)** - Testing procedures and validation

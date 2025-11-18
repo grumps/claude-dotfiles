@@ -21,16 +21,6 @@ This directory contains comprehensive documentation for Claude dotfiles projects
   - Tagging strategies
   - Tool configuration (terraform-docs, tflint, tfsec)
 
-- **[Kustomize Style Guide](kustomize-style-guide.md)** - Complete Kustomize coding standards and architectural patterns
-  - Patch and overlay architecture
-  - Directory structure and organization
-  - Base configurations and overlays
-  - Strategic merge vs JSON patches
-  - ConfigMap and Secret management
-  - Component patterns and reusability
-  - Multi-environment best practices
-  - Tool configuration and validation
-
 ## Contributing
 
 See the main [CONTRIBUTING.md](../CONTRIBUTING.md) for:
