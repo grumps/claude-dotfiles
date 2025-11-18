@@ -32,6 +32,7 @@ just validate  # Run lint + test
 | `/commit` | Generate commit message | When ready to commit |
 | `/update-docs` | Update documentation | After code changes |
 | `/just-help` | Get Just recipe help | Learning Just commands |
+| `/helm-render` | Work with Helm charts | Rendering/validating charts |
 
 ## Just Recipes Reference
 
@@ -80,6 +81,33 @@ just test-for-claude  # OPTIONAL - Test output for Claude
 - **Runs**: Only if made executable
 - **Generates**: Commit message in editor
 - **Enable**: `chmod +x .git/hooks/prepare-commit-msg`
+
+## Scripts Reference
+
+### Helm Chart Exploration (User-level tooling)
+
+```bash
+# Explore third-party charts
+just helm-explore bitnami/nginx          # Chart info + values + README
+just helm-show bitnami/nginx             # Show all available values
+
+# Validate and render
+just helm-validate bitnami/nginx my-values.yaml
+just helm-render bitnami/nginx my-values.yaml
+just helm-test bitnami/nginx my-values.yaml  # Validate + render
+
+# Compare configurations
+just helm-compare bitnami/nginx current.yaml proposed.yaml
+
+# Repository management
+just helm-add-repo bitnami https://charts.bitnami.com/bitnami
+just helm-update
+
+# Quick workflows
+just helm-watch bitnami/nginx my-values.yaml  # Auto re-render on changes
+```
+
+**See**: [Helm Guide](./helm-guide.md) for comprehensive documentation
 
 ## Development Workflow
 

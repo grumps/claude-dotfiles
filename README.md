@@ -119,6 +119,7 @@ just info          # Display repository information and status
 /commit                # Generate commit message
 /prepare-pr            # Prepare branch for PR with linear history
 /just-help             # Get help with Just
+/helm-render           # Work with Helm charts
 ```
 
 ## Features
@@ -146,6 +147,7 @@ Built-in commands for Claude Code workflows:
 - **/commit** - Generate conventional commit messages
 - **/prepare-pr** - Prepare feature branch for PR with linear history workflow
 - **/just-help** - Get help with Just recipes and usage
+- **/helm-render** - Render and validate Helm charts with custom values
 
 Commands are immediately available after installation in `.claude/commands/`.
 
@@ -196,6 +198,44 @@ Follow the instructions in [docs/notification-hooks.md](docs/notification-hooks.
 - Works with multiple Claude sessions
 
 See [docs/notification-hooks.md](docs/notification-hooks.md) for full documentation and customization options.
+
+### Scripts and Utilities
+
+**Helm Chart Exploration** - User-level tooling for understanding and validating third-party Helm charts:
+```bash
+# Explore a chart - see all available values
+just helm-explore bitnami/nginx
+
+# Validate custom values
+just helm-validate bitnami/nginx my-values.yaml
+
+# Render to see generated manifests
+just helm-render bitnami/nginx my-values.yaml
+
+# Compare different configurations
+just helm-compare bitnami/nginx current.yaml proposed.yaml
+```
+
+**Use cases:**
+- **Explore third-party charts** - Understand what values are available before using a chart
+- **Validate configurations** - Test custom values files before deployment
+- **Render manifests** - See what Kubernetes resources will be created
+- **Compare changes** - Understand impact of configuration changes
+
+**Features:**
+- Support for traditional Helm repos and OCI registries
+- Interactive chart exploration with `just helm-explore`
+- Values validation and rendering
+- Configuration comparison
+- Watch mode for iterative development
+- Just recipe integration for quick workflows
+
+See [docs/helm-guide.md](docs/helm-guide.md) for complete documentation.
+
+**Claude Code Integration:**
+```
+/helm-render
+```
 
 ## Common Workflows
 
