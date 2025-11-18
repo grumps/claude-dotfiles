@@ -101,14 +101,41 @@ Pre-commit hook now shows helpful message instead of
 failing when justfile doesn't exist.
 ```
 
+## Git Workflow: Linear History
+
+**This repository requires a strict linear history workflow.**
+
+Before creating a pull request, you MUST:
+
+1. **Rebase and squash** your commits into single or discrete working commits
+2. **Pull latest main** branch
+3. **Rebase onto main** to ensure linear history
+4. **Force push** your branch
+
+See [docs/git-workflow.md](docs/git-workflow.md) for detailed instructions.
+
+### Quick Commands
+
+```bash
+# Automated workflow (recommended)
+./scripts/git-linear-history.sh
+
+# Or manual workflow
+git rebase -i $(git merge-base HEAD main)  # Squash commits
+git fetch origin main                       # Get latest main
+git rebase origin/main                      # Rebase onto main
+git push origin YOUR_BRANCH --force-with-lease  # Force push
+```
+
 ## Pull Requests
 
 1. Create a branch: `git checkout -b feature/my-feature`
 2. Make your changes
 3. Test thoroughly
 4. Commit following conventions
-5. Push: `git push origin feature/my-feature`
-6. Open pull request
+5. **Follow linear history workflow** (see above)
+6. Push: `git push origin feature/my-feature --force-with-lease`
+7. Open pull request
 
 PR should include:
 - Clear description of changes

@@ -85,6 +85,7 @@ just info          # Display repository information and status
 /review-code           # Review staged changes
 /review-plan <file>    # Review a plan file
 /commit                # Generate commit message
+/prepare-pr            # Prepare branch for PR with linear history
 /just-help             # Get help with Just
 ```
 
@@ -111,6 +112,7 @@ Built-in commands for Claude Code workflows:
 - **/review-code** - Review staged changes with automated checks
 - **/review-plan** - Review implementation plans for completeness
 - **/commit** - Generate conventional commit messages
+- **/prepare-pr** - Prepare feature branch for PR with linear history workflow
 - **/just-help** - Get help with Just recipes and usage
 
 Commands are immediately available after installation in `.claude/commands/`.
@@ -190,6 +192,49 @@ git commit  # Message generated automatically
 
 See [examples/workflows.md](examples/workflows.md) for more.
 
+## Git Workflow: Linear History
+
+**This repository enforces a strict linear history workflow** for clean, maintainable git history.
+
+### Quick Overview
+
+Before creating a PR, you must:
+1. **Rebase and squash** commits into single or discrete working commits
+2. **Pull latest main** branch
+3. **Rebase onto main** to ensure linear history
+4. **Force push** your branch
+
+### Using the Workflow
+
+**Automated (recommended):**
+```bash
+./scripts/git-linear-history.sh
+```
+
+**Manual:**
+```bash
+git rebase -i $(git merge-base HEAD main)  # Squash commits
+git fetch origin main                       # Get latest main
+git rebase origin/main                      # Rebase onto main
+git push origin BRANCH --force-with-lease   # Force push
+```
+
+**Via Claude:**
+```
+/prepare-pr
+
+Claude will guide you through the linear history workflow
+```
+
+### Why Linear History?
+
+- **Easier code review** - Each commit represents a complete change
+- **Better bisect** - Every commit is working and testable
+- **Cleaner history** - No "fix typo" or merge commits
+- **Simpler reverts** - Revert entire features with one command
+
+See [docs/git-workflow.md](docs/git-workflow.md) for detailed documentation.
+
 ## Customization
 
 ### Per-Repository
@@ -236,12 +281,16 @@ Fork this repository and add:
 │   ├── review-code.md      # /review-code command
 │   ├── review-plan.md      # /review-plan command
 │   ├── commit.md           # /commit command
+│   ├── prepare-pr.md       # /prepare-pr command
 │   └── just-help.md        # /just-help command
 ├── prompts/                 # Output templates
 │   ├── plan.md
 │   ├── review-code.md
 │   ├── review-plan.md
+│   ├── prepare-pr.md
 │   └── commit.md
+├── scripts/                 # Automation scripts
+│   └── git-linear-history.sh  # Linear history workflow automation
 ├── hooks/                   # Git hooks
 │   ├── pre-commit
 │   └── prepare-commit-msg
@@ -324,6 +373,7 @@ Slash commands are automatically available in Claude Code after installation. Th
 
 ## Documentation
 
+- **[Git Workflow](docs/git-workflow.md)** - Linear history workflow with rebase and squash
 - **[Python Style Guide](docs/python-style-guide.md)** - Comprehensive Python coding standards
 - **[Terraform Style Guide](docs/terraform-style-guide.md)** - Comprehensive Terraform coding standards and tooling
 - **[Contributing](CONTRIBUTING.md)** - Development setup and guidelines
