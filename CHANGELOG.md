@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Notification hooks for desktop alerts when Claude awaits input
+- Context detection script for project-aware notifications (tmux, git)
+- Comprehensive notification hooks documentation (Linux and macOS)
+- macOS notification support (osascript-based, documented but not fully tested)
 - Initial release
 - Just-based task orchestration
 - Claude skills for planning, reviewing, and commits

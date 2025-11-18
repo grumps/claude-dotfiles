@@ -20,7 +20,8 @@ This repository provides:
 1. You define `lint` and `test` recipes in your project's `justfile`
 2. Claude's slash commands call standardized Just recipes
 3. Git hooks run `just validate` before commits
-4. Everything works together seamlessly
+4. Desktop notifications alert you when Claude awaits input
+5. Everything works together seamlessly
 
 ```mermaid
 sequenceDiagram
@@ -174,6 +175,27 @@ chmod +x .git/hooks/prepare-commit-msg
 # Then commit normally - message is generated:
 git commit
 ```
+
+### Notification Hooks
+
+Get desktop notifications when Claude Code is waiting for your input:
+
+**Linux (automatic setup):**
+```bash
+~/.claude-dotfiles/scripts/install-notification-hooks.sh
+```
+
+**macOS (manual setup - scoped):**
+Follow the instructions in [docs/notification-hooks.md](docs/notification-hooks.md) to configure osascript-based notifications.
+
+**Features:**
+- Desktop alerts when Claude awaits input
+- Project context in notifications (tmux window, git repo name)
+- Sound alerts (customizable)
+- Auto-dismiss notifications
+- Works with multiple Claude sessions
+
+See [docs/notification-hooks.md](docs/notification-hooks.md) for full documentation and customization options.
 
 ## Common Workflows
 
@@ -377,6 +399,7 @@ Slash commands are automatically available in Claude Code after installation. Th
 - **[Git Workflow](docs/git-workflow.md)** - Linear history workflow with rebase and squash
 - **[Python Style Guide](docs/python-style-guide.md)** - Comprehensive Python coding standards
 - **[Terraform Style Guide](docs/terraform-style-guide.md)** - Comprehensive Terraform coding standards and tooling
+- **[Notification Hooks](docs/notification-hooks.md)** - Desktop notifications setup and configuration
 - **[Contributing](CONTRIBUTING.md)** - Development setup and guidelines
 - **[Testing](TESTING.md)** - Testing procedures and validation
 - **[Workflows](examples/workflows.md)** - Example workflows with Claude
