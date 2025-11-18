@@ -12,6 +12,15 @@ This directory contains comprehensive documentation for Claude dotfiles projects
   - Testing guidelines
   - Tool configuration (ruff, pytest)
 
+- **[Terraform Style Guide](terraform-style-guide.md)** - Complete Terraform coding standards and tooling practices
+  - File organization and naming conventions
+  - Resource configuration and formatting
+  - Variables, outputs, and modules
+  - Security best practices (encryption, secrets, IAM)
+  - State management
+  - Tagging strategies
+  - Tool configuration (terraform-docs, tflint, tfsec)
+
 ## Contributing
 
 See the main [CONTRIBUTING.md](../CONTRIBUTING.md) for:

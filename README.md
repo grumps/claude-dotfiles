@@ -249,6 +249,7 @@ Fork this repository and add:
 │   ├── justfiles/          # Example language-specific recipes
 │   │   ├── golang.just
 │   │   ├── python.just
+│   │   ├── terraform.just
 │   │   └── k8s.just
 │   └── workflows.md
 └── install.sh               # Setup script
@@ -274,6 +275,7 @@ your-project/                # After installation
 Language-specific (optional):
 - **golangci-lint** - For Go projects
 - **ruff** - For Python projects
+- **terraform** + **tflint** + **tfsec** - For Terraform projects
 - **yamllint** - For YAML validation
 - **kubectl** - For Kubernetes validation
 
@@ -323,6 +325,7 @@ Slash commands are automatically available in Claude Code after installation. Th
 ## Documentation
 
 - **[Python Style Guide](docs/python-style-guide.md)** - Comprehensive Python coding standards
+- **[Terraform Style Guide](docs/terraform-style-guide.md)** - Comprehensive Terraform coding standards and tooling
 - **[Contributing](CONTRIBUTING.md)** - Development setup and guidelines
 - **[Testing](TESTING.md)** - Testing procedures and validation
 - **[Workflows](examples/workflows.md)** - Example workflows with Claude
@@ -342,7 +345,7 @@ MIT License - see [LICENSE](LICENSE) for details
 
 ## Acknowledgments
 
-Built for platform engineers working with Go, Python, and Kubernetes.
+Built for platform engineers working with Go, Python, Terraform, and Kubernetes.
 
 Inspired by the power of combining:
 - [Just](https://just.systems) - Command runner
