@@ -51,6 +51,9 @@ if [ "$GLOBAL_INSTALL" = false ]; then
 # Import base protocol from claude-dotfiles
 import? '$DOTFILES_DIR/justfiles/_base.just'
 
+# Import plan worktree management recipes (optional)
+import? '$DOTFILES_DIR/justfiles/plans.just'
+
 # === Required Recipes ===
 # The imported _base.just defines \`validate: lint test\`
 # You MUST implement lint and test, or validation will fail
@@ -79,6 +82,17 @@ fi
 # 2. Create .claude directory structure
 echo "📁 Creating Claude directory..."
 mkdir -p "$CLAUDE_DIR"/{commands,prompts,plans}
+
+# 2a. Symlink scripts directory (local install only)
+if [ "$GLOBAL_INSTALL" = false ]; then
+    if [ ! -e "scripts" ]; then
+        echo "🔗 Symlinking scripts directory..."
+        ln -s "$DOTFILES_DIR/scripts" scripts
+        echo "✅ Linked scripts directory"
+    else
+        echo "⏭️  scripts directory already exists"
+    fi
+fi
 
 # 3. Symlink slash commands
 echo "⚡ Symlinking slash commands..."
@@ -219,15 +233,21 @@ else
     echo "   - /commit - Generate commit messages"
     echo "   - /just-help - Get help with Just recipes"
     echo ""
-    echo "3. Edit context file:"
+    echo "3. Plan worktree recipes are available:"
+    echo "   just plan-list <plan-file>      # List stages in a plan"
+    echo "   just plan-setup <plan-file>     # Create worktrees for all stages"
+    echo "   just plan-status <plan-file>    # Show plan status"
+    echo "   just plan-validate <plan-file>  # Validate plan metadata"
+    echo ""
+    echo "4. Edit context file:"
     echo "   - Update .claude/context.yaml with your project details"
     echo ""
-    echo "4. Test the setup:"
+    echo "5. Test the setup:"
     echo "   just --list          # See available recipes"
     echo "   just validate        # Test validation (will fail until lint/test implemented)"
     echo "   /plan <feature>      # Try a slash command"
     echo ""
-    echo "5. Enable auto-commit messages (optional):"
+    echo "6. Enable auto-commit messages (optional):"
     echo "   chmod +x .git/hooks/prepare-commit-msg"
     echo ""
 fi

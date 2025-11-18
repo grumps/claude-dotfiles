@@ -1,8 +1,39 @@
 # Implementation Plan: [TITLE]
 
-**Created**: [DATE]
-**Author**: [NAME]
-**Status**: Draft | In Progress | Complete
+<!--
+This template uses JSON metadata to define extractable implementation stages.
+Each stage can be developed in its own git worktree for parallel development.
+
+To set up worktrees: just plan-setup .claude/plans/[this-file].md
+See skills/plan-worktree/SKILL.md for details.
+-->
+
+```json metadata
+{
+  "plan_id": "YYYY-MM-DD-short-slug",
+  "created": "YYYY-MM-DD",
+  "author": "[NAME]",
+  "status": "draft",
+  "stages": [
+    {
+      "id": "stage-1",
+      "name": "[Component/Feature Name]",
+      "branch": "feature/[plan-id]-[stage-id]",
+      "worktree_path": "../worktrees/[plan-id]/[stage-id]",
+      "status": "not-started",
+      "depends_on": []
+    },
+    {
+      "id": "stage-2",
+      "name": "[Component/Feature Name]",
+      "branch": "feature/[plan-id]-[stage-id]",
+      "worktree_path": "../worktrees/[plan-id]/[stage-id]",
+      "status": "not-started",
+      "depends_on": ["stage-1"]
+    }
+  ]
+}
+```
 
 ## Overview
 [1-2 sentences describing what we're building and why it matters]
@@ -14,7 +45,6 @@
 - [ ] Requirement 2
 
 ### Non-Functional Requirements
-- [ ] Performance: [metrics]
 - [ ] Security: [requirements]
 - [ ] Scalability: [targets]
 
@@ -34,35 +64,68 @@
 ### Existing Code to Follow
 [Reference similar implementations in the codebase]
 
-## Implementation Steps
+## Implementation Stages
 
-### Phase 1: [Phase Name]
+Each stage below corresponds to a stage definition in the frontmatter and can be extracted to its own worktree.
 
-#### Step 1.1: [Step Name]
-**What**: [What we're building]
-**Why**: [Rationale]
-**How**: [Technical implementation details]
-**Files**:
+### Stage 1: [Component/Feature Name]
+
+**Stage ID**: `stage-1`
+**Branch**: `feature/[plan-id]-stage-1`
+**Status**: Not Started
+**Dependencies**: None
+
+#### What
+[Description of what this stage builds - the component/feature in 1-2 sentences]
+
+#### Why
+[Why this stage is needed - the business/technical rationale]
+
+#### How
+
+**Architecture**:
+[How this component fits into the overall system]
+
+**Implementation Details**:
+- Detail 1: [Technical approach]
+- Detail 2: [Design pattern to use]
+- Detail 3: [Integration points]
+
+**Files to Change**:
 - Create: `path/to/new/file.go`
 - Modify: `path/to/existing/file.py`
+- Delete: `path/to/obsolete/file.js`
 
 **Code Example**:
 ```go
-// Example of what we're building
+// Example of key implementation
 func NewFeature() {
     // ...
 }
 ```
 
-**Validation**:
-- Run `just test-feature`
-- Manual test: [steps]
+#### Validation
+- [ ] Run `just test-stage-1` or `just test`
+- [ ] Manual test: [specific steps to verify]
+- [ ] Integration test: [verify with other components]
 
-#### Step 1.2: [Step Name]
-...
+#### TODO for Stage 1
+- [ ] Specific actionable task 1
+- [ ] Specific actionable task 2
+- [ ] Specific actionable task 3
 
-### Phase 2: [Phase Name]
-...
+---
+
+### Stage 2: [Component/Feature Name]
+
+**Stage ID**: `stage-2`
+**Branch**: `feature/[plan-id]-stage-2`
+**Status**: Not Started
+**Dependencies**: stage-1
+
+[Repeat structure above for each stage]
+
+---
 
 ## Testing Strategy
 
@@ -83,10 +146,6 @@ func NewFeature() {
 - [ ] Test step 1
 - [ ] Test step 2
 
-### Performance Testing
-**Load targets**: [e.g., 1000 rps]
-**Tools**: [e.g., k6, vegeta]
-
 ## Deployment Plan
 
 ### Pre-deployment
@@ -98,13 +157,11 @@ func NewFeature() {
 ### Staging Deployment
 - [ ] Deploy to staging: `just deploy-staging`
 - [ ] Smoke tests pass
-- [ ] Performance tests pass
 - [ ] Security scan pass
 
 ### Production Deployment
 - [ ] Deploy: `just deploy-production`
 - [ ] Monitor error rates
-- [ ] Check performance metrics
 - [ ] Verify functionality
 
 ### Rollback Plan
@@ -118,7 +175,6 @@ If issues detected:
 | Risk | Likelihood | Impact | Mitigation |
 |------|------------|--------|------------|
 | [Database migration fails] | Medium | High | [Test on staging first, have rollback script ready] |
-| [Performance regression] | Low | Medium | [Load test before deploy, monitor metrics] |
 
 ## Dependencies
 
@@ -138,11 +194,36 @@ If issues detected:
 ## Success Criteria
 
 - [ ] All tests pass
-- [ ] Performance meets targets
 - [ ] Security scan clean
 - [ ] Documentation complete
 - [ ] Deployed to production
 - [ ] Monitoring shows healthy metrics
+
+## Overall TODO List
+
+High-level tracking across all stages. Stage-specific TODOs are in each stage section above.
+
+### Pre-Implementation
+- [ ] Review and approve plan
+- [ ] Clarify open questions
+- [ ] Set up worktrees for stages (run `just plan-setup [plan-id]`)
+
+### Implementation (per stage)
+- [ ] Stage 1: [Component Name] - See Stage 1 TODO above
+- [ ] Stage 2: [Component Name] - See Stage 2 TODO above
+- [ ] Stage N: [Component Name] - See Stage N TODO above
+
+### Integration & Testing
+- [ ] Merge all stage branches
+- [ ] Run full integration tests
+- [ ] Address any conflicts or integration issues
+
+### Documentation & Deployment
+- [ ] Update README.md
+- [ ] Update CHANGELOG.md
+- [ ] Create pull request
+- [ ] Deploy to staging
+- [ ] Deploy to production
 
 ## References
 

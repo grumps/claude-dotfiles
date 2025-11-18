@@ -38,71 +38,138 @@ git log -5 --oneline --decorate
 ```
 
 ### 3. Create Structured Plan
-Use the template from `.claude/prompts/plan.md` with this format:
+Use the template from `.claude/prompts/plan.md`. The template uses JSON metadata to define implementation stages that can be extracted to git worktrees for parallel development.
 
+**Key Elements**:
+
+1. **JSON Metadata Block** - Defines metadata and stages:
+```json metadata
+{
+  "plan_id": "YYYY-MM-DD-short-slug",
+  "status": "draft",
+  "stages": [
+    {
+      "id": "stage-1",
+      "name": "Component/Feature Name",
+      "branch": "feature/plan-id-stage-1",
+      "worktree_path": "../worktrees/plan-id/stage-1",
+      "status": "not-started",
+      "depends_on": []
+    }
+  ]
+}
 ```
-# Implementation Plan: [TITLE]
 
-## Overview
-[1-2 sentences: what we're building and why]
+2. **Human-Readable Body** - Standard markdown sections:
+   - **Overview**: What and why (1-2 sentences)
+   - **Requirements**: Functional and non-functional requirements
+   - **Technical Approach**: Architecture, technologies, patterns
+   - **Implementation Stages**: One section per stage with What/Why/How/Validation/TODO
+   - **Testing Strategy**: Unit, integration, manual testing
+   - **Deployment Plan**: Pre-deployment, staging, production, rollback
+   - **Risks & Mitigations**: Risk table with mitigation strategies
+   - **Dependencies**: Upstream/downstream impacts
+   - **Success Criteria**: How we know it's done
+   - **Overall TODO List**: High-level tracking across stages
 
-## Requirements
-- [ ] Functional requirement 1
-- [ ] Functional requirement 2
-- [ ] Non-functional (performance, security, etc.)
+**Stage Structure** (repeatable per component):
+```markdown
+### Stage N: [Component Name]
 
-## Technical Approach
-**Architecture**: [How components fit together]
-**Technologies**: [Languages, frameworks, tools]
-**Patterns**: [Design patterns, existing code to follow]
+**Stage ID**: `stage-N`
+**Branch**: `feature/plan-id-stage-N`
+**Status**: Not Started
+**Dependencies**: [List of stage IDs]
 
-## Implementation Steps
+#### What
+[What this stage builds - 1-2 sentences]
 
-### Step 1: [Name]
-**What**: [What we're building]
-**Why**: [Why this step is necessary]
-**How**: [Technical details, code snippets]
-**Files**: [Files to create/modify]
-**Validation**: `just test-feature` or manual test steps
+#### Why
+[Why needed - business/technical rationale]
 
-### Step 2: [Name]
-...
+#### How
+**Architecture**: [How component fits in system]
+**Implementation Details**: [Technical approach, patterns]
+**Files to Change**: Create/Modify/Delete lists
+**Code Example**: [Key implementation snippets]
 
-## Testing Strategy
-- **Unit tests**: [What to test, coverage goals]
-- **Integration tests**: [What scenarios]
-- **Manual testing**: [Steps to verify]
+#### Validation
+- [ ] Run tests
+- [ ] Manual verification steps
+- [ ] Integration checks
 
-## Deployment Checklist
-- [ ] Run `just validate` (lint + tests pass)
-- [ ] Update documentation
-- [ ] Create pull request
-- [ ] Deploy to staging
-- [ ] Smoke test in staging
-- [ ] Deploy to production
-- [ ] Monitor for errors
-
-## Risks & Mitigations
-| Risk | Likelihood | Impact | Mitigation |
-|------|------------|--------|------------|
-| [Risk description] | Low/Med/High | Low/Med/High | [How to prevent/handle] |
-
-## Open Questions
-- [ ] Question needing answer before proceeding
-- [ ] Decision point requiring input
+#### TODO for Stage N
+- [ ] Specific actionable tasks
 ```
 
 ### 4. Save Plan
 Save to `.claude/plans/YYYY-MM-DD-short-description.md`
 
+### 5. Extract to Worktrees (Optional)
+For plans with multiple independent stages, you can extract them to separate git worktrees.
+
+**Using Just (Recommended)**:
+```bash
+# List all plans
+just plan-ls
+
+# Validate plan has proper metadata
+just plan-validate .claude/plans/YYYY-MM-DD-feature.md
+
+# List all stages
+just plan-list .claude/plans/YYYY-MM-DD-feature.md
+
+# Set up all worktrees
+just plan-setup .claude/plans/YYYY-MM-DD-feature.md
+
+# Or set up individual stage
+just plan-stage .claude/plans/YYYY-MM-DD-feature.md stage-1
+
+# Check status
+just plan-status .claude/plans/YYYY-MM-DD-feature.md
+
+# View all worktrees
+just plan-worktrees
+```
+
+**Direct Script Usage** (stdlib only, no external dependencies):
+```bash
+uv run scripts/planworktree.py list .claude/plans/YYYY-MM-DD-feature.md
+uv run scripts/planworktree.py setup-all .claude/plans/YYYY-MM-DD-feature.md
+```
+
+Each worktree gets:
+- Its own branch: `feature/plan-id-stage-id`
+- Isolated working directory: `../worktrees/plan-id/stage-id/`
+- Symlink to plan: `.claude/plans/CURRENT_STAGE.md`
+
+This allows parallel development of different components without branch conflicts.
+
+See `skills/plan-worktree/SKILL.md` for detailed workflow.
+
 ## Best Practices
-- Each step should be actionable and specific
+
+### Stage Organization
+- **Each stage = discrete component**: Stages should be independently testable features/components
+- **Minimize dependencies**: Design stages to be as parallel as possible
+- **Clear boundaries**: Each stage should have well-defined inputs and outputs
+- **Merge order**: Document dependency chains (stage-2 depends on stage-1, etc.)
+
+### Plan Content
+- Each stage should be actionable and specific
 - Reference Just recipes where applicable ("Run `just test`")
 - Include code examples for complex parts
 - Consider backwards compatibility
 - Think about edge cases and error handling
 - Mention relevant existing code/patterns to follow
 - **Never include time estimates or effort estimates** - focus only on what needs to be done and how
+
+### Worktree Usage
+- Use worktrees for large features with 3+ independent components
+- Keep stages focused - better to have more smaller stages than fewer large ones
+- Test each stage in isolation before merging
+- Update stage status in plan frontmatter as work progresses
+- Clean up worktrees after merging: `git worktree remove <path>`
 
 ## For Platform Engineering
 - **K8s manifests**: Include resource limits, probes, labels, RBAC
