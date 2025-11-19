@@ -47,6 +47,51 @@ lint-markdown:
   lychee --config lychee.toml .
   echo "✅ Link checking passed"
 
+# Run integration tests in Docker container (requires Docker/Podman)
+test-install:
+  #!/usr/bin/env bash
+  set -euo pipefail
+  echo "🧪 Running integration tests in Arch Linux container..."
+
+  # Check if docker or podman is available
+  if command -v docker &> /dev/null; then
+    CONTAINER_CMD="docker"
+  elif command -v podman &> /dev/null; then
+    CONTAINER_CMD="podman"
+  else
+    echo "❌ Neither docker nor podman found. Please install one of them."
+    exit 1
+  fi
+
+  echo "Using container runtime: $CONTAINER_CMD"
+
+  $CONTAINER_CMD run --rm -v "$(pwd):/workspace" -w /workspace archlinux:latest /bin/bash -c '
+    set -e
+    echo "📦 Installing dependencies..."
+    pacman -Sy --noconfirm git bats just base-devel
+
+    echo "🏗️  Creating test repository..."
+    mkdir -p /tmp/test-repo
+    cd /tmp/test-repo
+    git init
+    git config user.name "Test User"
+    git config user.email "test@example.com"
+
+    echo "📥 Running install script..."
+    bash /workspace/install.sh
+
+    echo "✅ Running installation tests..."
+    bats /workspace/tests/integration/test-install.bats
+
+    echo "🗑️  Running uninstall script..."
+    bash /workspace/uninstall.sh --force
+
+    echo "✅ Running uninstall tests..."
+    bats /workspace/tests/integration/test-uninstall.bats
+  '
+
+  echo "✅ Integration tests passed"
+
 # === Release Management Recipes ===
 
 # Generate or update CHANGELOG.md using git-cliff (Rust-based)

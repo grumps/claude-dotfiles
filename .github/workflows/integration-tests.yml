@@ -1,0 +1,88 @@
+name: Integration Tests
+
+on:
+  pull_request:
+    paths:
+      - 'install.sh'
+      - 'uninstall.sh'
+      - 'scripts/**'
+      - 'hooks/**'
+      - 'justfiles/**'
+      - 'tests/**'
+      - '.github/workflows/integration-tests.yml'
+  push:
+    branches: [main, master]
+
+jobs:
+  test-install:
+    name: Test Install (Arch Linux)
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:latest
+
+    steps:
+      - name: Install dependencies
+        run: pacman -Sy --noconfirm git bats just base-devel
+
+      - uses: actions/checkout@v4
+
+      - name: Create test repository
+        run: |
+          mkdir -p /tmp/test-repo
+          cd /tmp/test-repo
+          git init
+          git config user.name "Test User"
+          git config user.email "test@example.com"
+
+      - name: Run install script
+        working-directory: /tmp/test-repo
+        run: bash $GITHUB_WORKSPACE/install.sh
+
+      - name: Validate installation
+        working-directory: /tmp/test-repo
+        run: bats $GITHUB_WORKSPACE/tests/integration/test-install.bats
+
+      - name: Test uninstall (first run - should keep files)
+        working-directory: /tmp/test-repo
+        run: echo "n" | bash $GITHUB_WORKSPACE/uninstall.sh || true
+
+      - name: Test uninstall (second run - should remove files)
+        working-directory: /tmp/test-repo
+        run: echo -e "y\ny" | bash $GITHUB_WORKSPACE/uninstall.sh
+
+      - name: Validate uninstall cleanup
+        working-directory: /tmp/test-repo
+        run: bats $GITHUB_WORKSPACE/tests/integration/test-uninstall.bats
+
+  test-plan-worktree:
+    name: Test Plan Worktree Script
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Just
+        uses: extractions/setup-just@v2
+
+      - uses: astral-sh/setup-uv@v4
+
+      - name: Test plan worktree script exists and is executable
+        run: |
+          chmod +x scripts/planworktree.py
+          ./scripts/planworktree.py --help
+
+      - name: Create test plan file
+        run: |
+          mkdir -p .claude/plans
+          # Use an existing plan file as a test
+          if [ -f ".claude/plans/2025-11-18-github-actions-integration.md" ]; then
+            cp .claude/plans/2025-11-18-github-actions-integration.md .claude/plans/test-plan.md
+          else
+            echo "No test plan found, skipping plan worktree tests"
+            exit 0
+          fi
+
+      - name: Test plan worktree commands
+        run: |
+          ./scripts/planworktree.py list .claude/plans/test-plan.md
+          ./scripts/planworktree.py status .claude/plans/test-plan.md
+          ./scripts/planworktree.py validate .claude/plans/test-plan.md
