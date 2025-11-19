@@ -68,7 +68,7 @@ jobs:
       - name: Test plan worktree script exists and is executable
         run: |
           chmod +x scripts/planworktree.py
-          ./scripts/planworktree.py --help
+          uv run scripts/planworktree.py --help
 
       - name: Create test plan file
         run: |
@@ -83,6 +83,6 @@ jobs:
 
       - name: Test plan worktree commands
         run: |
-          ./scripts/planworktree.py list .claude/plans/test-plan.md
-          ./scripts/planworktree.py status .claude/plans/test-plan.md
-          ./scripts/planworktree.py validate .claude/plans/test-plan.md
+          uv run scripts/planworktree.py list .claude/plans/test-plan.md
+          uv run scripts/planworktree.py status .claude/plans/test-plan.md
+          uv run scripts/planworktree.py validate .claude/plans/test-plan.md
