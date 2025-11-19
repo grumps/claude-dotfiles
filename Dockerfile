@@ -1,4 +1,17 @@
+# Multi-stage build to get binaries from official containers
+FROM ghcr.io/terraform-linters/tflint:latest AS tflint
+FROM aquasec/tfsec:latest AS tfsec
+FROM alpine/helm:latest AS helm
+FROM golangci/golangci-lint:latest AS golangci-lint
+
+# Main stage
 FROM public.ecr.aws/x2w2w0z4/base:v0.5.1-bookworm-slim
+
+# NOTE: This base image currently only supports linux/amd64
+# ARM64 builds are disabled in the CI workflow until base image compatibility is resolved
+
+# Declare build arguments for architecture-specific installations
+ARG TARGETARCH
 
 # Install core development tools and dependencies
 # Using install_deb script provided by the base image
@@ -17,7 +30,6 @@ RUN install_deb \
     && rm -rf /var/lib/apt/lists/*
 
 # Install shfmt (shell formatter) - architecture-aware
-ARG TARGETARCH
 RUN case "${TARGETARCH}" in \
     amd64) SHFMT_ARCH=amd64 ;; \
     arm64) SHFMT_ARCH=arm64 ;; \
@@ -26,11 +38,15 @@ RUN case "${TARGETARCH}" in \
     wget -qO /usr/local/bin/shfmt https://github.com/mvdan/sh/releases/download/v3.8.0/shfmt_v3.8.0_linux_${SHFMT_ARCH} && \
     chmod +x /usr/local/bin/shfmt
 
+# Copy binaries from official containers
+COPY --from=helm /usr/bin/helm /usr/local/bin/helm
+COPY --from=golangci-lint /usr/bin/golangci-lint /usr/local/bin/golangci-lint
+COPY --from=tflint /usr/local/bin/tflint /usr/local/bin/tflint
+COPY --from=tfsec /usr/bin/tfsec /usr/local/bin/tfsec
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+
 # Install Just (command runner)
 RUN curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | bash -s -- --to /usr/local/bin
-
-# Install Helm
-RUN curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
 # Install kubectl - architecture-aware
 RUN case "${TARGETARCH}" in \
@@ -46,29 +62,17 @@ RUN case "${TARGETARCH}" in \
 RUN curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash && \
     mv kustomize /usr/local/bin/
 
-# Install yamllint
+# Install Python tools using uv
 RUN install_deb python3-pip && \
-    pip3 install --no-cache-dir yamllint --break-system-packages && \
+    uv pip install --break-system-packages --system yamllint ruff && \
     rm -rf /var/lib/apt/lists/*
 
-# Install Go tools (golangci-lint)
-RUN curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b /usr/local/bin v1.55.2
-
-# Install Python tools (ruff)
-RUN pip3 install --no-cache-dir ruff --break-system-packages
-
-# Install Terraform tools
+# Install Terraform
 RUN wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg && \
     echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com bookworm main" | tee /etc/apt/sources.list.d/hashicorp.list && \
     apt-get update && \
     install_deb terraform && \
     rm -rf /var/lib/apt/lists/*
-
-# Install tflint
-RUN curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
-
-# Install tfsec
-RUN curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install_linux.sh | bash
 
 # Verify installations
 RUN echo "=== Verifying tool installations ===" && \

@@ -1,10 +1,14 @@
-# Docker Base Container
+# Docker Base Container (CI/CD)
 
-This directory contains a Docker base container that includes all the tools needed for the claude-dotfiles project.
+This directory contains a Docker base container for **CI/CD pipelines only**. It includes all the tools needed for automated validation, testing, and deployment workflows.
+
+**Important**: This container is designed for CI/CD environments (GitHub Actions, GitLab CI, etc.), not for local development. For local development, install tools directly on your machine using the installation instructions in the main README.
 
 ## Base Image
 
 The container is built on `public.ecr.aws/x2w2w0z4/base:v0.5.1-bookworm-slim`, which provides a Debian Bookworm slim base with the `install_deb` script for package installation.
+
+The Dockerfile uses multi-stage builds to copy binaries from official containers, ensuring we get verified, official binaries without relying on install scripts. This approach is more reliable and faster than downloading/executing installation scripts.
 
 ## Included Tools
 
@@ -24,31 +28,32 @@ The container is built on `public.ecr.aws/x2w2w0z4/base:v0.5.1-bookworm-slim`, w
 - **just** - Task runner and command orchestration
 
 ### Kubernetes Tools
-- **helm** - Kubernetes package manager
-- **kubectl** - Kubernetes CLI
+- **helm** - Kubernetes package manager (from alpine/helm)
+- **kubectl** - Kubernetes CLI (from dl.k8s.io)
 - **kustomize** - Kubernetes configuration management
 - **yamllint** - YAML validation
 
 ### Go Development
-- **golangci-lint** (v1.55.2) - Go linting
+- **golangci-lint** - Go linting (from golangci/golangci-lint)
 
 ### Python Development
 - **python3-pip** - Python package installer
-- **ruff** - Fast Python linter
-- **yamllint** - YAML validation (via pip)
+- **uv** - Fast Python package installer and resolver
+- **ruff** - Fast Python linter (installed via uv)
+- **yamllint** - YAML validation (installed via uv)
 
 ### Terraform Tools
-- **terraform** - Infrastructure as Code
-- **tflint** - Terraform linting
-- **tfsec** - Terraform security scanner
+- **terraform** - Infrastructure as Code (from HashiCorp apt repo)
+- **tflint** - Terraform linting (from ghcr.io/terraform-linters/tflint)
+- **tfsec** - Terraform security scanner (from aquasec/tfsec)
 
-## Using Pre-Built Images
+## Using Pre-Built Images (CI/CD Only)
 
-Pre-built images are automatically published to GitHub Container Registry (ghcr.io) via GitHub Actions:
+Pre-built images are automatically published to GitHub Container Registry (ghcr.io) for use in CI/CD pipelines:
 
 - **On push to main** - Tagged as `latest`
 - **On version tags** (v1.2.3) - Tagged with semver versions
-- **Multi-platform** - Built for linux/amd64 and linux/arm64
+- **Platform** - Built for linux/amd64 (ARM64 support pending base image compatibility)
 - **Signed** - Includes build provenance attestation
 
 ### Pull the Latest Image
@@ -67,7 +72,16 @@ docker pull ghcr.io/grumps/claude-dotfiles:latest
 
 ### Using the Pre-Built Image
 
+**In CI/CD pipelines:**
+
 ```bash
+# Pull the latest image (automated in CI/CD)
+docker pull ghcr.io/grumps/claude-dotfiles:latest
+
+# GitHub Actions example - see CI/CD Usage section below
+```
+
+**For local Dockerfile testing only:**
 # Interactive shell
 docker run -it --rm -v $(pwd):/workspace ghcr.io/grumps/claude-dotfiles:latest
 
@@ -80,15 +94,32 @@ docker run --rm -v $(pwd):/workspace ghcr.io/grumps/claude-dotfiles:latest just 
 
 ## Building the Container Locally
 
-If you need to build the container locally (for development or customization):
+**Note**: Local builds are only needed for testing changes to the Dockerfile itself. For normal development, install tools directly on your machine.
+
+If you need to test Dockerfile changes locally:
 
 ```bash
 docker build -t claude-dotfiles-base:latest .
 ```
 
+### Multi-Stage Build
+
+The Dockerfile uses multi-stage builds to copy binaries from official containers where possible:
+- **helm** - Copied from `alpine/helm:latest`
+- **golangci-lint** - Copied from `golangci/golangci-lint:latest`
+- **tflint** - Copied from `ghcr.io/terraform-linters/tflint:latest`
+- **tfsec** - Copied from `aquasec/tfsec:latest`
+- **kubectl** - Downloaded from official Kubernetes releases (dl.k8s.io)
+
+This approach ensures:
+- Official, verified binaries from maintainers
+- Reduced reliance on installation scripts that could fail
+- Faster builds with better layer caching
+- Automatic architecture support from source containers
+
 ## CI/CD Usage
 
-Use the pre-built image in your CI/CD pipelines for fast, consistent builds:
+This container is designed for CI/CD pipelines. Use the pre-built image for fast, consistent builds:
 
 ```yaml
 # GitHub Actions example
@@ -206,15 +237,19 @@ To publish a new version:
    ```
 
 2. The workflow will automatically:
-   - Build the image for amd64 and arm64 platforms
+   - Build the image for linux/amd64 platform
    - Tag with `v1.2.3`, `1.2`, and `1`
    - Push to GitHub Container Registry
    - Generate build provenance attestation
 
 ### Workflow Features
 
-- **Multi-platform builds** - Supports linux/amd64 and linux/arm64
+- **Platform support** - Currently linux/amd64 (ARM64 pending base image compatibility)
 - **Layer caching** - Uses GitHub Actions cache for faster builds
 - **Security** - Generates and attaches build provenance
 - **Metadata** - Includes OCI labels for version, description, and more
 - **Efficient** - Only publishes on main branch and tags, not PRs
+
+### ARM64 Support
+
+ARM64 support is currently disabled due to base image compatibility issues. The base image `public.ecr.aws/x2w2w0z4/base:v0.5.1-bookworm-slim` does not properly support ARM64 architecture. Once a compatible base image is available, ARM64 builds will be re-enabled.
