@@ -391,6 +391,44 @@ Language-specific (optional):
 - **yamllint** - For YAML validation
 - **kubectl** - For Kubernetes validation
 
+## Docker Container (CI/CD)
+
+A pre-built Docker container is available for **CI/CD pipelines** with all required tools included.
+
+**Important**: This container is for CI/CD environments only (GitHub Actions, GitLab CI, etc.). For local development, install tools directly using the instructions above.
+
+### Using in CI/CD
+
+Pull and use the image in your CI/CD pipelines:
+
+```yaml
+# Example GitHub Actions workflow
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/grumps/claude-dotfiles:latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run validation
+        run: just validate
+```
+
+See [docs/docker.md](docs/docker.md) for complete CI/CD integration documentation.
+
+### Included Tools
+
+The container includes all required and optional tools:
+- Shell tools: shellcheck, shfmt
+- Command runner: just
+- Kubernetes: helm, kubectl, kustomize
+- Go: golangci-lint
+- Python: ruff, yamllint (via uv)
+- Terraform: terraform, tflint, tfsec
+- Utilities: git, jq, curl, wget
+
+See [docs/docker.md](docs/docker.md) for complete documentation.
+
 ## Troubleshooting
 
 ### "just: command not found"
@@ -436,6 +474,7 @@ Slash commands are automatically available in Claude Code after installation. Th
 
 ## Documentation
 
+- **[Docker Container](docs/docker.md)** - Container setup and usage guide
 - **[Git Workflow](docs/git-workflow.md)** - Linear history workflow with rebase and squash
 - **[Python Style Guide](docs/python-style-guide.md)** - Comprehensive Python coding standards
 - **[Terraform Style Guide](docs/terraform-style-guide.md)** - Comprehensive Terraform coding standards and tooling
