@@ -63,7 +63,7 @@ docker pull ghcr.io/grumps/claude-dotfiles:latest
 - `v1.2.3` - Specific version tags (semver)
 - `1.2` - Major.minor version tags
 - `1` - Major version tags
-- `main-sha-abc123` - SHA-tagged builds from main branch
+- `sha-abc123` - SHA-tagged builds from main branch
 
 ### Using the Pre-Built Image
 
