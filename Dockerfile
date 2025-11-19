@@ -3,26 +3,27 @@ FROM public.ecr.aws/x2w2w0z4/base:v0.5.1-bookworm-slim
 # Install core development tools and dependencies
 # Using install_deb script provided by the base image
 RUN install_deb \
-    # Core utilities \
     curl \
     wget \
     git \
     jq \
     ca-certificates \
     gnupg \
-    # Shell scripting tools \
     shellcheck \
-    # Notification support \
     libnotify-bin \
-    # Build essentials for potential compilation \
     build-essential \
-    # Additional utilities \
     less \
     vim \
     && rm -rf /var/lib/apt/lists/*
 
-# Install shfmt (shell formatter)
-RUN wget -qO /usr/local/bin/shfmt https://github.com/mvdan/sh/releases/download/v3.8.0/shfmt_v3.8.0_linux_amd64 && \
+# Install shfmt (shell formatter) - architecture-aware
+ARG TARGETARCH
+RUN case "${TARGETARCH}" in \
+    amd64) SHFMT_ARCH=amd64 ;; \
+    arm64) SHFMT_ARCH=arm64 ;; \
+    *) echo "Unsupported architecture: ${TARGETARCH}" && exit 1 ;; \
+    esac && \
+    wget -qO /usr/local/bin/shfmt https://github.com/mvdan/sh/releases/download/v3.8.0/shfmt_v3.8.0_linux_${SHFMT_ARCH} && \
     chmod +x /usr/local/bin/shfmt
 
 # Install Just (command runner)
@@ -31,8 +32,13 @@ RUN curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | bash 
 # Install Helm
 RUN curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
-# Install kubectl
-RUN curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && \
+# Install kubectl - architecture-aware
+RUN case "${TARGETARCH}" in \
+    amd64) KUBECTL_ARCH=amd64 ;; \
+    arm64) KUBECTL_ARCH=arm64 ;; \
+    *) echo "Unsupported architecture: ${TARGETARCH}" && exit 1 ;; \
+    esac && \
+    curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/${KUBECTL_ARCH}/kubectl" && \
     install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl && \
     rm kubectl
 
