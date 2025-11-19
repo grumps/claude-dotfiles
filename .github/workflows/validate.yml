@@ -27,3 +27,14 @@ jobs:
 
       - name: Run Python validation
         run: just lint-python
+
+  lint-markdown:
+    name: Lint Markdown and Check Links
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/grumps/claude-dotfiles:master
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run markdown validation
+        run: just lint-markdown

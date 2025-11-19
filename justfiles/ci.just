@@ -35,6 +35,18 @@ lint-python:
   uvx mypy scripts/*.py --strict
   echo "✅ Mypy type checking passed"
 
+# Validate markdown files with rumdl (Rust) and check links with lychee (Rust)
+lint-markdown:
+  #!/usr/bin/env bash
+  set -euo pipefail
+  echo "🔍 Running rumdl..."
+  rumdl check .
+  echo "✅ Markdown linting passed"
+
+  echo "🔍 Checking links with lychee..."
+  lychee --config lychee.toml .
+  echo "✅ Link checking passed"
+
 # === Release Management Recipes ===
 
 # Generate or update CHANGELOG.md using git-cliff (Rust-based)
