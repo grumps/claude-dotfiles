@@ -398,23 +398,33 @@ A pre-built Docker container is available with all required tools included. This
 - **CI/CD pipelines** - Use in GitHub Actions, GitLab CI, etc.
 - **Quick setup** - No need to install tools individually
 
-### Building the Container
+### Using the Pre-Built Image
+
+Pull the latest image from GitHub Container Registry:
 
 ```bash
-docker build -t claude-dotfiles-base:latest .
+docker pull ghcr.io/grumps/claude-dotfiles:latest
 ```
 
-### Using the Container
+Run commands:
 
 ```bash
 # Interactive shell
-docker run -it --rm -v $(pwd):/workspace claude-dotfiles-base:latest
+docker run -it --rm -v $(pwd):/workspace ghcr.io/grumps/claude-dotfiles:latest
 
 # Run validation
-docker run --rm -v $(pwd):/workspace claude-dotfiles-base:latest just validate
+docker run --rm -v $(pwd):/workspace ghcr.io/grumps/claude-dotfiles:latest just validate
 
 # Run specific commands
-docker run --rm -v $(pwd):/workspace claude-dotfiles-base:latest just lint
+docker run --rm -v $(pwd):/workspace ghcr.io/grumps/claude-dotfiles:latest just lint
+```
+
+### Building Locally
+
+To build the container locally:
+
+```bash
+docker build -t claude-dotfiles-base:latest .
 ```
 
 ### Included Tools
