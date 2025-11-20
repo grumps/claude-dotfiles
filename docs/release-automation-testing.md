@@ -11,9 +11,40 @@ The release automation is built using:
 
 All release logic lives in `justfiles/ci.just`, making it fully testable locally.
 
-## Prerequisites
+## Quick Start: Using Docker (Recommended)
 
-Install the required tools:
+The easiest way to test locally is using the pre-built Docker container with all tools included:
+
+```bash
+# Pull the container with all tools pre-installed (including git-cliff)
+docker pull ghcr.io/grumps/claude-dotfiles:master
+
+# Test release notes generation
+docker run --rm -v $(pwd):/workspace ghcr.io/grumps/claude-dotfiles:master \
+  just release-notes v1.0.0
+
+# Test changelog generation
+docker run --rm -v $(pwd):/workspace ghcr.io/grumps/claude-dotfiles:master \
+  just changelog
+
+# Interactive shell to run multiple commands
+docker run -it --rm -v $(pwd):/workspace ghcr.io/grumps/claude-dotfiles:master
+# Inside container:
+# just release-notes v1.0.0
+# just changelog
+```
+
+This container includes:
+- ✅ Just (task runner)
+- ✅ git-cliff (changelog generator)
+- ✅ All validation tools (shellcheck, shfmt, ruff, etc.)
+- ✅ Same environment as GitHub Actions
+
+**Note**: The container does not include `gh` CLI. For testing `github-release` recipe, you'll need to install it manually or use native installation (see below).
+
+## Prerequisites (Native Installation)
+
+If you prefer to install tools directly on your machine instead of using Docker:
 
 ```bash
 # Install Just (if not already installed)

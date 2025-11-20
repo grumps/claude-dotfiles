@@ -12,27 +12,20 @@ jobs:
   create-release:
     name: Create GitHub Release
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/grumps/claude-dotfiles:master
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Need full history for git-cliff
 
-      - name: Install Just
-        uses: extractions/setup-just@v2
-
-      - name: Install git-cliff
-        run: |
-          curl -L https://github.com/orhun/git-cliff/releases/latest/download/git-cliff-x86_64-unknown-linux-musl.tar.gz | tar xz
-          sudo mv git-cliff-*/git-cliff /usr/local/bin/
-          chmod +x /usr/local/bin/git-cliff
-
       - name: Install GitHub CLI
         run: |
           type -p gh > /dev/null || (
-            curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
-            echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
-            sudo apt update
-            sudo apt install gh -y
+            curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+            echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+            apt-get update
+            apt-get install -y gh
           )
 
       - name: Create GitHub release using Just recipe
