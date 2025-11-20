@@ -10,7 +10,7 @@ import? 'justfiles/ci.just'
 # === Required Recipes (for base protocol) ===
 
 # Run all linters
-lint: lint-shell
+lint: lint-shell lint-python
 
 # Run tests (placeholder for now, will add integration tests later)
 test:

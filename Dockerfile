@@ -64,7 +64,7 @@ RUN curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/
 
 # Install Python tools using uv
 RUN install_deb python3-pip && \
-    uv pip install --break-system-packages --system yamllint ruff && \
+    uv pip install --break-system-packages --system yamllint ruff mypy && \
     rm -rf /var/lib/apt/lists/*
 
 # Install Terraform
@@ -87,6 +87,8 @@ RUN echo "=== Verifying tool installations ===" && \
     yamllint --version && \
     golangci-lint --version && \
     ruff --version && \
+    mypy --version && \
+    uv --version && \
     terraform --version && \
     tflint --version && \
     tfsec --version && \

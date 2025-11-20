@@ -18,3 +18,19 @@ lint-shell:
     ! -name "*.py" \
     -exec shfmt -d -i 2 -ci -bn {} +
   echo "✅ Shell formatting check passed"
+
+# Lint and type-check Python scripts
+lint-python:
+  #!/usr/bin/env bash
+  set -euo pipefail
+  echo "🔍 Running ruff linter..."
+  uvx ruff check .
+  echo "✅ Ruff linting passed"
+
+  echo "🔍 Running ruff format check..."
+  uvx ruff format --check .
+  echo "✅ Ruff formatting check passed"
+
+  echo "🔍 Running mypy type checker..."
+  uvx mypy scripts/*.py --strict
+  echo "✅ Mypy type checking passed"
