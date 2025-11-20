@@ -62,20 +62,9 @@ RUN case "${TARGETARCH}" in \
 RUN curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash && \
     mv kustomize /usr/local/bin/
 
-# Install git-cliff (Rust-based changelog generator) - architecture-aware
-RUN case "${TARGETARCH}" in \
-    amd64) CLIFF_ARCH=x86_64 ;; \
-    arm64) CLIFF_ARCH=aarch64 ;; \
-    *) echo "Unsupported architecture: ${TARGETARCH}" && exit 1 ;; \
-    esac && \
-    wget -qO- "https://github.com/orhun/git-cliff/releases/download/v2.7.0/git-cliff-2.7.0-${CLIFF_ARCH}-unknown-linux-musl.tar.gz" | tar xz && \
-    mv "git-cliff-2.7.0/git-cliff" /usr/local/bin/git-cliff && \
-    chmod +x /usr/local/bin/git-cliff && \
-    rm -rf git-cliff-2.7.0
-
 # Install Python tools using uv
 RUN install_deb python3-pip && \
-    uv pip install --break-system-packages --system yamllint ruff mypy && \
+    uv pip install --break-system-packages --system yamllint ruff mypy git-cliff && \
     rm -rf /var/lib/apt/lists/*
 
 # Install Terraform
