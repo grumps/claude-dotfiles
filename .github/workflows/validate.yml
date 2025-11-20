@@ -9,8 +9,7 @@ jobs:
   lint-shell:
     name: Lint Shell Scripts
     runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/grumps/claude-dotfiles:master
+    container: ghcr.io/grumps/claude-dotfiles:master
     steps:
       - uses: actions/checkout@v4
 
@@ -20,8 +19,7 @@ jobs:
   lint-python:
     name: Lint Python Scripts
     runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/grumps/claude-dotfiles:master
+    container: ghcr.io/grumps/claude-dotfiles:master
     steps:
       - uses: actions/checkout@v4
 
@@ -31,8 +29,7 @@ jobs:
   lint-markdown:
     name: Lint Markdown and Check Links
     runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/grumps/claude-dotfiles:master
+    container: ghcr.io/grumps/claude-dotfiles:master
     steps:
       - uses: actions/checkout@v4
 

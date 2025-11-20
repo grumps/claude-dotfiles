@@ -67,6 +67,30 @@ RUN install_deb python3-pip && \
     uv pip install --break-system-packages --system yamllint ruff mypy git-cliff && \
     rm -rf /var/lib/apt/lists/*
 
+# Install rumdl (Rust-based markdown linter) - architecture-aware
+RUN case "${TARGETARCH}" in \
+    amd64) RUMDL_ARCH=x86_64-unknown-linux-musl ;; \
+    arm64) RUMDL_ARCH=aarch64-unknown-linux-musl ;; \
+    *) echo "Unsupported architecture: ${TARGETARCH}" && exit 1 ;; \
+    esac && \
+    wget -qO rumdl.tar.gz https://github.com/rvben/rumdl/releases/latest/download/rumdl-${RUMDL_ARCH}.tar.gz && \
+    tar -xzf rumdl.tar.gz && \
+    mv rumdl /usr/local/bin/rumdl && \
+    chmod +x /usr/local/bin/rumdl && \
+    rm rumdl.tar.gz
+
+# Install lychee (Rust-based link checker) - architecture-aware
+RUN case "${TARGETARCH}" in \
+    amd64) LYCHEE_ARCH=x86_64-unknown-linux-gnu ;; \
+    arm64) LYCHEE_ARCH=aarch64-unknown-linux-gnu ;; \
+    *) echo "Unsupported architecture: ${TARGETARCH}" && exit 1 ;; \
+    esac && \
+    wget -qO lychee.tar.gz https://github.com/lycheeverse/lychee/releases/download/v0.15.1/lychee-v0.15.1-${LYCHEE_ARCH}.tar.gz && \
+    tar -xzf lychee.tar.gz && \
+    mv lychee /usr/local/bin/lychee && \
+    chmod +x /usr/local/bin/lychee && \
+    rm lychee.tar.gz
+
 # Install Terraform
 RUN wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg && \
     echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com bookworm main" | tee /etc/apt/sources.list.d/hashicorp.list && \
@@ -90,6 +114,8 @@ RUN echo "=== Verifying tool installations ===" && \
     ruff --version && \
     mypy --version && \
     uv --version && \
+    rumdl --version && \
+    lychee --version && \
     terraform --version && \
     tflint --version && \
     tfsec --version && \
