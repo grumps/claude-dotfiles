@@ -64,10 +64,13 @@ RUN case "${TARGETARCH}" in \
 RUN curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash && \
     mv kustomize /usr/local/bin/
 
-# Install Python tools and rumdl using uv
+# Install Python tools using uv
 RUN install_deb python3-pip && \
-    uv pip install --break-system-packages --system yamllint ruff mypy git-cliff rumdl && \
+    uv pip install --break-system-packages --system yamllint ruff mypy git-cliff && \
     rm -rf /var/lib/apt/lists/*
+
+# Install rumdl using uv tool
+RUN uv tool install rumdl
 
 # Install Terraform
 RUN wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg && \
