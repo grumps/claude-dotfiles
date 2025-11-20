@@ -3,6 +3,7 @@ FROM ghcr.io/terraform-linters/tflint:latest AS tflint
 FROM aquasec/tfsec:latest AS tfsec
 FROM alpine/helm:latest AS helm
 FROM golangci/golangci-lint:latest AS golangci-lint
+FROM lycheeverse/lychee:latest AS lychee
 
 # Main stage
 FROM public.ecr.aws/x2w2w0z4/base:v0.5.1-bookworm-slim
@@ -43,6 +44,7 @@ COPY --from=helm /usr/bin/helm /usr/local/bin/helm
 COPY --from=golangci-lint /usr/bin/golangci-lint /usr/local/bin/golangci-lint
 COPY --from=tflint /usr/local/bin/tflint /usr/local/bin/tflint
 COPY --from=tfsec /usr/bin/tfsec /usr/local/bin/tfsec
+COPY --from=lychee /usr/local/bin/lychee /usr/local/bin/lychee
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 # Install Just (command runner)
@@ -62,34 +64,10 @@ RUN case "${TARGETARCH}" in \
 RUN curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash && \
     mv kustomize /usr/local/bin/
 
-# Install Python tools using uv
+# Install Python tools and rumdl using uv
 RUN install_deb python3-pip && \
-    uv pip install --break-system-packages --system yamllint ruff mypy git-cliff && \
+    uv pip install --break-system-packages --system yamllint ruff mypy git-cliff rumdl && \
     rm -rf /var/lib/apt/lists/*
-
-# Install rumdl (Rust-based markdown linter) - architecture-aware
-RUN case "${TARGETARCH}" in \
-    amd64) RUMDL_ARCH=x86_64-unknown-linux-musl ;; \
-    arm64) RUMDL_ARCH=aarch64-unknown-linux-musl ;; \
-    *) echo "Unsupported architecture: ${TARGETARCH}" && exit 1 ;; \
-    esac && \
-    wget -qO rumdl.tar.gz https://github.com/rvben/rumdl/releases/latest/download/rumdl-${RUMDL_ARCH}.tar.gz && \
-    tar -xzf rumdl.tar.gz && \
-    mv rumdl /usr/local/bin/rumdl && \
-    chmod +x /usr/local/bin/rumdl && \
-    rm rumdl.tar.gz
-
-# Install lychee (Rust-based link checker) - architecture-aware
-RUN case "${TARGETARCH}" in \
-    amd64) LYCHEE_ARCH=x86_64-unknown-linux-gnu ;; \
-    arm64) LYCHEE_ARCH=aarch64-unknown-linux-gnu ;; \
-    *) echo "Unsupported architecture: ${TARGETARCH}" && exit 1 ;; \
-    esac && \
-    wget -qO lychee.tar.gz https://github.com/lycheeverse/lychee/releases/download/v0.15.1/lychee-v0.15.1-${LYCHEE_ARCH}.tar.gz && \
-    tar -xzf lychee.tar.gz && \
-    mv lychee /usr/local/bin/lychee && \
-    chmod +x /usr/local/bin/lychee && \
-    rm lychee.tar.gz
 
 # Install Terraform
 RUN wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg && \
