@@ -198,21 +198,21 @@ echo ""
 
 # Test 8: Check tool dependencies (warnings only)
 echo "Test 8: Checking tool dependencies (informational)..."
-if command -v git-cliff &> /dev/null; then
+if command -v git-cliff &>/dev/null; then
   pass "git-cliff is installed ($(git-cliff --version 2>&1 | head -1))"
 else
   warn "git-cliff not installed (required for local testing)"
   info "Install: https://git-cliff.org/docs/installation"
 fi
 
-if command -v gh &> /dev/null; then
+if command -v gh &>/dev/null; then
   pass "gh CLI is installed ($(gh --version 2>&1 | head -1))"
 else
   warn "gh CLI not installed (required for github-release recipe)"
   info "Install: https://cli.github.com/"
 fi
 
-if command -v just &> /dev/null; then
+if command -v just &>/dev/null; then
   pass "just is installed ($(just --version 2>&1))"
 else
   warn "just not installed (required to run recipes)"
