@@ -8,9 +8,9 @@ respect-gitignore = true
 # Exclude patterns
 exclude = ["node_modules", ".git"]
 
+[rules]
 # Disable specific rules for documentation flexibility
-disabled-rules = [
-  "MD013",  # Line length - allow long lines in documentation
-  "MD033",  # Inline HTML - allow HTML elements in markdown
-  "MD041"   # First line heading - not all files need to start with H1
-]
+MD013.enabled = false  # Line length - allow long lines in documentation
+MD033.enabled = false  # Inline HTML - allow HTML elements in markdown
+MD041.enabled = false  # First line heading - not all files need to start with H1
+MD052.enabled = false  # Reference links - allow template placeholders
