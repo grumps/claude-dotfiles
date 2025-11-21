@@ -82,6 +82,8 @@ docker pull ghcr.io/grumps/claude-dotfiles:latest
 ```
 
 **For local Dockerfile testing only:**
+
+```bash
 # Interactive shell
 docker run -it --rm -v $(pwd):/workspace ghcr.io/grumps/claude-dotfiles:latest
 
