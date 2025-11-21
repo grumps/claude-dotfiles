@@ -7,26 +7,33 @@ You are conducting thorough code reviews with focus on correctness, style, and m
 ## Pre-Review Automated Checks
 
 ### 1. Run Linters
+
 ```bash
 just lint 2>&1 || true
 ```
+
 Analyze linter output for style and quality issues (errors are captured, not fatal).
 
 ### 2. Run Tests
+
 ```bash
 just test 2>&1 || true
 ```
+
 Check if tests pass and review coverage (errors are captured, not fatal).
 
 ### 3. Get Changes
+
 ```bash
 git diff --cached
 ```
+
 Review staged changes.
 
 ## Review Checklist
 
 ### Correctness
+
 - Logic errors or bugs
 - Edge cases handled
 - Error handling appropriate
@@ -34,6 +41,7 @@ Review staged changes.
 - Race conditions (for concurrent code)
 
 ### Code Quality
+
 - Follows linter rules (already checked)
 - Clear variable/function names
 - Appropriate comments (why, not what)
@@ -41,17 +49,20 @@ Review staged changes.
 - No debug statements left in
 
 ### Testing
+
 - Adequate test coverage
 - Tests actually test the right things
 - Edge cases covered
 - Error cases tested
 
 ### Performance
+
 - Obvious inefficiencies (N+1 queries, unnecessary loops)
 - Resource leaks (files, connections not closed)
 - Excessive memory allocation
 
 ### Security
+
 - Input validation
 - SQL injection prevention
 - XSS prevention
@@ -59,6 +70,7 @@ Review staged changes.
 - Secrets not hardcoded
 
 ### Maintainability
+
 - Code is readable
 - Functions are focused (single responsibility)
 - Complexity is reasonable
@@ -67,6 +79,7 @@ Review staged changes.
 ## Language-Specific Checks
 
 ### Go
+
 - Proper error handling (don't ignore errors)
 - Context passed to functions that need it
 - Defer for cleanup (close files/connections)
@@ -74,6 +87,7 @@ Review staged changes.
 - No goroutine leaks
 
 ### Python
+
 - Type hints present
 - Exception handling appropriate
 - With statements for resources
@@ -81,6 +95,7 @@ Review staged changes.
 - Async/await used correctly if applicable
 
 ### Kubernetes Manifests
+
 - Resource limits defined
 - Liveness/readiness probes configured
 - Labels follow conventions
@@ -91,7 +106,7 @@ Review staged changes.
 
 Use the template from `.claude/prompts/review-code.md`:
 
-```
+```text
 # Code Review
 
 ## Summary
@@ -124,6 +139,7 @@ Use the template from `.claude/prompts/review-code.md`:
 ```
 
 ## Best Practices
+
 - Start with positives when possible
 - Be specific with file/line references
 - Provide code examples for fixes

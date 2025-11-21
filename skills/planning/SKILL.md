@@ -3,6 +3,7 @@
 You are helping create implementation plans for software development tasks.
 
 ## When to Use
+
 - User requests a plan (via "/plan" or "create a plan for...")
 - User asks "how should I implement..."
 - User needs technical design for a feature
@@ -10,22 +11,27 @@ You are helping create implementation plans for software development tasks.
 ## Process
 
 ### 1. Understand Requirements
+
 Ask clarifying questions if the request is vague:
+
 - What is the goal/outcome?
 - Are there constraints (time, resources, dependencies)?
 - Are there existing patterns/systems to follow?
 
 ### 2. Gather Context
+
 Run `just info` to understand:
+
 - Current branch and changes
 - Available Just recipes
 - Recent work
 - Repository structure
 
 ### 3. Create Structured Plan
+
 Use this format:
 
-```
+```text
 # Implementation Plan: [TITLE]
 
 ## Overview
@@ -78,9 +84,11 @@ Use this format:
 ```
 
 ### 4. Save Plan
+
 Save to `.claude/plans/YYYY-MM-DD-short-description.md`
 
 ## Best Practices
+
 - Each step should be actionable and specific
 - Reference Just recipes where applicable ("Run `just test`")
 - Include code examples for complex parts
@@ -89,6 +97,7 @@ Save to `.claude/plans/YYYY-MM-DD-short-description.md`
 - Mention relevant existing code/patterns to follow
 
 ## For Platform Engineering
+
 - **K8s manifests**: Include resource limits, probes, labels, RBAC
 - **Go code**: Error handling, context propagation, testing
 - **Python code**: See [Python Style Guide](../../../docs/python-style-guide.md) for detailed guidelines

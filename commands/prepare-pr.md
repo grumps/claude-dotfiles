@@ -13,16 +13,19 @@ When the user asks to prepare a PR, create a PR, or finish a feature branch, you
 ### Step 1: Rebase and Squash Commits
 
 **First, check current commits:**
+
 ```bash
 git log origin/main..HEAD --oneline
 ```
 
 **Then perform interactive rebase:**
+
 ```bash
 git rebase -i $(git merge-base HEAD main)
 ```
 
 **Squashing Guidelines:**
+
 - **DEFAULT: Single commit** - Squash all commits into one for most features/fixes
 - **Exception: Multiple discrete commits** - Only when each commit is:
   - A complete, working change on its own
@@ -31,13 +34,15 @@ git rebase -i $(git merge-base HEAD main)
   - Example: "add database schema" + "add API endpoints" + "add UI components"
 
 **During the interactive rebase:**
+
 - Keep (`pick`) the first commit
 - Squash (`squash` or `s`) all other commits into logical groups
 - Edit the commit message to follow Conventional Commits format
 - Ensure the final commit message is clear and descriptive
 
 **Example rebase file:**
-```
+
+```text
 pick abc1234 feat(feature): add new feature
 squash def5678 fix typo
 squash ghi9012 update tests
@@ -57,12 +62,14 @@ git rebase origin/main
 ```
 
 **If conflicts occur:**
+
 1. Resolve conflicts in affected files
 2. Stage resolved files: `git add .`
 3. Continue rebase: `git rebase --continue`
 4. Repeat until rebase is complete
 
 **If rebase fails and you need to abort:**
+
 ```bash
 git rebase --abort
 ```
@@ -120,6 +127,7 @@ Alternatively, you can use the provided script that automates steps 1-4:
 ```
 
 This script will:
+
 - Guide you through interactive rebase
 - Fetch latest main
 - Rebase onto main
@@ -139,6 +147,7 @@ This script will:
 ## Why This Workflow?
 
 This workflow ensures:
+
 - **Clean history**: Easy to understand and review
 - **Easy bisect**: Each commit is working and testable
 - **Simple reverts**: Revert entire features with one command
@@ -149,16 +158,19 @@ See [docs/git-workflow.md](../docs/git-workflow.md) for detailed explanation.
 ## Common Issues
 
 ### "Cannot force push"
+
 - Make sure you're on a feature branch, not main
 - Use `--force-with-lease` instead of `--force`
 
 ### "Rebase conflicts"
+
 - Resolve conflicts in your editor
 - `git add .` to stage resolved files
 - `git rebase --continue` to proceed
 - Or `git rebase --abort` to start over
 
 ### "Lost commits after rebase"
+
 - Use `git reflog` to find lost commits
 - `git cherry-pick COMMIT_HASH` to restore them
 

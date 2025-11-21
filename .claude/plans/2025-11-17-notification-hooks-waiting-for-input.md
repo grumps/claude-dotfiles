@@ -58,6 +58,7 @@ Implement notification hooks that alert users when Claude Code is waiting for in
 ## Requirements
 
 ### Functional Requirements
+
 - [ ] Send desktop notification when Claude is waiting for user input
 - [ ] Notification includes project context (tmux window/pane name or git repository name)
 - [ ] Notification includes sound alert
@@ -71,6 +72,7 @@ Implement notification hooks that alert users when Claude Code is waiting for in
 - [ ] Documentation for users to set up notifications on their system
 
 ### Non-Functional Requirements
+
 - [ ] Security: Hooks run with user credentials, no elevated permissions needed
 - [ ] Compatibility: Works with standard freedesktop notification protocol
 - [ ] Usability: Simple configuration, clear documentation
@@ -82,12 +84,14 @@ Implement notification hooks that alert users when Claude Code is waiting for in
 Claude Code provides a `Notification` hook event that triggers when Claude sends notifications. We'll configure this hook to execute platform-specific shell commands that send desktop notifications.
 
 **Data Flow**:
+
 1. Claude Code generates notification event (e.g., waiting for input)
 2. Hook system intercepts notification event
 3. Configured shell command executes (notify-send on Linux, osascript on macOS)
 4. Desktop notification system displays alert to user
 
 ### Technologies
+
 - **Claude Code**: Built-in hook system (Notification event)
 - **Linux**:
   - SwayNotificationCenter (notification daemon for Wayland/Sway)
@@ -98,11 +102,13 @@ Claude Code provides a `Notification` hook event that triggers when Claude sends
   - macOS notification center
 
 ### Design Patterns
+
 - **Event Hook Pattern**: Register callback that executes on notification events
 - **Command Pattern**: Execute platform-specific commands via shell
 - **Configuration-based**: User controls hook behavior through settings file
 
 ### Existing Code to Follow
+
 - Existing git hooks in `hooks/` directory use shell scripts
 - Claude Code hook documentation shows JSON configuration format
 - Example from docs: `{"type": "command", "command": "notify-send 'Claude Code' 'Awaiting your input'"}`
@@ -119,9 +125,11 @@ Each stage below corresponds to a stage definition in the frontmatter and can be
 **Dependencies**: None
 
 #### What
+
 Create a shell script that detects project context (tmux window/pane name or git repository) to include in notifications.
 
 #### Why
+
 Notifications need to include project information so users know which Claude instance needs attention, especially when running multiple sessions.
 
 #### How
@@ -130,6 +138,7 @@ Notifications need to include project information so users know which Claude ins
 Standalone shell script that outputs project context as a string. Can be called from notification hooks via command substitution.
 
 **Implementation Details**:
+
 - Check for `$TMUX` environment variable
 - If in tmux, try to get pane title first (`#T`), then window name (`#W`)
 - Fall back to git repository name if not in tmux
@@ -137,9 +146,11 @@ Standalone shell script that outputs project context as a string. Can be called 
 - Return simple string suitable for notification title
 
 **Files to Change**:
+
 - Create: `scripts/get-notification-context.sh`
 
 **Code Example**:
+
 ```bash
 #!/usr/bin/env bash
 # Get project context for notification
@@ -183,6 +194,7 @@ fi
 ```
 
 #### Validation
+
 - [ ] Test in tmux session with named window
 - [ ] Test in tmux session with custom pane title
 - [ ] Test outside tmux in git repository
@@ -191,6 +203,7 @@ fi
 - [ ] Test that script works when called from different working directories
 
 #### TODO for Stage 1
+
 - [ ] Create `scripts/get-notification-context.sh` with tmux detection
 - [ ] Add git repository detection fallback
 - [ ] Add final fallback to "Claude"
@@ -211,21 +224,25 @@ fi
 **Dependencies**: context-script
 
 #### What
+
 Create installation script that configures Claude Code notification hooks for Linux systems using notify-send.
 
 #### Why
+
 Users need an easy way to set up notification hooks without manually editing JSON configuration files.
 
 #### How
 
 **Architecture**:
 Installation script that:
+
 1. Detects if notify-send is available
 2. Builds notification command using context detection script
 3. Updates Claude Code settings.json with hook configuration
 4. Preserves existing settings
 
 **Implementation Details**:
+
 - Use `command -v notify-send` to detect notification system
 - Build command with proper escaping for shell substitution
 - Use `jq` or Python to merge JSON configuration safely
@@ -234,10 +251,12 @@ Installation script that:
 - Add integration option to main `install.sh`
 
 **Files to Change**:
+
 - Create: `scripts/install-notification-hooks.sh`
 - Modify: `install.sh` (add optional notification setup step)
 
 **Code Example**:
+
 ```bash
 #!/usr/bin/env bash
 set -euo pipefail
@@ -271,6 +290,7 @@ echo "✓ Notification hooks configured"
 ```
 
 #### Validation
+
 - [ ] Test on clean Linux system (Ubuntu/Debian)
 - [ ] Verify notify-send is detected correctly
 - [ ] Test settings.json is updated with valid JSON
@@ -283,6 +303,7 @@ echo "✓ Notification hooks configured"
 - [ ] Test integration with main install.sh
 
 #### TODO for Stage 2
+
 - [ ] Create `scripts/install-notification-hooks.sh` skeleton
 - [ ] Add notify-send detection
 - [ ] Implement JSON merge logic (choose jq or Python approach)
@@ -306,15 +327,18 @@ echo "✓ Notification hooks configured"
 **Dependencies**: context-script, linux-setup
 
 #### What
+
 Comprehensive user documentation covering setup, configuration, customization, and troubleshooting of notification hooks.
 
 #### Why
+
 Users need clear documentation to understand how to set up and customize notification hooks for their workflow.
 
 #### How
 
 **Architecture**:
 Single documentation file with:
+
 - Quick start (automatic installation)
 - Manual configuration (for advanced users)
 - Customization examples (different sounds, timings, icons)
@@ -322,6 +346,7 @@ Single documentation file with:
 - Integration examples
 
 **Implementation Details**:
+
 - Document automatic installation via install script
 - Show manual configuration steps for power users
 - Provide example configurations for common scenarios
@@ -330,11 +355,13 @@ Single documentation file with:
 - Show how to disable/uninstall hooks
 
 **Files to Change**:
+
 - Create: `docs/notification-hooks.md`
 - Modify: `README.md` (add link to notification hooks docs)
 - Modify: `CHANGELOG.md` (document new feature)
 
 **Code Example**:
+
 ```markdown
 # Notification Hooks Setup
 
@@ -346,6 +373,7 @@ Run the installation script:
 ```
 
 Or during initial setup:
+
 ```bash
 ./install.sh  # Select 'y' when prompted for notifications
 ```
@@ -353,20 +381,23 @@ Or during initial setup:
 ## Manual Configuration
 
 Add to `~/.config/claude-code/settings.json`:
+
 ```json
 {
   "hooks": {
     "Notification": [
-      {
-        "matcher": "waiting for input|awaiting input",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "notify-send \"$(~/.claude-dotfiles/scripts/get-notification-context.sh)\" 'Claude is waiting for your input' --urgency=normal --icon=dialog-information --expire-time=10000"
-          }
-        ]
-      }
-    ]
+```
+{
+"matcher": "waiting for input|awaiting input",
+"hooks": [
+{
+"type": "command",
+"command": "notify-send \"$(~/.claude-dotfiles/scripts/get-notification-context.sh)\" 'Claude is waiting for your input' --urgency=normal --icon=dialog-information --expire-time=10000"
+}
+]
+}
+]
+```
   }
 }
 ```
@@ -384,9 +415,11 @@ Add to `~/.config/claude-code/settings.json`:
 
 ## Troubleshooting
 [Common issues and solutions]
-```
+
+```text
 
 #### Validation
+
 - [ ] Review documentation for clarity and completeness
 - [ ] Test all example configurations
 - [ ] Verify links work (internal and external)
@@ -398,6 +431,7 @@ Add to `~/.config/claude-code/settings.json`:
 - [ ] Verify CHANGELOG entry is accurate
 
 #### TODO for Stage 3
+
 - [ ] Create `docs/notification-hooks.md` skeleton
 - [ ] Write quick start section (automatic installation)
 - [ ] Document manual configuration steps
@@ -420,9 +454,11 @@ Add to `~/.config/claude-code/settings.json`:
 **Dependencies**: None (can be done in parallel)
 
 #### What
+
 Documentation-only support for macOS notification hooks using osascript, clearly marked as scoped/untested.
 
 #### Why
+
 Provide guidance for macOS users while keeping implementation focused on Linux. Document future work needed for full macOS support.
 
 #### How
@@ -431,6 +467,7 @@ Provide guidance for macOS users while keeping implementation focused on Linux. 
 Documentation section in notification hooks guide, plus GitHub issue for future implementation.
 
 **Implementation Details**:
+
 - Add macOS section to notification hooks documentation
 - Provide example osascript command for notifications
 - Clearly mark as scoped/untested
@@ -438,6 +475,7 @@ Documentation section in notification hooks guide, plus GitHub issue for future 
 - Link issue from documentation
 
 **Files to Change**:
+
 - Modify: `docs/notification-hooks.md` (add macOS section)
 - Create: GitHub issue for macOS implementation
 
@@ -451,16 +489,18 @@ macOS users can configure similar notifications using osascript:
 {
   "hooks": {
     "Notification": [
-      {
-        "matcher": "waiting for input|awaiting input",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "osascript -e 'display notification \"Awaiting your input\" with title \"Claude Code\"'"
-          }
-        ]
-      }
-    ]
+```
+{
+"matcher": "waiting for input|awaiting input",
+"hooks": [
+{
+"type": "command",
+"command": "osascript -e 'display notification \"Awaiting your input\" with title \"Claude Code\"'"
+}
+]
+}
+]
+```
   }
 }
 ```
@@ -468,9 +508,11 @@ macOS users can configure similar notifications using osascript:
 **Note**: This configuration is documented but not tested. macOS implementation is planned for future releases. See [issue #X](link) for details.
 
 **Contributions Welcome**: If you're a macOS user and want to help implement full macOS support, please see [CONTRIBUTING.md](../CONTRIBUTING.md).
-```
+
+```text
 
 #### Validation
+
 - [ ] Review macOS documentation for accuracy
 - [ ] Clearly mark as scoped/untested
 - [ ] Verify osascript example syntax is correct (basic validation)
@@ -479,6 +521,7 @@ macOS users can configure similar notifications using osascript:
 - [ ] Add note encouraging community contributions
 
 #### TODO for Stage 4
+
 - [ ] Add macOS section to `docs/notification-hooks.md`
 - [ ] Research osascript notification syntax
 - [ ] Write example osascript command
@@ -493,10 +536,13 @@ macOS users can configure similar notifications using osascript:
 ## Testing Strategy
 
 ### Unit Tests
+
 **Coverage Goal**: N/A (primarily shell scripts and configuration)
 
 ### Integration Tests
+
 **Scenarios**:
+
 - Installation script detects notify-send correctly
 - Settings.json is updated with valid JSON
 - Existing settings are preserved during update
@@ -506,12 +552,14 @@ macOS users can configure similar notifications using osascript:
 ### Manual Testing
 
 **Context Script Testing**:
+
 - [ ] Test in tmux with named window
 - [ ] Test in tmux with custom pane title
 - [ ] Test outside tmux in git repo
 - [ ] Test fallback (no tmux, no git)
 
 **Linux Installation Testing**:
+
 - [ ] Fresh Linux install: Run install-notification-hooks.sh
 - [ ] Verify notify-send is detected
 - [ ] Check settings.json has correct hook configuration
@@ -522,6 +570,7 @@ macOS users can configure similar notifications using osascript:
 - [ ] Test with multiple Claude sessions in different tmux windows
 
 **Documentation Testing**:
+
 - [ ] Follow quick start guide on fresh system
 - [ ] Test manual configuration instructions
 - [ ] Try all customization examples
@@ -530,24 +579,29 @@ macOS users can configure similar notifications using osascript:
 ## Deployment Plan
 
 ### Pre-deployment
+
 - [ ] Test on multiple Linux distributions (Ubuntu, Arch, Fedora)
 - [ ] Update README.md with notification hooks feature
 - [ ] Update CHANGELOG.md
 - [ ] Create pull request with all changes
 
 ### Release
+
 - [ ] Merge all stage branches to main
 - [ ] Tag release with version bump (e.g., v1.1.0)
 - [ ] Update documentation on main branch
 - [ ] Announce feature in release notes
 
 ### Post-release
+
 - [ ] Monitor GitHub issues for notification problems
 - [ ] Collect feedback on notification styles
 - [ ] Document common troubleshooting scenarios
 
 ### Rollback Plan
+
 If issues detected:
+
 1. Users can disable hooks by removing Notification section from settings.json
 2. Document rollback instructions in troubleshooting section
 3. Fix issues and release patch version
@@ -570,11 +624,13 @@ If issues detected:
 ## Dependencies
 
 ### Upstream Dependencies
+
 - [ ] Claude Code notification hook system (already implemented)
 - [ ] notify-send available on Linux systems (user installs)
 - [ ] D-Bus notification protocol (standard on Linux)
 
 ### Downstream Impact
+
 - Users: Will need to opt-in to notification hooks during install
 - Documentation: README and CHANGELOG need updates
 - Installation: install.sh gains new optional step
@@ -599,17 +655,20 @@ If issues detected:
 High-level tracking across all stages. Stage-specific TODOs are in each stage section above.
 
 ### Pre-Implementation
+
 - [ ] Review and approve plan
 - [ ] Clarify open questions
 - [ ] Set up worktrees for stages: `./scripts/plan-worktree.sh setup-all .claude/plans/2025-11-17-notification-hooks-waiting-for-input-v2.md`
 
 ### Implementation (per stage)
+
 - [ ] Stage 1: Context Detection Script - See Stage 1 TODO above
 - [ ] Stage 2: Linux Notification Configuration - See Stage 2 TODO above
 - [ ] Stage 3: User Documentation and Examples - See Stage 3 TODO above
 - [ ] Stage 4: macOS Documentation (Scoped) - See Stage 4 TODO above
 
 ### Integration & Testing
+
 - [ ] Merge context-script branch
 - [ ] Merge linux-setup branch (depends on context-script)
 - [ ] Merge documentation branch (depends on context-script, linux-setup)
@@ -618,6 +677,7 @@ High-level tracking across all stages. Stage-specific TODOs are in each stage se
 - [ ] Test end-to-end setup on fresh Linux system
 
 ### Documentation & Deployment
+
 - [ ] Update README.md
 - [ ] Update CHANGELOG.md
 - [ ] Create pull request
@@ -626,8 +686,8 @@ High-level tracking across all stages. Stage-specific TODOs are in each stage se
 
 ## References
 
-- Claude Code Hooks Guide: https://code.claude.com/docs/en/hooks-guide.md
-- Claude Code Hooks Reference: https://code.claude.com/docs/en/hooks.md
-- SwayNotificationCenter: https://github.com/ErikReider/SwayNotificationCenter
-- freedesktop Notifications Spec: https://specifications.freedesktop.org/notification-spec/notification-spec-latest.html
-- notify-send man page: https://manpages.ubuntu.com/manpages/lunar/man1/notify-send.1.html
+- Claude Code Hooks Guide: <https://code.claude.com/docs/en/hooks-guide.md>
+- Claude Code Hooks Reference: <https://code.claude.com/docs/en/hooks.md>
+- SwayNotificationCenter: <https://github.com/ErikReider/SwayNotificationCenter>
+- freedesktop Notifications Spec: <https://specifications.freedesktop.org/notification-spec/notification-spec-latest.html>
+- notify-send man page: <https://manpages.ubuntu.com/manpages/lunar/man1/notify-send.1.html>

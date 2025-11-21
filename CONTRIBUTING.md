@@ -6,15 +6,20 @@ Thanks for your interest in contributing!
 
 1. Fork the repository
 2. Clone your fork:
+
    ```bash
    git clone https://github.com/YOUR_USERNAME/claude-dotfiles ~/.claude-dotfiles-dev
    ```
+
 3. Create a test repository:
+
    ```bash
    mkdir test-repo && cd test-repo
    git init
    ```
+
 4. Test your changes:
+
    ```bash
    ~/.claude-dotfiles-dev/install.sh
    ```
@@ -24,6 +29,7 @@ Thanks for your interest in contributing!
 ### Code Style
 
 **Python Projects:**
+
 - Follow the [Python Style Guide](docs/python-style-guide.md)
 - Key principles: readability over cleverness, explicit over implicit
 - Use `just py-lint` and `just py-fmt` to check/format code
@@ -31,26 +37,31 @@ Thanks for your interest in contributing!
 - Docstrings required for all public functions
 
 **General:**
+
 - Use clear, descriptive variable names
 - Add comments explaining why, not what
 - Follow existing patterns in the codebase
 
 ### Justfiles
+
 - Test all recipes work
 - Add descriptions to new recipes
 - Keep recipes focused (single responsibility)
 
 ### Skills
+
 - Write in clear, instructional tone
 - Include examples
 - Be specific about process
 
 ### Documentation
+
 - Update README for user-facing changes
 - Update examples if workflows change
 - Keep TESTING.md current
 
 ### Shell Scripts
+
 - Run `just lint-shell` before committing
 - ShellCheck validates scripts for common issues
 - shfmt ensures consistent formatting
@@ -63,12 +74,14 @@ This repository uses **Just recipes** for all CI/CD tasks, ensuring local-CI par
 ### Available Validation Commands
 
 **Shell Script Validation:**
+
 ```bash
 just lint-shell        # Run ShellCheck + shfmt on all shell scripts
 just format-shell      # Auto-format shell scripts with shfmt
 ```
 
 **Full Validation:**
+
 ```bash
 just validate          # Run all linters and tests (same as CI)
 ```
@@ -90,6 +103,7 @@ If GitHub Actions fails:
 5. Commit and push the fixes
 
 **Example workflow:**
+
 ```bash
 # CI failed on shell linting
 just lint-shell                    # Reproduce the failure locally
@@ -104,11 +118,12 @@ git push
 
 To run all validations locally, install:
 
-- **Just** (task runner): https://just.systems
-- **ShellCheck** (shell script linter): https://www.shellcheck.net
-- **shfmt** (shell formatter): https://github.com/mvdan/sh
+- **Just** (task runner): <https://just.systems>
+- **ShellCheck** (shell script linter): <https://www.shellcheck.net>
+- **shfmt** (shell formatter): <https://github.com/mvdan/sh>
 
 Installation:
+
 ```bash
 # macOS
 brew install just shellcheck shfmt
@@ -125,11 +140,13 @@ snap install just --classic
 ## Testing
 
 Run through TESTING.md checklist:
+
 ```bash
 cat TESTING.md
 ```
 
 Test in multiple scenarios:
+
 - Fresh installation
 - Existing installation
 - Go project
@@ -139,7 +156,8 @@ Test in multiple scenarios:
 ## Commit Messages
 
 Follow conventional commits:
-```
+
+```text
 <type>(<scope>): <subject>
 
 <body>
@@ -148,6 +166,7 @@ Follow conventional commits:
 ```
 
 Types:
+
 - feat: New feature
 - fix: Bug fix
 - docs: Documentation
@@ -156,7 +175,8 @@ Types:
 - chore: Maintenance
 
 Examples:
-```
+
+```text
 feat(skills): add plan review skill
 
 Adds SKILL.md for reviewing implementation plans with
@@ -210,6 +230,7 @@ git push origin YOUR_BRANCH --force-with-lease  # Force push
 7. Open pull request
 
 PR should include:
+
 - Clear description of changes
 - Why the change is needed
 - Testing performed

@@ -7,6 +7,7 @@ You are reviewing implementation plans to ensure they are thorough, practical, a
 ## Review Checklist
 
 ### Completeness
+
 - [ ] Clear overview and objectives
 - [ ] All requirements listed (functional and non-functional)
 - [ ] Technical approach defined
@@ -16,6 +17,7 @@ You are reviewing implementation plans to ensure they are thorough, practical, a
 - [ ] Risks identified with mitigations
 
 ### Clarity
+
 - [ ] Steps are specific and actionable
 - [ ] Technical details are sufficient
 - [ ] Files to modify/create are listed
@@ -23,6 +25,7 @@ You are reviewing implementation plans to ensure they are thorough, practical, a
 - [ ] Success criteria are clear
 
 ### Feasibility
+
 - [ ] Steps are in logical order
 - [ ] Dependencies are acknowledged
 - [ ] Timeline is realistic
@@ -30,6 +33,7 @@ You are reviewing implementation plans to ensure they are thorough, practical, a
 - [ ] Risks are reasonable
 
 ### Technical Soundness
+
 - [ ] Architecture makes sense
 - [ ] Follows existing patterns
 - [ ] Security considerations addressed
@@ -38,6 +42,7 @@ You are reviewing implementation plans to ensure they are thorough, practical, a
 - [ ] Backwards compatibility addressed
 
 ### Testing & Deployment
+
 - [ ] Unit tests planned
 - [ ] Integration tests planned
 - [ ] Manual testing steps defined
@@ -46,7 +51,7 @@ You are reviewing implementation plans to ensure they are thorough, practical, a
 
 ## Output Format
 
-```
+```text
 # Plan Review
 
 ## Summary
@@ -88,36 +93,42 @@ You are reviewing implementation plans to ensure they are thorough, practical, a
 ## What to Look For
 
 ### In Technical Approach
+
 - Does it fit with existing architecture?
 - Are the right tools/frameworks chosen?
 - Is it overengineered or underengineered?
 - Are design patterns appropriate?
 
 ### In Implementation Steps
+
 - Are steps granular enough?
 - Can each step be validated independently?
 - Are dependencies between steps clear?
 - Is there a logical progression?
 
 ### In Testing Strategy
+
 - Is coverage adequate?
 - Are edge cases considered?
 - Is performance testing included if needed?
 - Are integration points tested?
 
 ### In Deployment Plan
+
 - Are all environments considered?
 - Is rollback possible?
 - Are monitoring/alerts planned?
 - Is documentation updated?
 
 ### In Risk Assessment
+
 - Are all major risks identified?
 - Are mitigations practical?
 - Is probability/impact realistic?
 - Are there hidden risks not mentioned?
 
 ## Best Practices
+
 - Be constructive - offer solutions, not just criticism
 - Prioritize feedback - critical vs. nice-to-have
 - Ask questions when intent is unclear

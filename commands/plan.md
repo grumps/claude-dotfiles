@@ -5,6 +5,7 @@ description: Create implementation plan for a feature
 You are helping create implementation plans for software development tasks.
 
 ## When to Use
+
 - User requests a plan (via "/plan" or "create a plan for...")
 - User asks "how should I implement..."
 - User needs technical design for a feature
@@ -12,7 +13,9 @@ You are helping create implementation plans for software development tasks.
 ## Process
 
 ### 1. Understand Requirements
+
 Ask clarifying questions if the request is vague:
+
 - What is the goal/outcome?
 - Are there constraints (resources, dependencies)?
 - Are there existing patterns/systems to follow?
@@ -20,17 +23,22 @@ Ask clarifying questions if the request is vague:
 **IMPORTANT**: Never estimate time or effort for tasks. Focus on technical approach and implementation details.
 
 ### 2. Gather Context
+
 If a justfile exists with the `info` recipe, run it to understand:
+
 ```bash
 just info 2>&1 || true
 ```
+
 This provides (if available):
+
 - Current branch and changes
 - Available Just recipes
 - Recent work
 - Repository structure
 
 Otherwise, gather context manually with:
+
 ```bash
 git branch --show-current
 git status --short
@@ -38,11 +46,13 @@ git log -5 --oneline --decorate
 ```
 
 ### 3. Create Structured Plan
+
 Use the template from `.claude/prompts/plan.md`. The template uses JSON metadata to define implementation stages that can be extracted to git worktrees for parallel development.
 
 **Key Elements**:
 
 1. **JSON Metadata Block** - Defines metadata and stages:
+
 ```json metadata
 {
   "plan_id": "YYYY-MM-DD-short-slug",
@@ -60,7 +70,7 @@ Use the template from `.claude/prompts/plan.md`. The template uses JSON metadata
 }
 ```
 
-2. **Human-Readable Body** - Standard markdown sections:
+1. **Human-Readable Body** - Standard markdown sections:
    - **Overview**: What and why (1-2 sentences)
    - **Requirements**: Functional and non-functional requirements
    - **Technical Approach**: Architecture, technologies, patterns
@@ -73,6 +83,7 @@ Use the template from `.claude/prompts/plan.md`. The template uses JSON metadata
    - **Overall TODO List**: High-level tracking across stages
 
 **Stage Structure** (repeatable per component):
+
 ```markdown
 ### Stage N: [Component Name]
 
@@ -103,12 +114,15 @@ Use the template from `.claude/prompts/plan.md`. The template uses JSON metadata
 ```
 
 ### 4. Save Plan
+
 Save to `.claude/plans/YYYY-MM-DD-short-description.md`
 
 ### 5. Extract to Worktrees (Optional)
+
 For plans with multiple independent stages, you can extract them to separate git worktrees.
 
 **Using Just (Recommended)**:
+
 ```bash
 # List all plans
 just plan-ls
@@ -133,12 +147,14 @@ just plan-worktrees
 ```
 
 **Direct Script Usage** (stdlib only, no external dependencies):
+
 ```bash
 uv run scripts/planworktree.py list .claude/plans/YYYY-MM-DD-feature.md
 uv run scripts/planworktree.py setup-all .claude/plans/YYYY-MM-DD-feature.md
 ```
 
 Each worktree gets:
+
 - Its own branch: `feature/plan-id-stage-id`
 - Isolated working directory: `../worktrees/plan-id/stage-id/`
 - Symlink to plan: `.claude/plans/CURRENT_STAGE.md`
@@ -150,12 +166,14 @@ See `skills/plan-worktree/SKILL.md` for detailed workflow.
 ## Best Practices
 
 ### Stage Organization
+
 - **Each stage = discrete component**: Stages should be independently testable features/components
 - **Minimize dependencies**: Design stages to be as parallel as possible
 - **Clear boundaries**: Each stage should have well-defined inputs and outputs
 - **Merge order**: Document dependency chains (stage-2 depends on stage-1, etc.)
 
 ### Plan Content
+
 - Each stage should be actionable and specific
 - Reference Just recipes where applicable ("Run `just test`")
 - Include code examples for complex parts
@@ -165,6 +183,7 @@ See `skills/plan-worktree/SKILL.md` for detailed workflow.
 - **Never include time estimates or effort estimates** - focus only on what needs to be done and how
 
 ### Worktree Usage
+
 - Use worktrees for large features with 3+ independent components
 - Keep stages focused - better to have more smaller stages than fewer large ones
 - Test each stage in isolation before merging
@@ -172,6 +191,7 @@ See `skills/plan-worktree/SKILL.md` for detailed workflow.
 - Clean up worktrees after merging: `git worktree remove <path>`
 
 ## For Platform Engineering
+
 - **K8s manifests**: Include resource limits, probes, labels, RBAC
 - **Go code**: Error handling, context propagation, testing
 - **Python code**: See project's Python Style Guide for detailed guidelines

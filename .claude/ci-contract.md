@@ -5,11 +5,13 @@ This document defines the contract between CI orchestrators (GitHub Actions, Arg
 ## Purpose
 
 All CI logic lives in Just recipes (`justfiles/ci.just`). Orchestrators simply:
+
 1. Set up the environment
 2. Invoke `just <task>`
 3. Report results
 
 This ensures:
+
 - ✅ Local-CI parity (developers run same commands)
 - ✅ No vendor lock-in (Just recipes work anywhere)
 - ✅ Easy migration between orchestrators
@@ -17,10 +19,12 @@ This ensures:
 ## Required Environment
 
 ### Operating System
+
 - Linux (Ubuntu 20.04+ or Arch Linux)
 - Bash 5.0+
 
 ### Tools in PATH
+
 - `just` (0.11.0+)
 - `git` (2.30+)
 - `bash`
@@ -39,24 +43,29 @@ This ensures:
 ### Environment Variables
 
 #### Required for All Tasks
+
 - `HOME` - User home directory (for tool caches)
 
 #### Required for Specific Tasks
+
 - `GITHUB_TOKEN` - Required for `github-release` task
   - Used by `gh` CLI for GitHub API authentication
   - Must have `repo` and `workflow` scopes for releases
 
 #### Optional
+
 - `CI` - Set to `true` in CI environments (for conditional behavior)
 
 ## Inputs
 
 ### Source Code
+
 - Working directory must be repository root
 - Git history required for: `release-notes`, `github-release`
 - Clean checkout required for: `test-install`
 
 ### Parameters
+
 Just recipes use explicit parameters (not implicit env vars where possible):
 
 ```bash
@@ -70,15 +79,18 @@ TAG=v1.2.3 just release-notes  # Don't do this
 ## Outputs
 
 ### Exit Codes
+
 - `0` - Success
 - Non-zero - Failure (check stdout/stderr for details)
 
 ### Stdout/Stderr
+
 - Validation failures printed to stderr
 - Progress messages printed to stdout
 - Format: Emoji + message (e.g., `✅ Shell linting passed`)
 
 ### Artifacts
+
 Current tasks do NOT produce artifacts, but if added:
 
 | Task | Artifact | Path | Format |
@@ -89,6 +101,7 @@ Current tasks do NOT produce artifacts, but if added:
 ## Orchestrator Requirements
 
 ### Minimal Orchestrator (Any CI)
+
 ```yaml
 # Pseudocode - works in any CI system
 steps:
@@ -98,6 +111,7 @@ steps:
 ```
 
 ### GitHub Actions Orchestrator
+
 ```yaml
 # .github/workflows/validate.yml
 jobs:
@@ -111,6 +125,7 @@ jobs:
 ```
 
 ### Argo Workflows Orchestrator (Future)
+
 ```yaml
 # argo-workflows/validate.yaml
 templates:
@@ -182,6 +197,7 @@ env:
 ### From GitHub Actions to Argo Workflows
 
 1. **Create CI tools container image**:
+
    ```dockerfile
    FROM ubuntu:22.04
    RUN apt-get update && apt-get install -y \
@@ -195,6 +211,7 @@ env:
    - Secrets → Kubernetes secrets
 
 3. **Convert workflow syntax**:
+
    ```yaml
    # GHA
    - run: just lint-shell
@@ -255,6 +272,7 @@ When adding new CI tasks to `justfiles/ci.just`:
 ### Updating Tool Versions
 
 Tool versions are specified in orchestrator workflows, not Just recipes:
+
 - GitHub Actions: Workflow YAML installation steps
 - Argo Workflows: Container image versions
 - Local: Developer's installed tools
