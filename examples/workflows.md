@@ -157,7 +157,6 @@ Complete workflow from planning to deployment.
    git add .
    ```
 
-
    ```text
    In Claude: /review-code
    ```
@@ -167,7 +166,6 @@ Complete workflow from planning to deployment.
    ```text
    In Claude: /commit
    ```
-
 
    ```bash
    git commit # (paste message or let hook generate)

@@ -226,8 +226,10 @@ jobs:
   lint:
     runs-on: ubuntu-latest
 ```
+
 steps:
-```
+
+```text
     - uses: actions/checkout@v4
     - name: Install Just
         uses: extractions/setup-just@v2

@@ -387,6 +387,7 @@ Add to `~/.config/claude-code/settings.json`:
   "hooks": {
     "Notification": [
 ```
+
 {
 "matcher": "waiting for input|awaiting input",
 "hooks": [
@@ -397,7 +398,8 @@ Add to `~/.config/claude-code/settings.json`:
 ]
 }
 ]
-```
+
+```text
   }
 }
 ```
@@ -490,6 +492,7 @@ macOS users can configure similar notifications using osascript:
   "hooks": {
     "Notification": [
 ```
+
 {
 "matcher": "waiting for input|awaiting input",
 "hooks": [
@@ -500,7 +503,8 @@ macOS users can configure similar notifications using osascript:
 ]
 }
 ]
-```
+
+```text
   }
 }
 ```
