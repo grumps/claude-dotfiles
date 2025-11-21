@@ -40,7 +40,7 @@ lint-markdown:
   #!/usr/bin/env bash
   set -euo pipefail
   echo "🔍 Running rumdl..."
-  rumdl check .
+  uvx rumdl check .
   echo "✅ Markdown linting passed"
 
   echo "🔍 Checking links with lychee..."

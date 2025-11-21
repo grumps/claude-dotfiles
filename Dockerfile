@@ -95,7 +95,7 @@ RUN echo "=== Verifying tool installations ===" && \
     ruff --version && \
     mypy --version && \
     uv --version && \
-    rumdl --version && \
+    uvx rumdl --version && \
     lychee --version && \
     terraform --version && \
     tflint --version && \
