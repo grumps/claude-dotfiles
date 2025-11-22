@@ -143,7 +143,7 @@ just release-notes feature-branch # ❌ Not a version tag
 - Must be in a repository with a remote on GitHub
 - Must have push access to create tags and releases
 
-**Option A: Test with a test tag on your fork**
+#### Option A: Test with a test tag on your fork
 
 ```bash
 # Create a test tag locally
@@ -162,7 +162,7 @@ git tag -d v0.0.1-test
 git push origin :refs/tags/v0.0.1-test
 ```
 
-**Option B: Dry-run validation (no actual release)**
+#### Option B: Dry-run validation (no actual release)
 
 You can test the recipe logic without creating a release:
 

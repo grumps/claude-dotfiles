@@ -122,13 +122,13 @@ Display:
 
 Based on user preference, either:
 
-**Option A: Setup all stages at once**
+#### Option A: Setup all stages at once
 
 ```bash
 just plan-setup .claude/plans/YYYY-MM-DD-feature.md
 ```
 
-**Option B: Setup individual stage**
+#### Option B: Setup individual stage
 
 ```bash
 just plan-stage .claude/plans/YYYY-MM-DD-feature.md <stage-id>

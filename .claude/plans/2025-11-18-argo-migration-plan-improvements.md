@@ -214,6 +214,7 @@ steps:
   - checkout: repository
   - install: just, docker  # Minimal requirements
   - run: just test-install
+
 ```
 
 ### GitHub Actions Orchestrator
@@ -234,6 +235,7 @@ steps:
     - name: Install Just
         uses: extractions/setup-just@v2
     - run: just lint-shell
+
 ```
 
 ### Argo Workflows Orchestrator (Future)
@@ -249,6 +251,7 @@ templates:
       image: myorg/ci-tools:latest  # Pre-installed just, shellcheck
       command: [just, lint-shell]
       workingDir: /workspace
+
 ```
 
 ## Triggers and Path Filtering
@@ -282,6 +285,7 @@ on:
     - '**.md'          # lint-markdown
     - 'install.sh'     # test-install
     - 'uninstall.sh'   # test-install
+
 ```
 
 ## Secrets Management
@@ -311,6 +315,7 @@ env:
       secretKeyRef:
         name: github-credentials
         key: token
+
 ```
 
 ## Migration Guide
@@ -387,6 +392,9 @@ just test-install
 just release-notes v0.0.1
 ```
 
+
+```text
+
 ## Maintainer Notes
 
 ### Adding New Just Tasks
@@ -403,20 +411,23 @@ When adding new CI tasks to `justfiles/ci.just`:
 ### Updating Tool Versions
 
 Tool versions are specified in orchestrator workflows, not Just recipes:
+
 - GitHub Actions: Workflow YAML installation steps
 - Argo Workflows: Container image versions
 - Local: Developer's installed tools
 
 Keep minimum version requirements documented here.
+```
 
 ```text
-
 **Why this helps**:
 
 - ✅ Makes expectations explicit for any CI system
 - ✅ Documents migration path to Argo Workflows
 - ✅ Helps contributors understand local testing
 - ✅ Reference for future CI system integrations
+
+```
 
 ## 3. Plan Update: Add Argo Migration Section
 
@@ -425,6 +436,7 @@ Keep minimum version requirements documented here.
 **Add new section after "Success Criteria" (around line 1240)**:
 
 ```markdown
+
 ## Future Migration Path: Argo Workflows
 
 ### Overview
@@ -436,6 +448,7 @@ The Justfile-centric architecture enables future migration to Argo Workflows (Ku
 ### Migration Readiness
 
 **Already Argo-Compatible**:
+
 - ✅ All CI logic in Just recipes (not workflow YAML)
 - ✅ Container-based integration testing
 - ✅ Standard CLI tools (shellcheck, ruff, lychee, etc.)
@@ -443,6 +456,7 @@ The Justfile-centric architecture enables future migration to Argo Workflows (Ku
 - ✅ CI contract documented (`.claude/ci-contract.md`)
 
 **Will Need Adaptation**:
+
 - ⚠️ Workflow orchestration syntax (GHA YAML → Argo templates)
 - ⚠️ Trigger mechanisms (GHA webhooks → Argo Events)
 - ⚠️ Secrets management (GHA secrets → Kubernetes secrets)
@@ -460,6 +474,7 @@ lint-shell:
       uses: extractions/setup-just@v2
   - name: Run validation
       run: just lint-shell
+
 ```
 
 **Future Argo Workflow** (`argo/validate.yaml`):
@@ -476,6 +491,7 @@ spec:
       image: myorg/ci-tools:latest  # Pre-installed just, shellcheck
       command: [just, lint-shell]
       workingDir: /workspace
+
 ```
 
 **Key Point**: Same `just lint-shell` command runs in both systems.
@@ -483,11 +499,13 @@ spec:
 ### Migration Timeline Estimate
 
 **Phase 1: Preparation** (Already in this plan)
+
 - Duration: Included in current implementation
 - Tasks: Abstract GitHub releases, document CI contract
 - Deliverables: `.claude/ci-contract.md`, improved Stage 6
 
 **Phase 2: Argo Implementation** (Future, when ready)
+
 - Duration: 1-2 weeks
 - Tasks:
   - Set up Argo Workflows in Kubernetes cluster
@@ -497,6 +515,7 @@ spec:
   - Set up Kubernetes secrets
 
 **Phase 3: Parallel Running** (Future)
+
 - Duration: 1-2 weeks
 - Tasks:
   - Run both GHA and Argo in parallel
@@ -504,6 +523,7 @@ spec:
   - Build confidence
 
 **Phase 4: Migration** (Future)
+
 - Duration: 1 week
 - Tasks:
   - Switch primary CI to Argo
@@ -516,7 +536,9 @@ spec:
 
 - Full migration review: `.claude/plans/2025-11-18-argo-workflows-migration-review.md`
 - CI contract: `.claude/ci-contract.md`
-- Argo Workflows docs: https://argoproj.github.io/argo-workflows/
+- Argo Workflows docs: <https://argoproj.github.io/argo-workflows/>
+
+```text
 
 ```text
 
@@ -573,3 +595,10 @@ Your GitHub Actions plan is **already excellent** for Argo migration due to the 
 ✅ Provide significant value for current use and future migration
 
 **Recommendation**: Incorporate these changes into the current plan implementation.
+```
+
+```text
+```
+
+
+```text

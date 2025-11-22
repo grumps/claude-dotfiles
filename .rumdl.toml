@@ -9,8 +9,9 @@ respect-gitignore = true
 exclude = ["node_modules", ".git"]
 
 disable = [
-  "MD013",
-  "MD033",
-  "MD041",
-  "MD052",
+  "MD013",  # Line length - allow long lines in documentation
+  "MD033",  # Inline HTML - allow HTML elements in markdown
+  "MD041",  # First line heading - not all files need to start with H1
+  "MD046",  # Code block style - allow nested code blocks in documentation examples
+  "MD052",  # Reference links - allow template placeholders
 ]

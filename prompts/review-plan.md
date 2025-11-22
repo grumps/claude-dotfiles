@@ -55,9 +55,9 @@
 
 ## Concerns 🔴
 
-**Critical issues that must be addressed**
+### Critical issues that must be addressed
 
-### 1. [Concern Title]
+#### 1. [Concern Title]
 
 **Issue**: [What's missing or problematic]
 **Impact**: [Why this matters]
@@ -65,9 +65,9 @@
 
 ## Suggestions 🟡
 
-**Improvements and considerations**
+### Improvements and considerations
 
-### 1. [Suggestion Title]
+#### 1. [Suggestion Title]
 
 **Current**: [What the plan says]
 **Suggestion**: [Alternative approach]

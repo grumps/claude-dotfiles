@@ -541,7 +541,9 @@ module "vpc" {
 
 ```text
 
+```text
 ---
+```
 
 ## Security Best Practices
 
@@ -1041,7 +1043,7 @@ resource "aws_instance" "web" {
 
 ### Other Anti-Patterns to Avoid
 
-**❌ Hardcoded values**
+#### ❌ Hardcoded values
 
 ```hcl
 # Bad
@@ -1057,7 +1059,7 @@ resource "aws_instance" "web" {
 }
 ```
 
-**❌ Missing lifecycle blocks for critical resources**
+#### ❌ Missing lifecycle blocks for critical resources
 
 ```hcl
 # Bad - instance replacement causes downtime

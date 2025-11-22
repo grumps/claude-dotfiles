@@ -40,9 +40,9 @@
 
 ## Critical Issues 🔴
 
-**Must be fixed before merge**
+### Must be fixed before merge
 
-### 1. [Issue Title] (file:line)
+#### 1. [Issue Title] (file:line)
 
 **Problem**: [What's wrong]
 **Risk**: [Why this is critical - security, correctness, performance]
@@ -58,9 +58,9 @@ fixedCode()
 
 ## Suggestions 🟡
 
-**Nice-to-haves, improvements**
+### Nice-to-haves, improvements
 
-### 1. [Suggestion Title]
+#### 1. [Suggestion Title]
 
 **Current**: [How it works now]
 **Suggestion**: [How to improve]
