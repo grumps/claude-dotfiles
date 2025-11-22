@@ -197,8 +197,8 @@ else
   echo "⏭️  context.yaml already exists"
 fi
 
-# 8. Optional: Notification hooks setup (Linux only)
-if [ "$(uname)" = "Linux" ]; then
+# 8. Optional: Notification hooks setup (Linux only, interactive mode only)
+if [ "$(uname)" = "Linux" ] && [ -t 0 ] && [ -z "${CI:-}" ]; then
   echo ""
   read -p "🔔 Would you like to set up desktop notifications for Claude? (y/N) " -n 1 -r
   echo ""
@@ -214,6 +214,11 @@ if [ "$(uname)" = "Linux" ]; then
     echo "   You can set it up later by running:"
     echo "   $DOTFILES_DIR/scripts/install-notification-hooks.sh"
   fi
+elif [ "$(uname)" = "Linux" ]; then
+  # Non-interactive mode (CI/automation) - skip prompt, just inform
+  echo "⏭️  Skipping notification setup (non-interactive mode)"
+  echo "   You can set it up later by running:"
+  echo "   $DOTFILES_DIR/scripts/install-notification-hooks.sh"
 fi
 
 # 9. Summary

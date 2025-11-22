@@ -42,13 +42,9 @@ jobs:
         working-directory: /tmp/test-repo
         run: bats $GITHUB_WORKSPACE/tests/integration/test-install.bats
 
-      - name: Test uninstall (first run - should keep files)
+      - name: Test uninstall with --force flag
         working-directory: /tmp/test-repo
-        run: echo "n" | bash $GITHUB_WORKSPACE/uninstall.sh || true
-
-      - name: Test uninstall (second run - should remove files)
-        working-directory: /tmp/test-repo
-        run: echo -e "y\ny" | bash $GITHUB_WORKSPACE/uninstall.sh
+        run: bash $GITHUB_WORKSPACE/uninstall.sh --force
 
       - name: Validate uninstall cleanup
         working-directory: /tmp/test-repo
