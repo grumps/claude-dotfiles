@@ -64,7 +64,8 @@ jobs:
       - name: Test plan worktree script exists and is executable
         run: |
           chmod +x scripts/planworktree.py
-          uv run scripts/planworktree.py --help
+          # Verify script runs (list command requires plan file, so just check it executes)
+          uv run scripts/planworktree.py 2>&1 | grep -q "Usage:" || exit 1
 
       - name: Create test plan file
         run: |

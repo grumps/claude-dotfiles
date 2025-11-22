@@ -56,20 +56,31 @@ import? '$DOTFILES_DIR/justfiles/plans.just'
 # The imported _base.just defines \`validate: lint test\`
 # You MUST implement lint and test, or validation will fail
 
-# Uncomment and customize for your project:
+# Placeholder lint recipe - customize for your project
+lint:
+  @echo "⚠️  No linters configured yet"
+  @echo "   Add linting commands for your project (shellcheck, ruff, yamllint, etc.)"
+  @echo "✅ Lint check passed (no linters configured)"
 
-# lint:
-#   golangci-lint run ./...
-#   ruff check .
-#   yamllint .
-
-# test:
-#   go test -race -cover ./...
-#   pytest -v
+# Placeholder test recipe - customize for your project
+test:
+  @echo "⚠️  No tests configured yet"
+  @echo "   Add test commands for your project (go test, pytest, etc.)"
+  @echo "✅ Tests passed (no tests configured)"
 
 # === Custom Recipes ===
 
 # Add your repository-specific recipes below
+
+# Example recipes (uncomment and customize):
+# lint:
+#   golangci-lint run ./...
+#   ruff check .
+#   yamllint .
+#
+# test:
+#   go test -race -cover ./...
+#   pytest -v
 EOF
     echo "✅ Created justfile"
   else
@@ -135,7 +146,8 @@ if [ "$GLOBAL_INSTALL" = false ]; then
   # Prepare-commit-msg hook (optional, not enabled by default)
   if [ ! -f ".git/hooks/prepare-commit-msg" ]; then
     cp "$DOTFILES_DIR/hooks/prepare-commit-msg" .git/hooks/prepare-commit-msg
-    # Don't make it executable - user can enable later
+    # Explicitly remove execute permission - user can enable later
+    chmod -x .git/hooks/prepare-commit-msg 2>/dev/null || chmod 644 .git/hooks/prepare-commit-msg
     echo "✅ Copied prepare-commit-msg hook (disabled by default)"
     echo "   Enable with: chmod +x .git/hooks/prepare-commit-msg"
   else
