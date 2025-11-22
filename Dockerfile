@@ -1,9 +1,3 @@
-# Multi-stage build to get binaries from official containers
-FROM ghcr.io/terraform-linters/tflint:latest AS tflint
-FROM aquasec/tfsec:latest AS tfsec
-FROM alpine/helm:latest AS helm
-FROM golangci/golangci-lint:latest AS golangci-lint
-
 # Main stage
 FROM public.ecr.aws/x2w2w0z4/base:v0.5.1-bookworm-slim
 
@@ -39,10 +33,11 @@ RUN case "${TARGETARCH}" in \
     chmod +x /usr/local/bin/shfmt
 
 # Copy binaries from official containers
-COPY --from=helm /usr/bin/helm /usr/local/bin/helm
-COPY --from=golangci-lint /usr/bin/golangci-lint /usr/local/bin/golangci-lint
-COPY --from=tflint /usr/local/bin/tflint /usr/local/bin/tflint
-COPY --from=tfsec /usr/bin/tfsec /usr/local/bin/tfsec
+COPY --from=alpine/helm:latest /usr/bin/helm /usr/local/bin/helm
+COPY --from=golangci/golangci-lint:latest /usr/bin/golangci-lint /usr/local/bin/golangci-lint
+COPY --from=ghcr.io/terraform-linters/tflint:latest /usr/local/bin/tflint /usr/local/bin/tflint
+COPY --from=aquasec/tfsec:latest /usr/bin/tfsec /usr/local/bin/tfsec
+COPY --from=lycheeverse/lychee:latest /usr/local/bin/lychee /usr/local/bin/lychee
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 # Install Just (command runner)
@@ -67,6 +62,9 @@ RUN install_deb python3-pip && \
     uv pip install --break-system-packages --system yamllint ruff mypy git-cliff && \
     rm -rf /var/lib/apt/lists/*
 
+# Install rumdl using uv tool
+RUN uv tool install rumdl
+
 # Install Terraform
 RUN wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg && \
     echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com bookworm main" | tee /etc/apt/sources.list.d/hashicorp.list && \
@@ -90,6 +88,8 @@ RUN echo "=== Verifying tool installations ===" && \
     ruff --version && \
     mypy --version && \
     uv --version && \
+    uvx rumdl --version && \
+    lychee --version && \
     terraform --version && \
     tflint --version && \
     tfsec --version && \

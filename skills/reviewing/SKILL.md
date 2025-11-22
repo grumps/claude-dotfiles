@@ -3,6 +3,7 @@
 You are conducting thorough code reviews with focus on correctness, style, and maintainability.
 
 ## When to Use
+
 - User requests code review (via "/review-code")
 - User asks "review my changes"
 - User wants feedback on implementation
@@ -10,18 +11,23 @@ You are conducting thorough code reviews with focus on correctness, style, and m
 ## Pre-Review Automated Checks
 
 ### 1. Run Linters
+
 ```bash
 just lint-for-claude
 ```
+
 Analyze linter output for style and quality issues.
 
 ### 2. Run Tests
+
 ```bash
 just test-for-claude
 ```
+
 Check if tests pass and review coverage.
 
 ### 3. Get Changes
+
 ```bash
 git diff
 # or for staged changes
@@ -33,6 +39,7 @@ git diff path/to/file
 ## Review Checklist
 
 ### Correctness
+
 - Logic errors or bugs
 - Edge cases handled
 - Error handling appropriate
@@ -40,6 +47,7 @@ git diff path/to/file
 - Race conditions (for concurrent code)
 
 ### Code Quality
+
 - Follows linter rules (already checked)
 - Clear variable/function names
 - Appropriate comments (why, not what)
@@ -47,17 +55,20 @@ git diff path/to/file
 - No debug statements left in
 
 ### Testing
+
 - Adequate test coverage
 - Tests actually test the right things
 - Edge cases covered
 - Error cases tested
 
 ### Performance
+
 - Obvious inefficiencies (N+1 queries, unnecessary loops)
 - Resource leaks (files, connections not closed)
 - Excessive memory allocation
 
 ### Security
+
 - Input validation
 - SQL injection prevention
 - XSS prevention
@@ -65,6 +76,7 @@ git diff path/to/file
 - Secrets not hardcoded
 
 ### Maintainability
+
 - Code is readable
 - Functions are focused (single responsibility)
 - Complexity is reasonable
@@ -73,6 +85,7 @@ git diff path/to/file
 ## Language-Specific Checks
 
 ### Go
+
 - Proper error handling (don't ignore errors)
 - Context passed to functions that need it
 - Defer for cleanup (close files/connections)
@@ -80,6 +93,7 @@ git diff path/to/file
 - No goroutine leaks
 
 ### Python
+
 - Type hints present
 - Exception handling appropriate
 - With statements for resources
@@ -87,6 +101,7 @@ git diff path/to/file
 - Async/await used correctly if applicable
 
 ### Kubernetes Manifests
+
 - Resource limits defined
 - Liveness/readiness probes configured
 - Labels follow conventions
@@ -95,7 +110,7 @@ git diff path/to/file
 
 ## Output Format
 
-```
+```text
 # Code Review
 
 ## Summary
@@ -128,6 +143,7 @@ git diff path/to/file
 ```
 
 ## Best Practices
+
 - Start with positives when possible
 - Be specific with file/line references
 - Provide code examples for fixes

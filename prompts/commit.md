@@ -3,7 +3,8 @@
 [This file is used by Claude when generating commit messages]
 
 ## Format
-```
+
+```text
 <type>(<scope>): <subject>
 
 <body>
@@ -22,11 +23,14 @@
 Edit this file to customize commit message style for your repo.
 
 ### Common Scopes for This Repo
+
 [List your repo's common scopes here]
+
 - api
 - auth
 - db
 - k8s
 
 ### Additional Guidelines
+
 [Any repo-specific commit message rules]

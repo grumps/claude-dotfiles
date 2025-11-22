@@ -78,6 +78,7 @@ Implement comprehensive GitHub Actions CI/CD workflows that leverage Just recipe
 ### Functional Requirements
 
 **Linting & Static Analysis:**
+
 - [ ] Validate all shell scripts with ShellCheck
 - [ ] Lint Python scripts with ruff following repository style guide
 - [ ] Type check Python scripts with mypy
@@ -86,6 +87,7 @@ Implement comprehensive GitHub Actions CI/CD workflows that leverage Just recipe
 - [ ] Check for common security issues in shell scripts
 
 **Testing:**
+
 - [ ] Test install.sh in clean Arch Linux environment
 - [ ] Test uninstall.sh cleanup behavior
 - [ ] Validate example justfiles can be parsed
@@ -94,6 +96,7 @@ Implement comprehensive GitHub Actions CI/CD workflows that leverage Just recipe
 - [ ] Test git hooks execute properly
 
 **Pull Request Automation:**
+
 - [ ] Run all validations on PRs
 - [ ] Comment on PRs with validation results
 - [ ] Block merge if critical checks fail
@@ -101,12 +104,14 @@ Implement comprehensive GitHub Actions CI/CD workflows that leverage Just recipe
 - [ ] Check for CHANGELOG.md updates on feature branches
 
 **Release Automation:**
+
 - [ ] Automated version tagging
 - [ ] Generate release notes from CHANGELOG.md
 - [ ] Create GitHub releases automatically
 - [ ] Validate semantic versioning compliance
 
 **Documentation:**
+
 - [ ] Validate internal links
 - [ ] Check external links (with caching to avoid rate limits)
 - [ ] Ensure code examples in docs are valid
@@ -126,12 +131,14 @@ Implement comprehensive GitHub Actions CI/CD workflows that leverage Just recipe
 
 **Justfile-Centric Design:**
 All CI tasks are defined as Just recipes in `justfiles/ci.just`. GitHub Actions workflows are thin wrappers that:
+
 1. Set up the environment
 2. Invoke `just <task>`
 3. Report results
 
 **Directory Structure:**
-```
+
+```text
 justfiles/
   ci.just                 # CI/CD recipes (lint-shell, lint-python, test-install, etc.)
 .github/
@@ -143,6 +150,7 @@ justfiles/
 ```
 
 **Data Flow:**
+
 1. Developer can run `just lint-shell` locally (same as CI)
 2. PR opened triggers `validate.yml` → runs `just lint-*` commands
 3. Integration tests run `just test-install` in Arch container
@@ -150,6 +158,7 @@ justfiles/
 5. On version tag push, `just release` validates and creates GitHub release
 
 **Benefits:**
+
 - Developers run the exact same commands locally as CI
 - CI logic lives in justfiles (version controlled, reviewable)
 - Easy to debug: `just <command>` locally reproduces CI failures
@@ -158,10 +167,12 @@ justfiles/
 ### Technologies
 
 **GitHub Actions:**
+
 - ubuntu-latest runners (for running Just commands)
 - archlinux/archlinux:latest container (for install script testing)
 
 **Linting & Validation Tools (Rust-based preferred):**
+
 - **ShellCheck** (v0.10.0+): Shell script static analysis (Haskell, but industry standard)
 - **shfmt** (v3.8.0+): Shell script formatting validation (Go, but widely used)
 - **ruff** (v0.8.0+): Python linting and formatting (Rust-based, follows docs/python-style-guide.md)
@@ -171,11 +182,13 @@ justfiles/
 - **actionlint** (Go): Validate GitHub Actions workflow syntax
 
 **Testing Tools:**
+
 - **bats-core**: Bash Automated Testing System for integration tests
 - **just**: Task runner and CI orchestrator
 - **uv** (Rust): Python script execution (as used in scripts/planworktree.py)
 
 **Release Tools (Rust-based):**
+
 - **git-cliff** (Rust): Changelog generation and management
 - GitHub API for release creation (via curl or gh CLI)
 
@@ -204,19 +217,23 @@ justfiles/
 **Dependencies**: None
 
 #### What
+
 Create Just recipe for shell script validation (ShellCheck + shfmt) and GitHub Actions workflow that invokes it.
 
 #### Why
+
 Shell scripts (install.sh, uninstall.sh, hooks, helper scripts) are core to the repository. ShellCheck catches common bugs, security issues, and portability problems before they reach users. Using Just recipes allows developers to run the same checks locally.
 
 #### How
 
 **Architecture**:
+
 1. Define `just lint-shell` recipe in `justfiles/ci.just`
 2. GitHub Actions workflow calls `just lint-shell`
 3. Developers can run `just lint-shell` locally for same validation
 
 **Implementation Details**:
+
 - Create `lint-shell` recipe that runs ShellCheck and shfmt
 - Configure ShellCheck severity threshold (error/warning)
 - Scan all `*.sh` files, `hooks/*`, and `scripts/*`
@@ -225,12 +242,14 @@ Shell scripts (install.sh, uninstall.sh, hooks, helper scripts) are core to the 
 - Path filtering: skip if only markdown files changed
 
 **Files to Change**:
+
 - Create: `justfiles/ci.just` (CI/CD recipes)
 - Create: `.shellcheckrc` (configuration for repo-specific rules)
 - Create: `.github/workflows/validate.yml` (calls Just recipes)
 - Modify: `justfile` (import ci.just)
 
 **Code Example (`justfiles/ci.just`)**:
+
 ```just
 # CI/CD recipes for GitHub Actions and local development
 
@@ -250,6 +269,7 @@ lint-shell:
 ```
 
 **GitHub Actions Workflow (`.github/workflows/validate.yml`)**:
+
 ```yaml
 name: Validate Code
 
@@ -281,6 +301,7 @@ jobs:
 ```
 
 #### Validation
+
 - [ ] `just lint-shell` runs successfully locally
 - [ ] ShellCheck catches intentionally introduced errors
 - [ ] shfmt detects formatting issues
@@ -289,6 +310,7 @@ jobs:
 - [ ] ShellCheck configuration (.shellcheckrc) is respected
 
 #### TODO for Stage 1
+
 - [ ] Create `justfiles/ci.just` with `lint-shell` recipe
 - [ ] Create `.shellcheckrc` with repo standards (SC2086, SC2155 handling)
 - [ ] Update root `justfile` to import `justfiles/ci.just`
@@ -310,19 +332,23 @@ jobs:
 **Dependencies**: None
 
 #### What
+
 Create Just recipe for Python validation (ruff + mypy) and add to GitHub Actions workflow.
 
 #### Why
+
 scripts/planworktree.py is a critical component for plan-based development workflows. Enforcing the repository's strict Python standards (no lambdas, explicit over implicit, type hints required) maintains code quality. Using Just recipes allows developers to run the same checks locally.
 
 #### How
 
 **Architecture**:
+
 1. Define `just lint-python` recipe in `justfiles/ci.just`
 2. Add Python validation job to GitHub Actions that calls `just lint-python`
 3. Developers can run `just lint-python` locally for same validation
 
 **Implementation Details**:
+
 - Create `lint-python` recipe using uv to run ruff and mypy
 - Configure ruff with repository's style guide settings (docs/python-style-guide.md)
 - Run ruff linter and formatter checks
@@ -330,12 +356,14 @@ scripts/planworktree.py is a critical component for plan-based development workf
 - Use Python 3.11+ (minimum version per style guide)
 
 **Files to Change**:
+
 - Modify: `justfiles/ci.just` (add `lint-python` recipe)
 - Create: `pyproject.toml` (ruff and mypy configuration)
 - Modify: `.github/workflows/validate.yml` (add Python job)
 - Modify: `scripts/planworktree.py` (add type hints if missing, fix any lint issues)
 
 **Code Example (`justfiles/ci.just` addition)**:
+
 ```just
 # Lint and type-check Python scripts
 lint-python:
@@ -355,6 +383,7 @@ lint-python:
 ```
 
 **GitHub Actions Addition (`.github/workflows/validate.yml`)**:
+
 ```yaml
   lint-python:
     name: Lint Python Scripts
@@ -374,6 +403,7 @@ lint-python:
 ```
 
 **pyproject.toml**:
+
 ```toml
 [tool.ruff]
 line-length = 100
@@ -396,6 +426,7 @@ disallow_untyped_defs = true
 ```
 
 #### Validation
+
 - [ ] `just lint-python` runs successfully locally
 - [ ] ruff catches style violations per docs/python-style-guide.md
 - [ ] ruff format validates formatting
@@ -404,6 +435,7 @@ disallow_untyped_defs = true
 - [ ] GitHub Actions workflow calls `just lint-python` successfully
 
 #### TODO for Stage 2
+
 - [ ] Add `lint-python` recipe to `justfiles/ci.just`
 - [ ] Create `pyproject.toml` with ruff/mypy configuration
 - [ ] Align ruff rules with docs/python-style-guide.md
@@ -426,20 +458,24 @@ disallow_untyped_defs = true
 **Dependencies**: None
 
 #### What
+
 Create Just recipe for markdown validation (linting + link checking) and add to GitHub Actions workflow.
 
 #### Why
+
 Documentation is extensive (README, CONTRIBUTING, TESTING, docs/, examples/, skills/). Ensuring markdown quality and link validity prevents user confusion and maintains professional documentation standards. Using Just recipes allows developers to run the same checks locally.
 
 #### How
 
 **Architecture**:
+
 1. Define `just lint-markdown` recipe in `justfiles/ci.just`
 2. Use **lychee** (Rust-based) for link checking instead of Node.js tools
 3. Use markdownlint-cli2 for style (Node.js - tolerated for now, may migrate later)
 4. Add markdown validation job to GitHub Actions that calls `just lint-markdown`
 
 **Implementation Details**:
+
 - Create `lint-markdown` recipe with markdownlint and lychee
 - Use lychee for fast, concurrent link checking
 - Cache external link checks to avoid rate limits
@@ -447,12 +483,14 @@ Documentation is extensive (README, CONTRIBUTING, TESTING, docs/, examples/, ski
 - Spell-checking: Scoped for future work (requires custom technical dictionary)
 
 **Files to Change**:
+
 - Modify: `justfiles/ci.just` (add `lint-markdown` recipe)
 - Create: `.markdownlint.json` (markdown style configuration)
 - Create: `lychee.toml` (lychee link checker configuration)
 - Modify: `.github/workflows/validate.yml` (add markdown job)
 
 **Code Example (`justfiles/ci.just` addition)**:
+
 ```just
 # Lint markdown files and check links
 lint-markdown:
@@ -468,6 +506,7 @@ lint-markdown:
 ```
 
 **GitHub Actions Addition (`.github/workflows/validate.yml`)**:
+
 ```yaml
   lint-markdown:
     name: Lint Markdown
@@ -495,6 +534,7 @@ lint-markdown:
 **Configuration Files**:
 
 `.markdownlint.json`:
+
 ```json
 {
   "default": true,
@@ -505,6 +545,7 @@ lint-markdown:
 ```
 
 `lychee.toml`:
+
 ```toml
 # Lychee link checker configuration (Rust-based)
 exclude_path = [".git", "node_modules"]
@@ -525,6 +566,7 @@ cache = true
 ```
 
 #### Validation
+
 - [ ] `just lint-markdown` runs successfully locally
 - [ ] markdownlint catches style issues
 - [ ] lychee finds broken internal links
@@ -534,6 +576,7 @@ cache = true
 - [ ] GitHub Actions workflow calls `just lint-markdown` successfully
 
 #### TODO for Stage 3
+
 - [ ] Add `lint-markdown` recipe to `justfiles/ci.just`
 - [ ] Create `.markdownlint.json` configuration
 - [ ] Create `lychee.toml` configuration
@@ -555,20 +598,24 @@ cache = true
 **Dependencies**: shell-validation, python-validation
 
 #### What
+
 Create Just recipe for installation testing and automate testing of install.sh and uninstall.sh scripts in clean Arch Linux environment.
 
 #### Why
+
 The install script is the primary user entry point. Testing in a clean Arch Linux environment ensures symlinks work correctly and verifies git hooks function properly. Using Just recipes allows developers to run the same tests locally (with containers).
 
 #### How
 
 **Architecture**:
+
 1. Define `just test-install` recipe in `justfiles/ci.just`
 2. Use BATS for integration testing following TESTING.md checklist
 3. GitHub Actions runs tests in Arch Linux container
 4. Developers can run `just test-install` locally with Docker/Podman
 
 **Implementation Details**:
+
 - Create `test-install` recipe that uses BATS for testing
 - Test in Arch Linux container (archlinux:latest)
 - Test install.sh in local mode (per-repo)
@@ -580,6 +627,7 @@ The install script is the primary user entry point. Testing in a clean Arch Linu
 - Test plan worktree script functionality
 
 **Files to Change**:
+
 - Modify: `justfiles/ci.just` (add `test-install` recipe)
 - Create: `tests/integration/test-install.bats` (BATS test suite)
 - Create: `tests/integration/test-uninstall.bats`
@@ -587,6 +635,7 @@ The install script is the primary user entry point. Testing in a clean Arch Linu
 - Create: `.github/workflows/integration-tests.yml` (calls `just test-install`)
 
 **Code Example (`justfiles/ci.just` addition)**:
+
 ```just
 # Run integration tests (requires Docker/Podman)
 test-install:
@@ -609,6 +658,7 @@ test-install:
 ```
 
 **GitHub Actions Workflow (`.github/workflows/integration-tests.yml`)**:
+
 ```yaml
 name: Integration Tests
 
@@ -684,6 +734,7 @@ jobs:
 ```
 
 **BATS Test Example** (`tests/integration/test-install.bats`):
+
 ```bash
 #!/usr/bin/env bats
 
@@ -719,6 +770,7 @@ setup() {
 ```
 
 #### Validation
+
 - [ ] `just test-install` runs successfully locally (with Docker)
 - [ ] Tests run successfully in Arch Linux container
 - [ ] Install script creates all expected files
@@ -729,6 +781,7 @@ setup() {
 - [ ] GitHub Actions workflow runs tests in Arch container
 
 #### TODO for Stage 4
+
 - [ ] Add `test-install` recipe to `justfiles/ci.just`
 - [ ] Create `tests/integration/` directory
 - [ ] Write `test-install.bats` test suite
@@ -751,20 +804,24 @@ setup() {
 **Dependencies**: shell-validation, python-validation, markdown-validation, integration-testing
 
 #### What
+
 Create orchestration workflow that runs all Just-based validations on pull requests and provides consolidated feedback.
 
 #### Why
+
 Single workflow that coordinates all checks, enforces quality gates, and provides clear feedback to contributors before merge. All checks use Just recipes for local-CI parity.
 
 #### How
 
 **Architecture**:
+
 1. Meta-workflow that runs all `just lint-*` and `just test-*` commands
 2. Uses **cocogitto** (Rust) for conventional commit checking instead of Node.js tools
 3. Aggregates results and blocks merge if failures
 4. Auto-labels PRs based on changed files
 
 **Implementation Details**:
+
 - Run all validation jobs in parallel
 - Check conventional commit format on PR title (using cocogitto)
 - Validate CHANGELOG.md updated for feature branches
@@ -772,11 +829,13 @@ Single workflow that coordinates all checks, enforces quality gates, and provide
 - Auto-label PRs based on changed files (GitHub labeler)
 
 **Files to Change**:
+
 - Create: `.github/workflows/pr-checks.yml` (orchestration)
 - Create: `cog.toml` (cocogitto conventional commit configuration)
 - Create: `.github/labeler.yml` (auto-labeling configuration)
 
 **Code Example (`.github/workflows/pr-checks.yml`)**:
+
 ```yaml
 name: Pull Request Checks
 
@@ -851,6 +910,7 @@ jobs:
 ```
 
 **Cocogitto Configuration (`cog.toml`)**:
+
 ```toml
 # Conventional commit configuration (Rust-based tool)
 [changelog]
@@ -866,6 +926,7 @@ test = "Tests"
 ```
 
 **Auto-labeler Configuration (`.github/labeler.yml`)**:
+
 ```yaml
 documentation:
   - changed-files:
@@ -897,6 +958,7 @@ justfile:
 ```
 
 #### Validation
+
 - [ ] All validation and test jobs run in parallel
 - [ ] PR blocked if any check fails
 - [ ] Cocogitto conventional commit validation works (Rust-based)
@@ -906,6 +968,7 @@ justfile:
 - [ ] All checks use Just recipes (validate.yml and integration-tests.yml)
 
 #### TODO for Stage 5
+
 - [ ] Create `.github/workflows/pr-checks.yml`
 - [ ] Create `cog.toml` for cocogitto configuration
 - [ ] Create `.github/labeler.yml` for auto-labeling
@@ -926,20 +989,24 @@ justfile:
 **Dependencies**: None (can run in parallel)
 
 #### What
+
 Create Just recipe for release management using git-cliff (Rust) and automate GitHub release creation.
 
 #### Why
+
 Streamline the release process using Rust-based tooling (git-cliff), ensure consistent release notes, and automate changelog integration with GitHub releases. Using Just recipes allows developers to test release processes locally.
 
 #### How
 
 **Architecture**:
+
 1. Define `just release` recipe using git-cliff for changelog management
 2. GitHub Actions workflow triggered on version tags calls `just release`
 3. Use git-cliff (Rust) instead of Node.js semantic-release tools
 4. Developers can run `just release` locally to test
 
 **Implementation Details**:
+
 - Trigger on semantic version tags (v1.2.3)
 - Validate tag matches semantic versioning format
 - Use git-cliff to generate/update CHANGELOG.md
@@ -948,11 +1015,13 @@ Streamline the release process using Rust-based tooling (git-cliff), ensure cons
 - Attach install.sh and uninstall.sh as release assets
 
 **Files to Change**:
+
 - Modify: `justfiles/ci.just` (add `release` recipe)
 - Create: `cliff.toml` (git-cliff configuration)
 - Create: `.github/workflows/release.yml` (calls `just release`)
 
 **Code Example (`justfiles/ci.just` addition)**:
+
 ```just
 # Generate or update CHANGELOG.md using git-cliff (Rust-based)
 changelog:
@@ -1002,6 +1071,7 @@ release TAG: (release-notes TAG) (github-release TAG)
 ```
 
 **git-cliff Configuration (`cliff.toml`)**:
+
 ```toml
 # git-cliff configuration for changelog generation (Rust-based)
 [changelog]
@@ -1033,6 +1103,7 @@ commit_parsers = [
 ```
 
 **GitHub Actions Workflow (`.github/workflows/release.yml`)**:
+
 ```yaml
 name: Release
 
@@ -1078,6 +1149,7 @@ jobs:
 ```
 
 #### Validation
+
 - [ ] `just changelog` generates CHANGELOG.md locally using git-cliff
 - [ ] `just release-notes <tag>` validates tag format and generates notes
 - [ ] `just release-notes <tag>` works without GitHub dependency (Argo-compatible)
@@ -1091,6 +1163,7 @@ jobs:
 - [ ] Can test releases locally with gh CLI and personal repo
 
 #### TODO for Stage 6
+
 - [ ] Add `changelog`, `release-notes`, `github-release`, and `release` recipes to `justfiles/ci.just`
 - [ ] Create `cliff.toml` for git-cliff configuration
 - [ ] Align cliff.toml with cog.toml commit types
@@ -1109,10 +1182,13 @@ jobs:
 ## Testing Strategy
 
 ### Unit Tests
+
 **Coverage Goal**: N/A (primarily workflow configuration and integration tests)
 
 ### Integration Tests
+
 **Scenarios**:
+
 - All Just-based validations execute successfully locally and in CI
 - Shell validation catches intentional errors (`just lint-shell`)
 - Python validation catches type errors and lint violations (`just lint-python`)
@@ -1124,6 +1200,7 @@ jobs:
 ### Manual Testing
 
 **Local Testing (Just Recipes)**:
+
 - [ ] Run `just lint-shell` locally → verify ShellCheck works
 - [ ] Run `just lint-python` locally → verify ruff and mypy work
 - [ ] Run `just lint-markdown` locally → verify lychee link checking works
@@ -1131,6 +1208,7 @@ jobs:
 - [ ] Run `just changelog` locally → verify git-cliff generates changelog
 
 **Workflow Testing**:
+
 - [ ] Create test PR with shell script errors → verify `just lint-shell` fails in CI
 - [ ] Create test PR with Python lint errors → verify `just lint-python` fails in CI
 - [ ] Create test PR with broken markdown links → verify `just lint-markdown` fails in CI
@@ -1138,6 +1216,7 @@ jobs:
 - [ ] Test conventional commits with cocogitto locally
 
 **End-to-End Testing**:
+
 - [ ] Fork repository, enable Actions, create PR with errors
 - [ ] Verify status checks block merge
 - [ ] Fix errors locally using Just recipes, verify checks pass in CI and merge allowed
@@ -1146,6 +1225,7 @@ jobs:
 ## Deployment Plan
 
 ### Pre-deployment
+
 - [ ] All Just recipes tested locally (lint-shell, lint-python, lint-markdown, test-install)
 - [ ] All workflows tested in fork/branch
 - [ ] Update CONTRIBUTING.md with Just recipe usage and CI/CD requirements
@@ -1154,6 +1234,7 @@ jobs:
 - [ ] Review workflow configurations for security
 
 ### Staging Deployment
+
 - [ ] Merge justfiles/ci.just and workflow files to main branch
 - [ ] Configure GitHub repository settings:
   - [ ] Enable Actions
@@ -1163,6 +1244,7 @@ jobs:
 - [ ] Verify Just recipes run same checks as CI
 
 ### Production Deployment
+
 - [ ] Verify all workflows run successfully on real PRs
 - [ ] Verify all Just recipes work locally for contributors
 - [ ] Enable required status checks for main/master branch
@@ -1171,7 +1253,9 @@ jobs:
 - [ ] Announce CI/CD integration in CHANGELOG.md (using git-cliff)
 
 ### Rollback Plan
+
 If issues detected:
+
 1. Disable specific workflow by removing from `.github/workflows/`
 2. Remove from required status checks in branch protection
 3. Just recipes remain functional locally for debugging
@@ -1199,6 +1283,7 @@ If issues detected:
 ## Dependencies
 
 ### Upstream Dependencies
+
 - [ ] GitHub Actions enabled for repository
 - [ ] Just (task runner) - installed in CI and documented for local dev
 - [ ] ShellCheck (Haskell) - installed in CI
@@ -1212,6 +1297,7 @@ If issues detected:
 - [ ] cocogitto (Rust) - for conventional commits
 
 ### Downstream Impact
+
 - Contributors: Must pass all Just-based checks before merge, can run same checks locally
 - Contributors: Need Just and tools installed for local development
 - Maintainers: Automated release process with git-cliff reduces manual work
@@ -1255,6 +1341,7 @@ The Justfile-centric architecture enables future migration to Argo Workflows (Ku
 ### Migration Readiness
 
 **Already Argo-Compatible** ✅:
+
 - All CI logic in Just recipes (not workflow YAML)
 - Container-based integration testing (archlinux:latest)
 - Standard CLI tools (shellcheck, ruff, lychee, git-cliff, etc.)
@@ -1263,6 +1350,7 @@ The Justfile-centric architecture enables future migration to Argo Workflows (Ku
 - CI contract documented (`.claude/ci-contract.md`)
 
 **Will Require Adaptation** ⚠️:
+
 - Workflow orchestration syntax (GitHub Actions YAML → Argo Workflow templates)
 - Trigger mechanisms (GitHub webhooks → Argo Events)
 - Secrets management (GitHub Actions secrets → Kubernetes secrets)
@@ -1272,6 +1360,7 @@ The Justfile-centric architecture enables future migration to Argo Workflows (Ku
 ### Argo Workflow Conceptual Mapping
 
 **Current GitHub Actions** (`.github/workflows/validate.yml`):
+
 ```yaml
 jobs:
   lint-shell:
@@ -1287,6 +1376,7 @@ jobs:
 ```
 
 **Future Argo Workflow** (`argo-workflows/validate.yaml`):
+
 ```yaml
 apiVersion: argoproj.io/v1alpha1
 kind: Workflow
@@ -1311,6 +1401,7 @@ spec:
 **Key Point**: Same `just lint-shell` command runs identically in both systems.
 
 **Benefits of Current Architecture for Argo**:
+
 1. ✅ Just recipes are 100% portable between CI systems
 2. ✅ Can create custom container images with all tools pre-installed
 3. ✅ Container-based testing already proven with BATS tests
@@ -1321,6 +1412,7 @@ spec:
 ### Migration Timeline Estimate
 
 **Phase 1: Preparation** (Already included in this plan)
+
 - **Duration**: Included in current implementation (2-4 hours for Argo-specific improvements)
 - **Tasks**:
   - ✅ Abstract GitHub releases to `gh` CLI (Stage 6)
@@ -1333,6 +1425,7 @@ spec:
   - Migration review documents
 
 **Phase 2: Argo Implementation** (Future, when ready for migration)
+
 - **Duration**: 1-2 weeks
 - **Tasks**:
   - Set up Argo Workflows in Kubernetes cluster
@@ -1348,6 +1441,7 @@ spec:
   - Argo Events sensors configured
 
 **Phase 3: Parallel Running** (Future, validation phase)
+
 - **Duration**: 1-2 weeks
 - **Tasks**:
   - Run both GitHub Actions and Argo Workflows in parallel
@@ -1360,6 +1454,7 @@ spec:
   - Team confidence in Argo Workflows
 
 **Phase 4: Migration** (Future, cutover phase)
+
 - **Duration**: 1 week
 - **Tasks**:
   - Switch primary CI to Argo Workflows
@@ -1398,8 +1493,8 @@ This GitHub Actions plan includes specific improvements for Argo compatibility:
 - **Full migration analysis**: `.claude/plans/2025-11-18-argo-workflows-migration-review.md`
 - **Specific improvements**: `.claude/plans/2025-11-18-argo-migration-plan-improvements.md`
 - **CI contract**: `.claude/ci-contract.md`
-- **Argo Workflows**: https://argoproj.github.io/argo-workflows/
-- **Argo Events**: https://argoproj.github.io/argo-events/
+- **Argo Workflows**: <https://argoproj.github.io/argo-workflows/>
+- **Argo Events**: <https://argoproj.github.io/argo-events/>
 
 ### Anti-Patterns to Avoid (Would Hurt Argo Migration)
 
@@ -1413,6 +1508,7 @@ During implementation of this plan, do NOT:
 6. ❌ Make Just recipes depend on GitHub Actions environment variables
 
 **Follow these principles instead**:
+
 1. ✅ All logic in Just recipes
 2. ✅ Workflows only orchestrate (setup → invoke Just → report)
 3. ✅ Use standard tools available in any Linux environment
@@ -1422,11 +1518,13 @@ During implementation of this plan, do NOT:
 ## Overall TODO List
 
 ### Pre-Implementation
+
 - [ ] Review and approve plan
 - [ ] Clarify open questions
 - [ ] Set up worktrees for stages: `./scripts/planworktree.py setup-all .claude/plans/2025-11-18-github-actions-integration.md`
 
 ### Implementation (per stage)
+
 - [ ] Stage 1: Shell Script Validation - See Stage 1 TODO above
 - [ ] Stage 2: Python Linting and Type Checking - See Stage 2 TODO above
 - [ ] Stage 3: Markdown Linting and Link Checking - See Stage 3 TODO above
@@ -1435,12 +1533,14 @@ During implementation of this plan, do NOT:
 - [ ] Stage 6: Release Automation - See Stage 6 TODO above
 
 ### Integration & Testing
+
 - [ ] Merge all stage branches to integration branch
 - [ ] Test all workflows together
 - [ ] Verify no conflicts between workflows
 - [ ] Test end-to-end PR flow
 
 ### Documentation & Deployment
+
 - [ ] Update README.md with status badges
 - [ ] Update CONTRIBUTING.md with CI requirements
 - [ ] Update CHANGELOG.md with CI/CD feature
@@ -1452,24 +1552,28 @@ During implementation of this plan, do NOT:
 ## References
 
 ### CI/CD & GitHub Actions
-- GitHub Actions Documentation: https://docs.github.com/en/actions
-- Just (task runner): https://just.systems/
-- Semantic Versioning: https://semver.org/
-- Conventional Commits: https://www.conventionalcommits.org/
+
+- GitHub Actions Documentation: <https://docs.github.com/en/actions>
+- Just (task runner): <https://just.systems/>
+- Semantic Versioning: <https://semver.org/>
+- Conventional Commits: <https://www.conventionalcommits.org/>
 
 ### Linting & Validation Tools
-- ShellCheck: https://www.shellcheck.net/
-- shfmt: https://github.com/mvdan/sh
-- ruff (Rust-based Python linter): https://docs.astral.sh/ruff/
-- mypy: https://mypy.readthedocs.io/
-- lychee (Rust link checker): https://github.com/lycheeverse/lychee
-- markdownlint: https://github.com/DavidAnson/markdownlint
+
+- ShellCheck: <https://www.shellcheck.net/>
+- shfmt: <https://github.com/mvdan/sh>
+- ruff (Rust-based Python linter): <https://docs.astral.sh/ruff/>
+- mypy: <https://mypy.readthedocs.io/>
+- lychee (Rust link checker): <https://github.com/lycheeverse/lychee>
+- markdownlint: <https://github.com/DavidAnson/markdownlint>
 
 ### Testing & Automation
-- BATS (Bash Automated Testing): https://github.com/bats-core/bats-core
-- git-cliff (Rust changelog generator): https://git-cliff.org/
-- cocogitto (Rust conventional commits): https://github.com/cocogitto/cocogitto
+
+- BATS (Bash Automated Testing): <https://github.com/bats-core/bats-core>
+- git-cliff (Rust changelog generator): <https://git-cliff.org/>
+- cocogitto (Rust conventional commits): <https://github.com/cocogitto/cocogitto>
 
 ### Rust Tooling Ecosystem
-- uv (Rust-based Python package manager): https://github.com/astral-sh/uv
+
+- uv (Rust-based Python package manager): <https://github.com/astral-sh/uv>
 - Rust-based tooling benefits: Performance, single binary distribution, no runtime dependencies

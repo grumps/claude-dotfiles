@@ -114,6 +114,7 @@ just helm-watch bitnami/nginx my-values.yaml  # Auto re-render on changes
 1. `/plan` → 2. Code → 3. `just validate` → 4. `/review-code` → 5. `/commit` → 6. Push
 
 **Commands**:
+
 ```bash
 /plan implement feature    # Generate plan
 # ... implement code ...
@@ -128,11 +129,13 @@ git push                 # Push to remote
 ## File Structure
 
 **Global** (`~/.claude-dotfiles/`):
+
 - `commands/` → Symlinked to `~/.claude/commands/` (Claude reads from here)
 - `justfiles/` → Imported by project justfiles
 - `hooks/`, `prompts/`, `skills/` → Templates copied/used during install
 
 **Per-project**:
+
 - `justfile` → Imports from `~/.claude-dotfiles/justfiles/_base.just`
 - `.claude/plans/` → Generated plans stored here
 - `.git/hooks/pre-commit` → Runs `just validate`
@@ -141,7 +144,7 @@ git push                 # Push to remote
 
 ### Starting a New Feature
 
-```
+```text
 /plan add user authentication
 ↓
 Review plan
@@ -167,20 +170,24 @@ just validate  # Faster than waiting for hook
 
 ### Generate Commit Message
 
-```
+```text
 /commit  # Copy output
 ```
+
 or
+
 ```bash
 git commit  # Auto-generate if hook enabled
 ```
 
 ### Update Documentation
 
-```
+```text
 /update-docs  # After code changes
 ```
+
 or
+
 ```bash
 just check-docs  # Check if needed
 ```
@@ -190,12 +197,14 @@ just check-docs  # Check if needed
 ### Per-Project
 
 **justfile** - Add custom recipes
+
 ```just
 deploy:
   kubectl apply -f k8s/
 ```
 
 **context.yaml** - Add project context
+
 ```yaml
 project:
   name: "My API"
@@ -206,6 +215,7 @@ conventions:
 ```
 
 **prompts/** - Customize output
+
 ```bash
 cp .claude/prompts/commit.md .claude/prompts/commit-custom.md
 # Edit for your team
@@ -223,7 +233,7 @@ cp .claude/prompts/commit.md .claude/prompts/commit-custom.md
 
 | Problem | Solution |
 |---------|----------|
-| "just: command not found" | Install Just: https://just.systems |
+| "just: command not found" | Install Just: <https://just.systems> |
 | Recipe not found | `just --list` - check available recipes |
 | Validation failing | `just lint` and `just test` separately to debug |
 | Hook not running | `chmod +x .git/hooks/pre-commit` |

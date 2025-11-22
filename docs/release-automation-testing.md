@@ -5,6 +5,7 @@ This guide explains how to test the release automation workflow locally without 
 ## Overview
 
 The release automation is built using:
+
 - **git-cliff** (Rust): Changelog generation
 - **Just**: Task runner for local-CI parity
 - **gh CLI**: GitHub release creation
@@ -35,6 +36,7 @@ docker run -it --rm -v $(pwd):/workspace ghcr.io/grumps/claude-dotfiles:master
 ```
 
 This container includes:
+
 - ✅ Just (task runner)
 - ✅ git-cliff (changelog generator)
 - ✅ All validation tools (shellcheck, shfmt, ruff, etc.)
@@ -97,11 +99,13 @@ cat CHANGELOG.md
 ```
 
 **Expected Output:**
+
 - CHANGELOG.md file updated with all conventional commits
 - Commits grouped by type: Added, Fixed, Documentation, etc.
 - Follows Keep a Changelog format
 
 **Validation:**
+
 - Check that all conventional commits are included
 - Verify grouping is correct (feat → Added, fix → Fixed, etc.)
 - Ensure version tags are properly formatted
@@ -121,10 +125,12 @@ just release-notes feature-branch # ❌ Not a version tag
 ```
 
 **Expected Output:**
+
 - Valid tag: Release notes for that version printed to stdout
 - Invalid tag: Error message explaining expected format
 
 **Validation:**
+
 - Verify tag format validation works (must be `v1.2.3`)
 - Check that release notes only include relevant commits
 - Ensure output is clean (no progress bars or extra output)
@@ -132,11 +138,12 @@ just release-notes feature-branch # ❌ Not a version tag
 ### 3. Test GitHub Release Creation (Local)
 
 **Prerequisites:**
+
 - Must have `gh` CLI installed and authenticated
 - Must be in a repository with a remote on GitHub
 - Must have push access to create tags and releases
 
-**Option A: Test with a test tag on your fork**
+#### Option A: Test with a test tag on your fork
 
 ```bash
 # Create a test tag locally
@@ -155,7 +162,7 @@ git tag -d v0.0.1-test
 git push origin :refs/tags/v0.0.1-test
 ```
 
-**Option B: Dry-run validation (no actual release)**
+#### Option B: Dry-run validation (no actual release)
 
 You can test the recipe logic without creating a release:
 
@@ -246,6 +253,7 @@ docker run --rm -v "$(pwd):/workspace" -w /workspace archlinux:latest bash -c '
 ```
 
 **Expected:**
+
 - Should generate release notes successfully
 - No GitHub API calls needed
 - Works in air-gapped environments
@@ -308,6 +316,7 @@ git-cliff --config cliff.toml --unreleased --tag v1.0.0 -v
 ### GitHub Actions
 
 The `.github/workflows/release.yml` workflow automatically:
+
 1. Triggers on version tags (`v*.*.*`)
 2. Installs Just and git-cliff
 3. Runs `just github-release $TAG`
@@ -316,11 +325,13 @@ The `.github/workflows/release.yml` workflow automatically:
 ### Argo Workflows (Future)
 
 The `release-notes` recipe is Argo-compatible:
+
 - No GitHub-specific dependencies
 - Works in any container with git and git-cliff
 - Output to stdout (can be captured by workflow)
 
 Example Argo workflow:
+
 ```yaml
 apiVersion: argoproj.io/v1alpha1
 kind: Workflow
@@ -336,6 +347,7 @@ spec:
 ## Best Practices
 
 1. **Always test locally before pushing tags**
+
    ```bash
    just release-notes v1.0.0  # Verify notes look good
    git tag v1.0.0             # Create tag
@@ -353,6 +365,7 @@ spec:
    - NOT: `1.0.0`, `v1.0`, `release-1.0.0`
 
 4. **Test in isolation**
+
    ```bash
    # Create a test branch
    git checkout -b test-release
@@ -369,6 +382,7 @@ spec:
    ```
 
 5. **Review before creating release**
+
    ```bash
    # Generate notes to review
    just release-notes v1.0.0 > release-notes.txt
@@ -383,12 +397,14 @@ spec:
 ## Recipe Reference
 
 ### `just changelog`
+
 - **Purpose**: Generate/update full CHANGELOG.md
 - **Dependencies**: git-cliff
 - **GitHub Required**: No
 - **Output**: CHANGELOG.md file
 
 ### `just release-notes <tag>`
+
 - **Purpose**: Generate release notes for specific version
 - **Dependencies**: git-cliff
 - **GitHub Required**: No (Argo-compatible)
@@ -396,6 +412,7 @@ spec:
 - **Validates**: Semantic version tag format
 
 ### `just github-release <tag>`
+
 - **Purpose**: Create GitHub release with notes and assets
 - **Dependencies**: git-cliff, gh CLI
 - **GitHub Required**: Yes (uses GitHub API)
@@ -403,6 +420,7 @@ spec:
 - **Validates**: Tag format, creates release notes
 
 ### `just release <tag>`
+
 - **Purpose**: Full release workflow (notes + GitHub release)
 - **Dependencies**: git-cliff, gh CLI
 - **GitHub Required**: Yes (for final release creation)
@@ -440,6 +458,7 @@ echo "✅ Release automation validated locally"
 ## Summary
 
 Key advantages of this approach:
+
 - ✅ All recipes testable locally with Just
 - ✅ No GitHub Actions needed for testing
 - ✅ `release-notes` has zero GitHub dependencies (Argo-compatible)

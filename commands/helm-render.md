@@ -5,6 +5,7 @@ You are helping the user explore and validate Helm charts. Use the `helm-chart-r
 ## Context
 
 This is user-level tooling (not project-specific). The user wants to:
+
 1. **Explore third-party charts** - Understand what values are available and what they do
 2. **Validate configurations** - Test custom values files before deployment
 3. **Render charts** - See what Kubernetes manifests will be generated
@@ -18,12 +19,14 @@ Help the user explore and work with Helm charts by following these workflows:
 When a user wants to understand a chart (e.g., "Show me the values for bitnami/nginx"):
 
 **Steps:**
+
 1. Use `helm-show` to display all available values
 2. Explain key configuration options
 3. Highlight common customizations (image tags, replicas, resources, etc.)
 4. Show examples of typical values files
 
 **Commands:**
+
 ```bash
 # Show all available values
 scripts/helm-chart-render.sh show-values --chart bitnami/nginx
@@ -46,6 +49,7 @@ just helm-explore bitnami/nginx
 When a user has created a values file and wants to validate it:
 
 **Steps:**
+
 1. Validate the values file syntax and schema
 2. Render the chart with their values
 3. Show what resources will be created
@@ -53,6 +57,7 @@ When a user has created a values file and wants to validate it:
 5. Suggest improvements
 
 **Commands:**
+
 ```bash
 # Validate values file
 scripts/helm-chart-render.sh validate --chart bitnami/nginx --values my-values.yaml --strict
@@ -72,11 +77,13 @@ just helm-test bitnami/nginx my-values.yaml
 When a user wants to understand differences between two configurations:
 
 **Steps:**
+
 1. Compare the rendered manifests
 2. Highlight key differences
 3. Explain impact of the changes
 
 **Commands:**
+
 ```bash
 # Compare two values files
 scripts/helm-chart-render.sh diff \
@@ -93,12 +100,14 @@ just helm-compare bitnami/nginx current-values.yaml new-values.yaml
 When a user needs to add a new repository:
 
 **Steps:**
+
 1. Determine if it's traditional (https://) or OCI (oci://)
 2. Check if authentication is needed
 3. Add the repository
 4. Update to fetch latest charts
 
 **Commands:**
+
 ```bash
 # Add traditional repository
 scripts/helm-chart-render.sh add-repo --name bitnami --url https://charts.bitnami.com/bitnami
@@ -157,6 +166,7 @@ just helm-update
 **User**: "Help me configure the bitnami/postgresql chart"
 
 **You**:
+
 1. "Let me show you all available values for bitnami/postgresql"
 2. Run: `just helm-show bitnami/postgresql`
 3. Explain key sections (auth, persistence, resources, etc.)
@@ -201,6 +211,7 @@ Rendered charts are saved to `./helm-output/<chart-name>/` by default. This keep
 ## Error Handling
 
 If validation or rendering fails:
+
 1. Explain the error in plain language
 2. Show the specific value causing the issue
 3. Suggest a fix

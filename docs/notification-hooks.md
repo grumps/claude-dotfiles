@@ -20,7 +20,7 @@ Or during initial setup:
 
 ### macOS (Manual Configuration - Scoped)
 
-> **Note**: macOS support is documented but not yet fully implemented or tested. This configuration is provided as a starting point. See [issue #TBD](link-to-issue) for full macOS implementation tracking.
+> **Note**: macOS support is documented but not yet fully implemented or tested. This configuration is provided as a starting point.
 
 Add to `~/.config/claude-code/settings.json`:
 
@@ -83,6 +83,7 @@ This is especially useful when running multiple Claude sessions across different
 Claude Code's built-in hook system triggers when specific events occur. The `Notification` hook fires when Claude displays notifications. We filter for "waiting for input" events using a matcher pattern and execute a platform-specific notification command.
 
 **Data Flow**:
+
 1. Claude Code generates a notification event (e.g., "awaiting input")
 2. Hook system checks matcher pattern
 3. If matched, executes configured shell command
@@ -93,10 +94,12 @@ Claude Code's built-in hook system triggers when specific events occur. The `Not
 ### Linux (SwayNotificationCenter / notify-send)
 
 **Prerequisites**:
+
 - `notify-send` command (usually from `libnotify-bin` package)
 - A notification daemon (e.g., SwayNotificationCenter, dunst, mako)
 
 **Installation**:
+
 ```bash
 # Debian/Ubuntu
 sudo apt install libnotify-bin
@@ -109,6 +112,7 @@ sudo dnf install libnotify
 ```
 
 **Test your setup**:
+
 ```bash
 notify-send "Test" "Notification system working!"
 ```
@@ -116,15 +120,18 @@ notify-send "Test" "Notification system working!"
 ### macOS (osascript)
 
 **Prerequisites**:
+
 - `osascript` (built into macOS)
 - macOS notification center enabled
 
 **Test your setup**:
+
 ```bash
 osascript -e 'display notification "Test notification" with title "Claude Code"'
 ```
 
 **Known Limitations** (documented but not tested):
+
 - Cannot customize notification icon via osascript
 - Sound names must match system sounds (e.g., "Purr", "Ping", "Pop")
 - Notifications appear in macOS Notification Center
@@ -158,21 +165,25 @@ Remove the `sound name` parameter:
 Adjust `--expire-time` (in milliseconds):
 
 **5 seconds**:
+
 ```bash
 notify-send "..." "..." --expire-time=5000
 ```
 
 **15 seconds**:
+
 ```bash
 notify-send "..." "..." --expire-time=15000
 ```
 
 **30 seconds**:
+
 ```bash
 notify-send "..." "..." --expire-time=30000
 ```
 
 **Persistent** (until clicked):
+
 ```bash
 notify-send "..." "..." --expire-time=0
 ```
@@ -230,11 +241,13 @@ Add more context with a subtitle:
 ### Linux: Notifications Not Appearing
 
 **Check if notify-send is installed**:
+
 ```bash
 command -v notify-send
 ```
 
 If not found, install:
+
 ```bash
 # Debian/Ubuntu
 sudo apt install libnotify-bin
@@ -247,6 +260,7 @@ sudo dnf install libnotify
 ```
 
 **Check if notification daemon is running**:
+
 ```bash
 # For SwayNotificationCenter
 pgrep -a swaync
@@ -259,11 +273,13 @@ pgrep -a mako
 ```
 
 **Test notification manually**:
+
 ```bash
 notify-send "Test" "This is a test notification"
 ```
 
 **Check Claude Code settings**:
+
 ```bash
 cat ~/.config/claude-code/settings.json
 ```
@@ -273,11 +289,13 @@ Ensure the `hooks.Notification` section exists and has correct JSON syntax.
 ### Linux: No Sound
 
 **Check notification daemon settings**:
+
 - SwayNotificationCenter: Check `~/.config/swaync/config.json` for sound settings
 - dunst: Check `~/.config/dunst/dunstrc` for sound settings
 - Some notification daemons require explicit sound configuration
 
 **Test with explicit sound** (if supported by your daemon):
+
 ```bash
 notify-send "Test" "Test" --hint=string:sound-name:message-new-instant
 ```
@@ -285,11 +303,13 @@ notify-send "Test" "Test" --hint=string:sound-name:message-new-instant
 ### macOS: Notifications Not Appearing
 
 **Check notification permissions**:
+
 1. Open System Settings > Notifications
 2. Find Terminal (or your terminal app)
 3. Ensure "Allow Notifications" is enabled
 
 **Test osascript directly**:
+
 ```bash
 osascript -e 'display notification "Test" with title "Test"'
 ```
@@ -300,11 +320,13 @@ Notifications may be silenced if Do Not Disturb is active.
 ### macOS: Wrong Sound or No Sound
 
 **Check available sounds**:
+
 ```bash
 ls /System/Library/Sounds/
 ```
 
 **Test with different sound**:
+
 ```bash
 osascript -e 'display notification "Test" with title "Test" sound name "Ping"'
 ```
@@ -314,6 +336,7 @@ osascript -e 'display notification "Test" with title "Test" sound name "Ping"'
 ### Context Script Not Working
 
 **Test context script directly**:
+
 ```bash
 ~/.claude-dotfiles/scripts/get-notification-context.sh
 ```
@@ -321,11 +344,13 @@ osascript -e 'display notification "Test" with title "Test" sound name "Ping"'
 Should output your current context (tmux window, git repo name, or "Claude").
 
 **Make sure script is executable**:
+
 ```bash
 chmod +x ~/.claude-dotfiles/scripts/get-notification-context.sh
 ```
 
 **Test in different environments**:
+
 ```bash
 # In tmux
 tmux
@@ -353,6 +378,7 @@ If `$(...)` substitution isn't working, check your shell and quoting:
 **Restart Claude Code** after modifying settings.json.
 
 **Validate JSON syntax**:
+
 ```bash
 python3 -m json.tool ~/.config/claude-code/settings.json
 ```
@@ -402,6 +428,7 @@ export CLAUDE_NOTIFICATION_ICON=/path/to/project/icon.png
 ```
 
 Then in settings.json:
+
 ```json
 {
   "command": "notify-send \"$(~/.claude-dotfiles/scripts/get-notification-context.sh)\" 'Claude is waiting' --icon=${CLAUDE_NOTIFICATION_ICON:-dialog-information}"
@@ -463,6 +490,7 @@ Use environment variables to conditionally enable notifications:
 ```
 
 Then:
+
 ```bash
 # Enable
 export CLAUDE_NOTIFICATIONS=1
@@ -476,11 +504,13 @@ unset CLAUDE_NOTIFICATIONS
 ### Command Injection
 
 The notification hooks execute shell commands. Be cautious with:
+
 - User input in notification text
 - Environment variables
 - Dynamic command construction
 
 The provided scripts use safe patterns:
+
 - Context detection script has no user input
 - Commands use proper quoting
 - No `eval` or dangerous constructs
@@ -488,6 +518,7 @@ The provided scripts use safe patterns:
 ### Permissions
 
 Notification hooks run with your user privileges. They:
+
 - Cannot access system-level resources without your permissions
 - Cannot run with elevated privileges (no sudo)
 - Respect your shell environment and restrictions
@@ -516,8 +547,8 @@ A: No. Hooks run asynchronously and don't block Claude Code's execution.
 
 - [Claude Code Hooks Guide](https://docs.claude.com/en/docs/claude-code/hooks-guide)
 - [Claude Code Hooks Reference](https://docs.claude.com/en/docs/claude-code/hooks)
-- [freedesktop Notifications Spec](https://specifications.freedesktop.org/notification-spec/notification-spec-latest.html)
-- [notify-send man page](https://manpages.ubuntu.com/manpages/lunar/man1/notify-send.1.html)
+- [freedesktop Notifications Spec](https://specifications.freedesktop.org/notification/latest-single/)
+- [notify-send man page](https://manpages.debian.org/stable/libnotify-bin/notify-send.1.en.html)
 - [SwayNotificationCenter](https://github.com/ErikReider/SwayNotificationCenter)
 
 ## Contributing

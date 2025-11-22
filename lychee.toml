@@ -1,0 +1,27 @@
+# Lychee link checker configuration
+# https://github.com/lycheeverse/lychee
+
+# Paths to exclude from checking
+exclude_path = [".git", "node_modules"]
+
+# Don't check local file:// links
+exclude_link_local = true
+
+# Timeout for each link check (seconds)
+timeout = 10
+
+# Number of retries for failed requests
+max_retries = 3
+
+# Maximum number of concurrent checks
+max_concurrency = 8
+
+# Cache results to avoid repeated checks and rate limiting
+cache = true
+
+# Exclude specific URL patterns
+exclude = [
+  "^http://localhost",
+  "^http://127\\.0\\.0\\.1",
+  "^https://example\\.com"
+]

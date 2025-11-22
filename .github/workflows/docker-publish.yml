@@ -1,20 +1,7 @@
 name: Build and Publish Docker Image
 
 on:
-  push:
-    branches:
-      - main
-      - master
-    tags:
-      - 'v*.*.*'
-    paths:
-      - 'Dockerfile'
-      - '.dockerignore'
-      - '.github/workflows/docker-publish.yml'
   pull_request:
-    branches:
-      - main
-      - master
     paths:
       - 'Dockerfile'
       - '.dockerignore'

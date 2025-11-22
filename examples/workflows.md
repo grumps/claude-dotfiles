@@ -5,12 +5,14 @@ Common workflows using Claude dotfiles integration.
 ## Workflow 1: Planning a New Feature
 
 ### Scenario
+
 You need to add rate limiting to your API.
 
 ### Steps
 
 1. **Start in Claude chat:**
-   ```
+
+   ```text
    /plan add rate limiting middleware to API
    ```
 
@@ -21,7 +23,8 @@ You need to add rate limiting to your API.
    - Save to `.claude/plans/2025-11-15-rate-limiting.md`
 
 3. **Review the plan:**
-   ```
+
+   ```text
    /review-plan .claude/plans/2025-11-15-rate-limiting.md
    ```
 
@@ -36,17 +39,20 @@ You need to add rate limiting to your API.
 ## Workflow 2: Code Review Before Commit
 
 ### Scenario
+
 You've made changes and want review before committing.
 
 ### Steps
 
 1. **Stage your changes:**
+
    ```bash
    git add .
    ```
 
 2. **Request review in Claude:**
-   ```
+
+   ```text
    /review-code
    ```
 
@@ -66,6 +72,7 @@ You've made changes and want review before committing.
 5. **Fix issues and re-review if needed**
 
 6. **Commit when ready:**
+
    ```bash
    git commit
    ```
@@ -75,22 +82,26 @@ You've made changes and want review before committing.
 ## Workflow 3: Generating Commit Messages
 
 ### Scenario
+
 You want Claude to write your commit message.
 
 ### Steps
 
 1. **Stage your changes:**
+
    ```bash
    git add .
    ```
 
 2. **Option A - In Claude chat:**
-   ```
+
+   ```text
    /commit
    ```
 
    Claude analyzes staged changes and generates message.
    Copy the message and use it:
+
    ```bash
    git commit -m "feat(api): add rate limiting middleware
 
@@ -103,11 +114,13 @@ You want Claude to write your commit message.
 3. **Option B - Using prepare-commit-msg hook:**
 
    Enable the hook (one-time):
+
    ```bash
    chmod +x .git/hooks/prepare-commit-msg
    ```
 
    Then commit normally:
+
    ```bash
    git commit
    ```
@@ -117,17 +130,20 @@ You want Claude to write your commit message.
 ## Workflow 4: Full Feature Workflow
 
 ### Scenario
+
 Complete workflow from planning to deployment.
 
 ### Steps
 
 1. **Create plan:**
-   ```
+
+   ```text
    In Claude: /plan implement user authentication with OAuth
    ```
 
 2. **Review plan:**
-   ```
+
+   ```text
    In Claude: /review-plan .claude/plans/2025-11-15-oauth-auth.md
    ```
 
@@ -136,17 +152,21 @@ Complete workflow from planning to deployment.
    - Run `just validate` frequently
 
 4. **Review phase 1:**
+
    ```bash
    git add .
    ```
-   ```
+
+   ```text
    In Claude: /review-code
    ```
 
 5. **Fix issues, commit phase 1:**
-   ```
+
+   ```text
    In Claude: /commit
    ```
+
    ```bash
    git commit # (paste message or let hook generate)
    ```
@@ -154,11 +174,13 @@ Complete workflow from planning to deployment.
 6. **Repeat for phase 2, 3, etc.**
 
 7. **Final review before PR:**
-   ```
+
+   ```text
    In Claude: review all changes in this feature branch
    ```
 
 8. **Create PR with plan linked:**
+
    ```markdown
    Implements user authentication with OAuth.
 
@@ -178,11 +200,13 @@ Complete workflow from planning to deployment.
 ## Workflow 5: Quick Validation
 
 ### Scenario
+
 Check if your code is ready to commit.
 
 ### Steps
 
 1. **Run validation:**
+
    ```bash
    just validate
    ```
@@ -202,22 +226,26 @@ Check if your code is ready to commit.
 ## Workflow 6: Understanding the Codebase
 
 ### Scenario
+
 You're new to the repo and want to understand it.
 
 ### Steps
 
 1. **Check available commands:**
+
    ```bash
    just --list
    ```
 
 2. **Get repository context:**
+
    ```bash
    just info
    ```
 
 3. **Ask Claude:**
-   ```
+
+   ```text
    I'm new to this repository. Based on the context, can you explain:
    - Main components
    - How to run tests
@@ -225,18 +253,21 @@ You're new to the repo and want to understand it.
    ```
 
 4. **Review existing plans:**
-   ```
+
+   ```text
    What patterns do you see in .claude/plans/ ?
    ```
 
 ## Workflow 7: Customizing for Your Team
 
 ### Scenario
+
 Set up repo-specific guidelines.
 
 ### Steps
 
 1. **Edit context file:**
+
    ```yaml
    # .claude/context.yaml
    project:
@@ -252,12 +283,14 @@ Set up repo-specific guidelines.
    ```
 
 2. **Customize commit style:**
+
    ```bash
    cp .claude/prompts/commit.md .claude/prompts/commit-custom.md
    # Edit to add team-specific rules
    ```
 
 3. **Add team-specific skill:**
+
    ```bash
    mkdir -p .claude/skills/team
    # Create SKILL.md with your patterns
@@ -268,6 +301,7 @@ Set up repo-specific guidelines.
    - Upload team skills from `.claude/skills/team/`
 
 5. **Document in README:**
+
    ```markdown
    ## Team Conventions
    - We use specific commit scopes (see .claude/context.yaml)

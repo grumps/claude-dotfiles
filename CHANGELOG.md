@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+
 - Notification hooks for desktop alerts when Claude awaits input
 - Context detection script for project-aware notifications (tmux, git)
 - Comprehensive notification hooks documentation (Linux and macOS)
@@ -22,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2025-11-16
 
 ### Added
+
 - Base justfile recipes (validate, lint, test, context)
 - Language-specific recipes (Go, Python, Kubernetes)
 - Planning skill with structured format
@@ -37,5 +39,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Testing checklist
 - Contributing guide
 
-[Unreleased]: https://github.com/YOUR_USERNAME/claude-dotfiles/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/YOUR_USERNAME/claude-dotfiles/releases/tag/v0.1.0
+[Unreleased]: https://github.com/grumps/claude-dotfiles/releases
+[0.1.0]: https://github.com/grumps/claude-dotfiles/releases

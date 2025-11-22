@@ -18,6 +18,7 @@ Your plan is **excellent** for Argo migration! These improvements make it even b
 **File**: `.claude/plans/2025-11-18-github-actions-integration.md` (Stage 6)
 
 **Current approach** (Line 968):
+
 ```just
 # Create a release (validate tag, generate notes, create GitHub release)
 release TAG:
@@ -31,6 +32,7 @@ release TAG:
 ```
 
 **✅ Improved approach** (Argo-ready):
+
 ```just
 # Generate release notes for a tag
 release-notes TAG:
@@ -72,6 +74,7 @@ release TAG: (release-notes TAG) (github-release TAG)
 ```
 
 **Why this is better**:
+
 - ✅ Separates concerns (notes generation vs. GitHub API)
 - ✅ `release-notes` works in any CI (no GitHub dependency)
 - ✅ `github-release` uses `gh` CLI (consistent interface, works locally)
@@ -79,6 +82,7 @@ release TAG: (release-notes TAG) (github-release TAG)
 - ✅ Argo migration: Just replace `gh` CLI with Kubernetes API client
 
 **GitHub Actions workflow adjustment** (`.github/workflows/release.yml`, Line 1051):
+
 ```yaml
       - name: Install gh CLI
         run: |
@@ -96,6 +100,7 @@ release TAG: (release-notes TAG) (github-release TAG)
 ```
 
 **Benefits**:
+
 - Same Just recipe works in GHA and future Argo Workflows
 - Local testing: `GITHUB_TOKEN=... just github-release v1.0.0`
 - Easy to replace `gh` CLI with other tools if needed
@@ -167,10 +172,13 @@ This ensures:
 Just recipes use explicit parameters (not implicit env vars where possible):
 
 ```bash
-# Good: Explicit parameter
+
+## Good: Explicit parameter
+
 just release-notes v1.2.3
 
-# Avoid: Implicit environment variable
+## Avoid: Implicit environment variable
+
 TAG=v1.2.3 just release-notes  # Don't do this
 ```
 
@@ -196,36 +204,54 @@ Current tasks do NOT produce artifacts, but if added:
 ## Orchestrator Requirements
 
 ### Minimal Orchestrator (Any CI)
+
 ```yaml
-# Pseudocode - works in any CI system
+
+## Pseudocode - works in any CI system
+
 steps:
+
   - checkout: repository
   - install: just, docker  # Minimal requirements
   - run: just test-install
+
 ```
 
 ### GitHub Actions Orchestrator
+
 ```yaml
-# .github/workflows/validate.yml
+
+## .github/workflows/validate.yml
+
 jobs:
   lint:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install Just
+```
+
+steps:
+
+```text
+    - uses: actions/checkout@v4
+    - name: Install Just
         uses: extractions/setup-just@v2
-      - run: just lint-shell
+    - run: just lint-shell
+
 ```
 
 ### Argo Workflows Orchestrator (Future)
+
 ```yaml
-# argo-workflows/validate.yaml
+
+## argo-workflows/validate.yaml
+
 templates:
+
   - name: lint-shell
     container:
       image: myorg/ci-tools:latest  # Pre-installed just, shellcheck
       command: [just, lint-shell]
       workingDir: /workspace
+
 ```
 
 ## Triggers and Path Filtering
@@ -245,18 +271,21 @@ templates:
 Recommended paths to watch:
 
 ```yaml
-# Example: GitHub Actions path filtering
+
+## Example: GitHub Actions path filtering
+
 on:
   pull_request:
     paths:
-      - '**.sh'          # lint-shell
-      - 'hooks/**'       # lint-shell
-      - 'scripts/**'     # lint-shell, test-install
-      - '**.py'          # lint-python
-      - 'pyproject.toml' # lint-python
-      - '**.md'          # lint-markdown
-      - 'install.sh'     # test-install
-      - 'uninstall.sh'   # test-install
+    - '**.sh'          # lint-shell
+    - 'hooks/**'       # lint-shell
+    - 'scripts/**'     # lint-shell, test-install
+    - '**.py'          # lint-python
+    - 'pyproject.toml' # lint-python
+    - '**.md'          # lint-markdown
+    - 'install.sh'     # test-install
+    - 'uninstall.sh'   # test-install
+
 ```
 
 ## Secrets Management
@@ -272,16 +301,21 @@ on:
 Orchestrators must provide secrets as environment variables:
 
 ```bash
-# GitHub Actions
+
+## GitHub Actions
+
 GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} just github-release v1.0.0
 
-# Argo Workflows (future)
+## Argo Workflows (future)
+
 env:
+
   - name: GITHUB_TOKEN
     valueFrom:
       secretKeyRef:
         name: github-credentials
         key: token
+
 ```
 
 ## Migration Guide
@@ -289,11 +323,13 @@ env:
 ### From GitHub Actions to Argo Workflows
 
 1. **Create CI tools container image**:
+
    ```dockerfile
    FROM ubuntu:22.04
    RUN apt-get update && apt-get install -y \
      just shellcheck git gh
-   # ... more tools
+
+## ... more tools
    ```
 
 2. **Replace GHA-specific integrations**:
@@ -302,16 +338,21 @@ env:
    - Secrets → Kubernetes secrets
 
 3. **Convert workflow syntax**:
-   ```yaml
-   # GHA
-   - run: just lint-shell
 
-   # Argo
-   - name: lint-shell
+   ```yaml
+
+## GHA
+
+    - run: just lint-shell
+
+## Argo
+
+    - name: lint-shell
+
      template: just-task
      arguments:
        parameters:
-       - name: task
+      - name: task
          value: lint-shell
    ```
 
@@ -328,23 +369,31 @@ Same process in reverse. Just recipes are portable!
 To validate an orchestrator meets the contract:
 
 ```bash
-# 1. Check tool availability
+
+## 1. Check tool availability
+
 just --version
 git --version
 shellcheck --version
 
-# 2. Run each task
+## 2. Run each task
+
 just lint-shell
 just lint-python
 just lint-markdown
 
-# 3. Verify test tasks work
+## 3. Verify test tasks work
+
 docker --version  # or podman
 just test-install
 
-# 4. Check release tasks (read-only)
+## 4. Check release tasks (read-only)
+
 just release-notes v0.0.1
 ```
+
+
+```text
 
 ## Maintainer Notes
 
@@ -362,6 +411,7 @@ When adding new CI tasks to `justfiles/ci.just`:
 ### Updating Tool Versions
 
 Tool versions are specified in orchestrator workflows, not Just recipes:
+
 - GitHub Actions: Workflow YAML installation steps
 - Argo Workflows: Container image versions
 - Local: Developer's installed tools
@@ -369,19 +419,24 @@ Tool versions are specified in orchestrator workflows, not Just recipes:
 Keep minimum version requirements documented here.
 ```
 
+```text
 **Why this helps**:
+
 - ✅ Makes expectations explicit for any CI system
 - ✅ Documents migration path to Argo Workflows
 - ✅ Helps contributors understand local testing
 - ✅ Reference for future CI system integrations
 
-### 3. Plan Update: Add Argo Migration Section
+```
+
+## 3. Plan Update: Add Argo Migration Section
 
 **File**: `.claude/plans/2025-11-18-github-actions-integration.md`
 
 **Add new section after "Success Criteria" (around line 1240)**:
 
 ```markdown
+
 ## Future Migration Path: Argo Workflows
 
 ### Overview
@@ -393,6 +448,7 @@ The Justfile-centric architecture enables future migration to Argo Workflows (Ku
 ### Migration Readiness
 
 **Already Argo-Compatible**:
+
 - ✅ All CI logic in Just recipes (not workflow YAML)
 - ✅ Container-based integration testing
 - ✅ Standard CLI tools (shellcheck, ruff, lychee, etc.)
@@ -400,6 +456,7 @@ The Justfile-centric architecture enables future migration to Argo Workflows (Ku
 - ✅ CI contract documented (`.claude/ci-contract.md`)
 
 **Will Need Adaptation**:
+
 - ⚠️ Workflow orchestration syntax (GHA YAML → Argo templates)
 - ⚠️ Trigger mechanisms (GHA webhooks → Argo Events)
 - ⚠️ Secrets management (GHA secrets → Kubernetes secrets)
@@ -412,14 +469,16 @@ The Justfile-centric architecture enables future migration to Argo Workflows (Ku
 lint-shell:
   runs-on: ubuntu-latest
   steps:
-    - uses: actions/checkout@v4
-    - name: Install Just
+  - uses: actions/checkout@v4
+  - name: Install Just
       uses: extractions/setup-just@v2
-    - name: Run validation
+  - name: Run validation
       run: just lint-shell
+
 ```
 
 **Future Argo Workflow** (`argo/validate.yaml`):
+
 ```yaml
 apiVersion: argoproj.io/v1alpha1
 kind: Workflow
@@ -432,6 +491,7 @@ spec:
       image: myorg/ci-tools:latest  # Pre-installed just, shellcheck
       command: [just, lint-shell]
       workingDir: /workspace
+
 ```
 
 **Key Point**: Same `just lint-shell` command runs in both systems.
@@ -439,11 +499,13 @@ spec:
 ### Migration Timeline Estimate
 
 **Phase 1: Preparation** (Already in this plan)
+
 - Duration: Included in current implementation
 - Tasks: Abstract GitHub releases, document CI contract
 - Deliverables: `.claude/ci-contract.md`, improved Stage 6
 
 **Phase 2: Argo Implementation** (Future, when ready)
+
 - Duration: 1-2 weeks
 - Tasks:
   - Set up Argo Workflows in Kubernetes cluster
@@ -453,6 +515,7 @@ spec:
   - Set up Kubernetes secrets
 
 **Phase 3: Parallel Running** (Future)
+
 - Duration: 1-2 weeks
 - Tasks:
   - Run both GHA and Argo in parallel
@@ -460,6 +523,7 @@ spec:
   - Build confidence
 
 **Phase 4: Migration** (Future)
+
 - Duration: 1 week
 - Tasks:
   - Switch primary CI to Argo
@@ -472,12 +536,16 @@ spec:
 
 - Full migration review: `.claude/plans/2025-11-18-argo-workflows-migration-review.md`
 - CI contract: `.claude/ci-contract.md`
-- Argo Workflows docs: https://argoproj.github.io/argo-workflows/
-```
+- Argo Workflows docs: <https://argoproj.github.io/argo-workflows/>
+
+```text
+
+```text
 
 ## Implementation Checklist
 
 ### Stage 6 Updates (During Implementation)
+
 - [ ] Split `release` recipe into `release-notes` and `github-release`
 - [ ] Use `gh` CLI in `github-release` recipe
 - [ ] Update `.github/workflows/release.yml` to install `gh` CLI
@@ -485,12 +553,14 @@ spec:
 - [ ] Test locally with token: `GITHUB_TOKEN=... just github-release v0.0.1` (dry-run)
 
 ### New Documentation (During Implementation)
+
 - [ ] Create `.claude/ci-contract.md` with environment requirements
 - [ ] Document all Just tasks and their dependencies
 - [ ] Document required secrets
 - [ ] Add migration guide section
 
 ### Plan Updates (Now or During Implementation)
+
 - [ ] Add "Future Migration Path: Argo Workflows" section to plan
 - [ ] Reference migration review document
 - [ ] Update Stage 6 code examples with improved recipes
@@ -525,3 +595,10 @@ Your GitHub Actions plan is **already excellent** for Argo migration due to the 
 ✅ Provide significant value for current use and future migration
 
 **Recommendation**: Incorporate these changes into the current plan implementation.
+```
+
+```text
+```
+
+
+```text

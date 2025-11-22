@@ -13,6 +13,7 @@ The Dockerfile uses multi-stage builds to copy binaries from official containers
 ## Included Tools
 
 ### Core Utilities
+
 - **git** - Version control
 - **curl** / **wget** - File downloading
 - **jq** - JSON processing
@@ -21,28 +22,34 @@ The Dockerfile uses multi-stage builds to copy binaries from official containers
 - **less** / **vim** - Text viewing and editing
 
 ### Shell Development
+
 - **shellcheck** - Shell script linting
 - **shfmt** (v3.8.0) - Shell script formatting
 
 ### Command Runner
+
 - **just** - Task runner and command orchestration
 
 ### Kubernetes Tools
+
 - **helm** - Kubernetes package manager (from alpine/helm)
 - **kubectl** - Kubernetes CLI (from dl.k8s.io)
 - **kustomize** - Kubernetes configuration management
 - **yamllint** - YAML validation
 
 ### Go Development
+
 - **golangci-lint** - Go linting (from golangci/golangci-lint)
 
 ### Python Development
+
 - **python3-pip** - Python package installer
 - **uv** - Fast Python package installer and resolver
 - **ruff** - Fast Python linter (installed via uv)
 - **yamllint** - YAML validation (installed via uv)
 
 ### Terraform Tools
+
 - **terraform** - Infrastructure as Code (from HashiCorp apt repo)
 - **tflint** - Terraform linting (from ghcr.io/terraform-linters/tflint)
 - **tfsec** - Terraform security scanner (from aquasec/tfsec)
@@ -82,6 +89,8 @@ docker pull ghcr.io/grumps/claude-dotfiles:latest
 ```
 
 **For local Dockerfile testing only:**
+
+```bash
 # Interactive shell
 docker run -it --rm -v $(pwd):/workspace ghcr.io/grumps/claude-dotfiles:latest
 
@@ -105,6 +114,7 @@ docker build -t claude-dotfiles-base:latest .
 ### Multi-Stage Build
 
 The Dockerfile uses multi-stage builds to copy binaries from official containers where possible:
+
 - **helm** - Copied from `alpine/helm:latest`
 - **golangci-lint** - Copied from `golangci/golangci-lint:latest`
 - **tflint** - Copied from `ghcr.io/terraform-linters/tflint:latest`
@@ -112,6 +122,7 @@ The Dockerfile uses multi-stage builds to copy binaries from official containers
 - **kubectl** - Downloaded from official Kubernetes releases (dl.k8s.io)
 
 This approach ensures:
+
 - Official, verified binaries from maintainers
 - Reduced reliance on installation scripts that could fail
 - Faster builds with better layer caching
@@ -176,6 +187,7 @@ docker run -it --rm \
 ```
 
 This allows you to:
+
 - Work with your project files in `/workspace`
 - Use your git configuration
 - Access SSH keys for git operations
@@ -183,6 +195,7 @@ This allows you to:
 ## Caching
 
 To optimize build times, the Dockerfile:
+
 - Cleans up apt lists after installations
 - Uses `--no-cache-dir` for pip installations
 - Downloads and installs tools in logical layers
@@ -211,6 +224,7 @@ docker run -it --rm \
 ### Build Failures
 
 If the build fails during tool installation:
+
 1. Check the base image is accessible: `docker pull public.ecr.aws/x2w2w0z4/base:v0.5.1-bookworm-slim`
 2. Verify network connectivity for downloading tools
 3. Check the specific error message in the build output
@@ -222,6 +236,7 @@ The container image is automatically built and published using GitHub Actions (`
 ### Automatic Publishing
 
 The workflow is triggered on:
+
 - **Push to main/master** - Builds and publishes with `latest` tag
 - **Version tags** (v1.2.3) - Builds and publishes with semver tags
 - **Pull requests** - Builds only (does not publish)
@@ -231,6 +246,7 @@ The workflow is triggered on:
 To publish a new version:
 
 1. Create and push a version tag:
+
    ```bash
    git tag v1.2.3
    git push origin v1.2.3

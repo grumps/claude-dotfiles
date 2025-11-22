@@ -24,6 +24,7 @@ This directory contains comprehensive documentation for Claude dotfiles projects
 ## Contributing
 
 See the main [CONTRIBUTING.md](../CONTRIBUTING.md) for:
+
 - Development setup
 - Making changes
 - Commit message standards

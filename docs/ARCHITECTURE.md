@@ -27,6 +27,7 @@ Design decisions and technical overview for Claude Dotfiles.
 **Decision**: Use Just as the task runner.
 
 **Reasons**:
+
 - Cross-platform (Make is POSIX-focused)
 - Better error messages
 - Simpler syntax (no tab requirements)
@@ -37,6 +38,7 @@ Design decisions and technical overview for Claude Dotfiles.
 **Decision**: Symlink commands to `~/.claude/`, copy hooks to projects.
 
 **Reasons**:
+
 - Commands rarely need per-project customization → symlink for easy updates
 - Hooks often need project-specific tweaks → copy for isolation
 - Prompts might be customized → copy to `.claude/prompts/` in projects
@@ -46,11 +48,13 @@ Design decisions and technical overview for Claude Dotfiles.
 **Decision**: Install dotfiles globally, configure per-project.
 
 **What's global** (in `~/.claude-dotfiles/` and `~/.claude/`):
+
 - Shared Just recipes
 - Slash command definitions
 - Base hooks and prompts
 
 **What's per-project** (in `your-project/`):
+
 - justfile with project-specific `lint` and `test` implementations
 - Git hooks (copies)
 - Generated plans in `.claude/plans/`

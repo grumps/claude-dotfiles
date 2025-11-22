@@ -48,6 +48,7 @@ just helm-test bitnami/nginx my-nginx.yaml
 ## Installation
 
 The script requires:
+
 - **Helm 3.x** - [Installation Guide](https://helm.sh/docs/intro/install/)
 - **kubectl** (optional) - For manifest validation
 
@@ -170,6 +171,7 @@ just helm-render bitnami/nginx my-values.yaml production
 ```
 
 **Output:**
+
 - `helm-output/nginx/all-manifests.yaml` - All resources in one file
 - `helm-output/nginx/Deployment-*.yaml` - Individual resource files
 - Resource summary with counts
@@ -375,7 +377,8 @@ just helm-readme bitnami/postgresql
 ```
 
 **Or use Claude:**
-```
+
+```text
 /helm-render
 User: "Help me understand the bitnami/postgresql chart"
 ```
@@ -441,12 +444,14 @@ just helm-compare bitnami/nginx current.yaml proposed.yaml
 **Goal:** Quickly test changes while editing values
 
 **Terminal 1:**
+
 ```bash
 # Start watch mode
 just helm-watch bitnami/nginx my-values.yaml
 ```
 
 **Terminal 2:**
+
 ```bash
 # Edit values file
 vim my-values.yaml
@@ -678,11 +683,12 @@ helm show values <chart> | grep -i required
 
 Use the `/helm-render` slash command in Claude Code:
 
-```
+```text
 /helm-render
 ```
 
 Claude will help you:
+
 - Explore chart values
 - Create starter configurations
 - Validate your values files

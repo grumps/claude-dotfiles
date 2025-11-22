@@ -32,7 +32,7 @@ This document defines Terraform coding standards and tooling practices for proje
 
 Favor a **layered architecture** that separates concerns and promotes maintainability:
 
-```
+```text
 terraform/
 ├── layers/
 │   ├── 1-foundation/        # VPC, networking, base security
@@ -57,12 +57,14 @@ terraform/
 ```
 
 **Benefits:**
+
 - **Clear dependencies** - Lower layers can't depend on higher layers
 - **Incremental deployment** - Apply layers sequentially (foundation → data → compute → application)
 - **Easier troubleshooting** - Issues isolated to specific layers
 - **Team collaboration** - Different teams can own different layers
 
 **Example layer progression:**
+
 ```bash
 # Apply in order
 cd layers/1-foundation && terraform apply
@@ -77,7 +79,7 @@ cd layers/4-application && terraform apply
 
 ### Directory Structure
 
-```
+```text
 terraform/
 ├── environments/
 │   ├── dev/
@@ -461,6 +463,7 @@ module "vpc" {
 ### Module Structure
 
 Every module should have:
+
 - **main.tf** - Resource definitions
 - **variables.tf** - Input variables
 - **outputs.tf** - Output values
@@ -535,9 +538,12 @@ module "vpc" {
 | vpc_id | ID of the VPC |
 | public_subnet_ids | List of public subnet IDs |
 | private_subnet_ids | List of private subnet IDs |
-```
 
+```text
+
+```text
 ---
+```
 
 ## Security Best Practices
 
@@ -742,6 +748,7 @@ resource "aws_s3_bucket" "data" {
 ```
 
 **Benefits of provider-level tags:**
+
 - **DRY principle** - Define common tags once
 - **Consistency** - All resources automatically tagged
 - **Less boilerplate** - No need for `merge()` on every resource
@@ -780,6 +787,7 @@ resource "aws_instance" "web" {
 ### Required Tags
 
 Every resource should have these tags (via provider defaults or locals):
+
 - **Project** - Project name
 - **Environment** - Environment (dev, staging, prod)
 - **ManagedBy** - Always "terraform"
@@ -828,7 +836,7 @@ rule "terraform_unused_declarations" {
 
 #### .terraform-version
 
-```
+```text
 1.6.0
 ```
 
@@ -856,18 +864,21 @@ repos:
 Before submitting Terraform code, verify:
 
 **Architecture & Design:**
+
 - [ ] Layered architecture followed (foundation → data → compute → application)
 - [ ] Using local modules (unless registry modules are justified)
 - [ ] Tags defined at provider level using `default_tags`
 - [ ] No `local-exec` or `remote-exec` provisioners used
 
 **Code Quality:**
+
 - [ ] All files formatted with `terraform fmt`
 - [ ] `terraform validate` passes
 - [ ] `tflint` passes with no errors
 - [ ] `tfsec` passes with no high/critical issues
 
 **Variables & Outputs:**
+
 - [ ] All variables have descriptions
 - [ ] All variables have appropriate types
 - [ ] Critical variables have validation rules
@@ -875,6 +886,7 @@ Before submitting Terraform code, verify:
 - [ ] Sensitive outputs marked as `sensitive = true`
 
 **Security:**
+
 - [ ] No hardcoded secrets or credentials
 - [ ] Encryption enabled for data at rest
 - [ ] Encryption enabled for data in transit
@@ -882,6 +894,7 @@ Before submitting Terraform code, verify:
 - [ ] State backend configured with encryption and locking
 
 **Documentation & Review:**
+
 - [ ] All resources have appropriate tags (inherited from provider or explicit)
 - [ ] Module README.md updated (if applicable)
 - [ ] `terraform plan` reviewed and approved
@@ -967,6 +980,7 @@ resource "null_resource" "configure_server" {
 ```
 
 **Why avoid local-exec:**
+
 - **Not idempotent** - Commands may fail on re-runs
 - **Hidden dependencies** - External tools must be installed (ansible, aws-cli, etc.)
 - **State drift** - No way to track what actually happened
@@ -1029,7 +1043,8 @@ resource "aws_instance" "web" {
 
 ### Other Anti-Patterns to Avoid
 
-**❌ Hardcoded values**
+#### ❌ Hardcoded values
+
 ```hcl
 # Bad
 resource "aws_instance" "web" {
@@ -1044,7 +1059,8 @@ resource "aws_instance" "web" {
 }
 ```
 
-**❌ Missing lifecycle blocks for critical resources**
+#### ❌ Missing lifecycle blocks for critical resources
+
 ```hcl
 # Bad - instance replacement causes downtime
 resource "aws_instance" "web" {
@@ -1064,6 +1080,7 @@ resource "aws_instance" "web" {
 ```
 
 **❌ Over-using count instead of for_each**
+
 ```hcl
 # Bad - reordering list causes resource recreation
 resource "aws_instance" "web" {

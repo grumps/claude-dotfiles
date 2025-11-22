@@ -94,6 +94,7 @@ uv run scripts/planworktree.py status .claude/plans/YYYY-MM-DD-feature.md
 When a user wants to set up worktrees for a plan:
 
 ### 1. Validate the Plan
+
 - Read the plan file from `.claude/plans/`
 - Verify it has JSON metadata block with stage definitions
 - Check that required fields are present (id, branch, worktree_path)
@@ -103,49 +104,61 @@ just plan-validate .claude/plans/YYYY-MM-DD-feature.md
 ```
 
 ### 2. Show Stage Overview
+
 Run the `list` command to show the user what stages will be created:
+
 ```bash
 just plan-list .claude/plans/YYYY-MM-DD-feature.md
 ```
 
 Display:
+
 - Stage IDs and names
 - Current status (not-started/in-progress/complete)
 - Branch names
 - Dependencies between stages
 
 ### 3. Create Worktrees
+
 Based on user preference, either:
 
-**Option A: Setup all stages at once**
+#### Option A: Setup all stages at once
+
 ```bash
 just plan-setup .claude/plans/YYYY-MM-DD-feature.md
 ```
 
-**Option B: Setup individual stage**
+#### Option B: Setup individual stage
+
 ```bash
 just plan-stage .claude/plans/YYYY-MM-DD-feature.md <stage-id>
 ```
 
 The script will:
+
 - Create parent directories if needed
 - Create new branch from current HEAD (or use existing branch)
 - Add git worktree at specified path
 - Create `.claude/plans/CURRENT_STAGE.md` symlink to the plan
 
 ### 4. Verify Setup
+
 Show the user what was created:
+
 ```bash
 just plan-status .claude/plans/YYYY-MM-DD-feature.md
 ```
 
 Also show all active worktrees:
+
 ```bash
 just plan-worktrees
 ```
 
 ### 5. Provide Next Steps
+
 Tell the user:
+
 - How to navigate to each worktree: `cd ../worktrees/plan-id/stage-1`
 - Where to find the plan: `.claude/plans/CURRENT_STAGE.md` in each worktree
 - How to start work: Run tests, verify the environment works
@@ -156,6 +169,7 @@ Tell the user:
 After worktrees are created, the development workflow is:
 
 1. **Work in isolation**: Each stage has its own worktree
+
    ```bash
    cd ../worktrees/plan-id/stage-1
    # Make changes, run tests
@@ -163,23 +177,27 @@ After worktrees are created, the development workflow is:
    ```
 
 2. **Reference the plan**: Plan is symlinked in each worktree
+
    ```bash
    cat .claude/plans/CURRENT_STAGE.md
    ```
 
 3. **Check stage status**: Update plan metadata as stages progress
+
    ```bash
    # In main repo, update plan frontmatter:
    # Change status from "not-started" to "in-progress" to "complete"
    ```
 
 4. **Merge stages**: When stage is complete, merge to main
+
    ```bash
    cd /path/to/main/repo
    git merge feature/plan-id-stage-1
    ```
 
 5. **Handle dependencies**: Merge stages in dependency order
+
    ```bash
    # If stage-2 depends on stage-1:
    git merge feature/plan-id-stage-1  # First
@@ -187,6 +205,7 @@ After worktrees are created, the development workflow is:
    ```
 
 6. **Clean up**: Remove worktrees when done
+
    ```bash
    git worktree remove ../worktrees/plan-id/stage-1
    ```
@@ -194,7 +213,8 @@ After worktrees are created, the development workflow is:
 ## Directory Structure
 
 After setup, the structure looks like:
-```
+
+```text
 project/
 ├── .git/
 ├── .claude/
@@ -243,6 +263,7 @@ import? 'justfiles/plans.just'
 ```
 
 Available recipes:
+
 - `plan-ls` - List all plans
 - `plan-validate` - Validate plan metadata
 - `plan-list` - List stages in a plan
@@ -315,21 +336,28 @@ just plan-list .claude/plans/2025-11-17-feature.md
 ## Troubleshooting
 
 ### Worktree path doesn't exist
+
 The script creates parent directories automatically. If you get permission errors, check directory ownership.
 
 ### Branch already exists
+
 If the branch exists from previous work:
+
 - The script will create a worktree from the existing branch
 - You can continue where you left off
 - Or delete the branch first: `git branch -D feature/plan-id-stage-1`
 
 ### Symlink broken
+
 If `.claude/plans/CURRENT_STAGE.md` is broken:
+
 - The plan file may have moved
 - Recreate: `ln -sf /absolute/path/to/plan.md .claude/plans/CURRENT_STAGE.md`
 
 ### Can't remove worktree
+
 If `git worktree remove` fails:
+
 - Check for uncommitted changes
 - Use `git worktree remove --force` if needed
 - Or manually delete and run `git worktree prune`

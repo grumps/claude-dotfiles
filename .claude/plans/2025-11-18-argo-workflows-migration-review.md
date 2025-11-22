@@ -10,12 +10,14 @@
 ✅ **Migration Risk: LOW** - The Justfile-centric architecture is **excellent** for future Argo Workflows migration. The plan minimizes vendor lock-in by keeping all CI logic in Just recipes with GitHub Actions as thin orchestration wrappers.
 
 **Key Strengths**:
+
 - All CI logic in portable Just recipes
 - Container-based integration testing (maps directly to Argo)
 - Standard CLI tools that run anywhere
 - Minimal GitHub Actions marketplace dependencies
 
 **Areas Requiring Adaptation** (not blockers):
+
 - GitHub-specific integrations (PR comments, releases API, auto-labeler)
 - Trigger mechanisms and path filtering
 - Secrets management approach
@@ -25,7 +27,9 @@
 ### ✅ Migration-Friendly Decisions
 
 #### 1. **Justfile-Centric Architecture** (EXCELLENT)
+
 **Current Approach**:
+
 ```just
 # All logic in justfiles/ci.just
 lint-shell:
@@ -35,6 +39,7 @@ lint-shell:
 ```
 
 **Argo Migration Path**:
+
 ```yaml
 # Argo Workflow - same Just recipe, different orchestrator
 - name: lint-shell
@@ -46,11 +51,14 @@ lint-shell:
 **Assessment**: ✅ Perfect portability. Just recipes work identically in any container runtime.
 
 #### 2. **Container-Based Integration Testing** (EXCELLENT)
+
 **Current Approach**:
+
 - BATS tests in `archlinux:latest` container
 - `just test-install` uses Docker/Podman
 
 **Argo Migration Path**:
+
 - Argo Workflows is container-native
 - Same containers, different orchestrator
 - Can add more complex container dependencies easily
@@ -58,13 +66,17 @@ lint-shell:
 **Assessment**: ✅ Direct mapping. Argo's container-first model is ideal for this.
 
 #### 3. **Standard CLI Tools** (EXCELLENT)
+
 **Tools Used**:
+
 - ShellCheck, shfmt, ruff, mypy, lychee, git-cliff, cocogitto
 
 **Assessment**: ✅ All tools are standard binaries that run in any Linux container. No GitHub Actions-specific tooling.
 
 #### 4. **Minimal GitHub Actions Marketplace Dependencies** (GOOD)
+
 **Current Dependencies**:
+
 - `actions/checkout@v4` - Standard git clone (easy to replace)
 - `extractions/setup-just@v2` - Just installation (can bake into container)
 - `astral-sh/setup-uv@v4` - uv installation (can bake into container)
@@ -88,7 +100,9 @@ lint-shell:
 | Status Checks | GitHub native | Custom reporting | Medium |
 
 **Recommendations**:
+
 1. **Abstract GitHub releases into Just recipe** (enables local testing):
+
    ```just
    # Create release (works locally and in any CI)
    create-release TAG NOTES:
@@ -105,6 +119,7 @@ lint-shell:
 #### 2. **Workflow Triggers and Path Filtering** (Low Impact)
 
 **Current Approach**:
+
 ```yaml
 on:
   pull_request:
@@ -114,11 +129,13 @@ on:
 ```
 
 **Argo Alternative**:
+
 - Argo Events with sensors and triggers
 - Path filtering in event sources
 - Conditional workflow templates
 
 **Recommendation**:
+
 - Document trigger requirements in a separate config file
 - Keep path filtering logic simple and declarable
 - Consider using Argo Events when migrating
@@ -126,14 +143,17 @@ on:
 #### 3. **Secrets Management** (Low Impact)
 
 **Current Approach**:
+
 - GitHub Actions secrets (`${{ secrets.GITHUB_TOKEN }}`)
 
 **Argo Alternative**:
+
 - Kubernetes secrets
 - External secrets operator
 - Vault integration
 
 **Recommendation**:
+
 - Document required secrets in plan
 - Use environment variables in Just recipes (already doing this)
 - Secrets are passed from orchestrator to container
@@ -141,20 +161,24 @@ on:
 #### 4. **Artifact Storage** (Very Low Impact)
 
 **Current Approach**:
+
 - GitHub Actions artifact storage (not heavily used)
 - Release assets via GitHub Releases
 
 **Argo Alternative**:
+
 - S3/Minio for artifacts
 - PV/PVC for temporary storage
 
 **Recommendation**:
+
 - Current plan doesn't rely heavily on artifacts ✅
 - If needed, add S3 upload to Just recipe
 
 ### 📋 Migration-Ready Checklist
 
 #### Already Migration-Friendly ✅
+
 - [x] All CI logic in Just recipes (not workflow YAML)
 - [x] Container-based integration testing
 - [x] Standard CLI tools (no proprietary dependencies)
@@ -164,10 +188,12 @@ on:
 #### Recommended Improvements
 
 **High Priority (Include in Current Plan)**:
+
 - [ ] **Abstract GitHub releases into Just recipe**
   - Move `gh release create` logic to `justfiles/ci.just`
   - Make release creation testable locally
   - Example:
+
     ```just
     # Release management (works with any orchestrator)
     github-release TAG:
@@ -181,6 +207,7 @@ on:
     ```
 
 **Medium Priority (Nice to Have)**:
+
 - [ ] **Document workflow contract**
   - Create `.claude/ci-contract.md` explaining orchestrator expectations
   - List required environment variables
@@ -194,6 +221,7 @@ on:
   - Pre-install Just, ShellCheck, ruff, etc. in custom image
   - Reduces setup time in both GHA and Argo
   - Example `Dockerfile`:
+
     ```dockerfile
     FROM ubuntu:latest
     RUN apt-get update && apt-get install -y \
@@ -202,6 +230,7 @@ on:
     ```
 
 **Low Priority (Future Work)**:
+
 - [ ] **Path filtering configuration file**
   - Extract path filters to `.claude/ci-paths.yaml`
   - Use in both GHA and Argo
@@ -210,6 +239,7 @@ on:
 ## Argo Workflows Conceptual Mapping
 
 ### Current GitHub Actions Structure
+
 ```yaml
 # .github/workflows/validate.yml
 jobs:
@@ -224,6 +254,7 @@ jobs:
 ```
 
 ### Equivalent Argo Workflow
+
 ```yaml
 # argo-workflows/validate.yaml
 apiVersion: argoproj.io/v1alpha1
@@ -257,12 +288,14 @@ spec:
 ```
 
 **Key Differences**:
+
 - Argo uses container images (can pre-install tools)
 - Argo uses parameters instead of workflow inputs
 - Argo has native DAG support (better than GHA's `needs:`)
 - Source code checkout handled differently (init containers or artifacts)
 
 **Similarities**:
+
 - ✅ Same Just recipes execute identically
 - ✅ Same exit codes indicate success/failure
 - ✅ Same tool versions in containers
@@ -270,6 +303,7 @@ spec:
 ## Migration Effort Estimate
 
 ### Phase 1: Preparation (Include in Current Plan)
+
 **Effort**: 2-4 hours
 
 - Abstract GitHub releases to Just recipe
@@ -277,6 +311,7 @@ spec:
 - Create custom CI container image (optional but recommended)
 
 ### Phase 2: Argo Workflows Implementation (Future)
+
 **Effort**: 1-2 weeks
 
 - Set up Argo Workflows in Kubernetes cluster
@@ -287,6 +322,7 @@ spec:
 - Test end-to-end workflows
 
 ### Phase 3: Migration (Future)
+
 **Effort**: 1 week
 
 - Run both systems in parallel
@@ -353,12 +389,14 @@ The Justfile-centric architecture is **exactly right** for avoiding vendor lock-
 **Recommendation**: **APPROVE** the current plan with the minor additions above (abstract GitHub releases, document CI contract). These additions take minimal time and provide significant value for both current use and future migration.
 
 When you're ready to migrate to Argo Workflows in a few months, you'll have:
+
 - Proven, tested Just recipes that work anywhere
 - Clear documentation of orchestrator requirements
 - Container-based integration tests ready for Kubernetes
 - Minimal GitHub-specific code to adapt
 
 **Next Steps**:
+
 1. Implement current GitHub Actions plan as-is
 2. Add the 3 recommended improvements (releases abstraction, CI contract, migration notes)
 3. In 2-3 months when ready for Argo: Follow Phase 2/3 migration plan above
@@ -366,10 +404,12 @@ When you're ready to migrate to Argo Workflows in a few months, you'll have:
 ## References
 
 ### Argo Workflows
-- Argo Workflows Documentation: https://argoproj.github.io/argo-workflows/
-- Argo Events (GitHub webhooks): https://argoproj.github.io/argo-events/
-- Argo Workflows Examples: https://github.com/argoproj/argo-workflows/tree/master/examples
+
+- Argo Workflows Documentation: <https://argoproj.github.io/argo-workflows/>
+- Argo Events (GitHub webhooks): <https://argoproj.github.io/argo-events/>
+- Argo Workflows Examples: <https://github.com/argoproj/argo-workflows/tree/master/examples>
 
 ### Migration Patterns
-- Avoiding CI/CD Vendor Lock-in: https://www.thoughtworks.com/insights/blog/infrastructure/ci-cd-portability
-- Container-First CI/CD: https://www.cncf.io/blog/2021/03/09/container-native-ci-cd/
+
+- Avoiding CI/CD Vendor Lock-in: <https://www.thoughtworks.com/insights/blog/infrastructure/ci-cd-portability>
+- Container-First CI/CD: <https://www.cncf.io/blog/2021/03/09/container-native-ci-cd/>

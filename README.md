@@ -3,6 +3,7 @@
 **Supercharge Claude Code with Just task runner integration.**
 
 This repository provides:
+
 - Shared Just recipes for consistent linting and testing across projects
 - Claude Code slash commands that run Just tasks and generate structured outputs
 - Git hooks that enforce quality standards via Just validation
@@ -47,6 +48,7 @@ sequenceDiagram
 ### 1. Install Prerequisites
 
 **Just** (command runner):
+
 ```bash
 # macOS
 brew install just
@@ -59,6 +61,7 @@ scoop install just
 ```
 
 **Git** (you probably have this):
+
 ```bash
 git --version
 ```
@@ -66,7 +69,7 @@ git --version
 ### 2. Clone This Repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/claude-dotfiles ~/.claude-dotfiles
+git clone https://github.com/grumps/claude-dotfiles ~/.claude-dotfiles
 ```
 
 ### 3. Set Up in Your Project
@@ -77,6 +80,7 @@ cd your-project
 ```
 
 This creates:
+
 - `justfile` - Imports shared recipes from `~/.claude-dotfiles/justfiles/`
 - `.claude/` directory in your project (for plans and local customization)
 - Git hooks that run `just validate` before commits
@@ -102,9 +106,10 @@ test:
 # See examples/justfiles/ for more recipe ideas
 ```
 
-### 5. Start Using!
+### 5. Start Using
 
 **Just commands:**
+
 ```bash
 just --list        # See available commands
 just validate      # Run lint + test (will fail until configured)
@@ -112,7 +117,8 @@ just info          # Display repository information and status
 ```
 
 **Claude Code slash commands (available immediately):**
-```
+
+```text
 /plan <feature>        # Create implementation plan
 /review-code           # Review staged changes
 /review-plan <file>    # Review a plan file
@@ -165,11 +171,13 @@ Customize in `.claude/prompts/` for your team.
 ### Git Hooks
 
 **pre-commit** - Runs `just validate` before every commit:
+
 ```bash
 git commit  # ← Automatically validates
 ```
 
 **prepare-commit-msg** (optional) - Generates commit messages:
+
 ```bash
 # Enable once:
 chmod +x .git/hooks/prepare-commit-msg
@@ -183,6 +191,7 @@ git commit
 Get desktop notifications when Claude Code is waiting for your input:
 
 **Linux (automatic setup):**
+
 ```bash
 ~/.claude-dotfiles/scripts/install-notification-hooks.sh
 ```
@@ -191,6 +200,7 @@ Get desktop notifications when Claude Code is waiting for your input:
 Follow the instructions in [docs/notification-hooks.md](docs/notification-hooks.md) to configure osascript-based notifications.
 
 **Features:**
+
 - Desktop alerts when Claude awaits input
 - Project context in notifications (tmux window, git repo name)
 - Sound alerts (customizable)
@@ -202,6 +212,7 @@ See [docs/notification-hooks.md](docs/notification-hooks.md) for full documentat
 ### Scripts and Utilities
 
 **Helm Chart Exploration** - User-level tooling for understanding and validating third-party Helm charts:
+
 ```bash
 # Explore a chart - see all available values
 just helm-explore bitnami/nginx
@@ -217,12 +228,14 @@ just helm-compare bitnami/nginx current.yaml proposed.yaml
 ```
 
 **Use cases:**
+
 - **Explore third-party charts** - Understand what values are available before using a chart
 - **Validate configurations** - Test custom values files before deployment
 - **Render manifests** - See what Kubernetes resources will be created
 - **Compare changes** - Understand impact of configuration changes
 
 **Features:**
+
 - Support for traditional Helm repos and OCI registries
 - Interactive chart exploration with `just helm-explore`
 - Values validation and rendering
@@ -233,7 +246,8 @@ just helm-compare bitnami/nginx current.yaml proposed.yaml
 See [docs/helm-guide.md](docs/helm-guide.md) for complete documentation.
 
 **Claude Code Integration:**
-```
+
+```text
 /helm-render
 ```
 
@@ -241,7 +255,7 @@ See [docs/helm-guide.md](docs/helm-guide.md) for complete documentation.
 
 ### Planning a Feature
 
-```
+```text
 In Claude: /plan add rate limiting to API
 ```
 
@@ -253,7 +267,7 @@ Claude runs `just info` to understand your project, asks clarifying questions, t
 git add .
 ```
 
-```
+```text
 In Claude: /review-code
 ```
 
@@ -261,7 +275,7 @@ Claude runs `just lint` and `just test`, reviews your `git diff`, and provides f
 
 ### Committing Changes
 
-```
+```text
 In Claude: /commit
 ```
 
@@ -276,6 +290,7 @@ See [examples/workflows.md](examples/workflows.md) for more.
 ### Quick Overview
 
 Before creating a PR, you must:
+
 1. **Rebase and squash** commits into single or discrete working commits
 2. **Pull latest main** branch
 3. **Rebase onto main** to ensure linear history
@@ -284,11 +299,13 @@ Before creating a PR, you must:
 ### Using the Workflow
 
 **Automated (recommended):**
+
 ```bash
 ./scripts/git-linear-history.sh
 ```
 
 **Manual:**
+
 ```bash
 git rebase -i $(git merge-base HEAD main)  # Squash commits
 git fetch origin main                       # Get latest main
@@ -297,7 +314,8 @@ git push origin BRANCH --force-with-lease   # Force push
 ```
 
 **Via Claude:**
-```
+
+```text
 /prepare-pr
 
 Claude will guide you through the linear history workflow
@@ -317,12 +335,14 @@ See [docs/git-workflow.md](docs/git-workflow.md) for detailed documentation.
 ### Per-Repository
 
 **justfile** - Add repo-specific recipes:
+
 ```just
 deploy-staging:
   kubectl apply -f k8s/ --context=staging
 ```
 
 **context.yaml** - Add project context:
+
 ```yaml
 project:
   name: "Payment API"
@@ -334,6 +354,7 @@ conventions:
 ```
 
 **prompts/** - Customize templates:
+
 ```bash
 cp .claude/prompts/plan.md .claude/prompts/plan-custom.md
 # Edit to match your team's style
@@ -342,6 +363,7 @@ cp .claude/prompts/plan.md .claude/prompts/plan-custom.md
 ### Team-Wide
 
 Fork this repository and add:
+
 - Custom skills in `skills/team/`
 - Team-specific Just recipes
 - Company commit conventions
@@ -350,7 +372,8 @@ Fork this repository and add:
 ## Directory Structure
 
 **Global installation** (symlinked to ~/.claude for Claude Code):
-```
+
+```text
 ~/.claude-dotfiles/          # Cloned repository
 ├── commands/                # Symlinked to ~/.claude/commands/
 │   ├── plan.md
@@ -366,7 +389,8 @@ Fork this repository and add:
 ```
 
 **Per-project** (created by install.sh):
-```
+
+```text
 your-project/
 ├── justfile                 # Imports ~/.claude-dotfiles/justfiles/_base.just
 ├── .claude/
@@ -385,6 +409,7 @@ your-project/
 - **Claude Code** - AI-powered coding assistant ([docs](https://docs.claude.com/claude-code))
 
 Language-specific (optional):
+
 - **golangci-lint** - For Go projects
 - **ruff** - For Python projects
 - **terraform** + **tflint** + **tfsec** - For Terraform projects
@@ -419,6 +444,7 @@ See [docs/docker.md](docs/docker.md) for complete CI/CD integration documentatio
 ### Included Tools
 
 The container includes all required and optional tools:
+
 - Shell tools: shellcheck, shfmt
 - Command runner: just
 - Kubernetes: helm, kubectl, kustomize
@@ -433,11 +459,12 @@ See [docs/docker.md](docs/docker.md) for complete documentation.
 
 ### "just: command not found"
 
-Install Just: https://just.systems
+Install Just: <https://just.systems>
 
 ### "Recipe not found"
 
 Check available recipes:
+
 ```bash
 just --list
 ```
@@ -447,6 +474,7 @@ Make sure imports in your justfile are uncommented.
 ### Validation failing
 
 See what's failing:
+
 ```bash
 just lint  # Check linting
 just test  # Check tests
@@ -457,6 +485,7 @@ Fix issues and try again.
 ### Hook not running
 
 Check hook is executable:
+
 ```bash
 ls -la .git/hooks/pre-commit
 ```
@@ -464,6 +493,7 @@ ls -la .git/hooks/pre-commit
 Should show: `-rwxr-xr-x` (the `x` means executable)
 
 If not:
+
 ```bash
 chmod +x .git/hooks/pre-commit
 ```
@@ -493,14 +523,13 @@ MIT License - see [LICENSE](LICENSE) for details
 
 ## Support
 
-- Issues: [GitHub Issues](https://github.com/YOUR_USERNAME/claude-dotfiles/issues)
-- Discussions: [GitHub Discussions](https://github.com/YOUR_USERNAME/claude-dotfiles/discussions)
+- Issues: [GitHub Issues](https://github.com/grumps/claude-dotfiles/issues)
 
 ## Acknowledgments
 
 Built for platform engineers working with Go, Python, Terraform, and Kubernetes.
 
 Inspired by the power of combining:
+
 - [Just](https://just.systems) - Command runner
-- [Claude](https://claude.ai) - AI assistant
 - [Conventional Commits](https://www.conventionalcommits.org) - Commit standards

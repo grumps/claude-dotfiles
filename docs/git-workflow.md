@@ -25,6 +25,7 @@ git rebase -i $(git merge-base HEAD main)
 ```
 
 **Squashing Guidelines:**
+
 - **Prefer a single commit** for small features/fixes
 - **Use multiple commits** only when they represent discrete, working changes:
   - Each commit should be a complete, working change
@@ -33,6 +34,7 @@ git rebase -i $(git merge-base HEAD main)
   - Example: "add database schema" + "add API endpoints" + "add frontend UI"
 
 **During Interactive Rebase:**
+
 - Keep (`pick`) the first commit
 - Squash (`squash` or `s`) subsequent commits into logical groups
 - Edit commit messages to follow [Conventional Commits](../commands/commit.md)
@@ -89,6 +91,7 @@ You can use the provided script to automate this workflow:
 ```
 
 This script will:
+
 1. Prompt you to squash commits interactively
 2. Pull the latest main branch
 3. Rebase your feature branch onto main
@@ -99,6 +102,7 @@ This script will:
 **When Claude is asked to create a PR or finish a feature branch, Claude MUST:**
 
 1. **Always rebase and squash first:**
+
    ```bash
    git rebase -i $(git merge-base HEAD main)
    ```
@@ -108,6 +112,7 @@ This script will:
    - Each remaining commit must be complete and working
 
 3. **Pull and rebase onto main:**
+
    ```bash
    git fetch origin main
    git pull origin main --rebase
@@ -115,11 +120,13 @@ This script will:
    ```
 
 4. **Force push with lease:**
+
    ```bash
    git push origin BRANCH_NAME --force-with-lease
    ```
 
 5. **Then create PR:**
+
    ```bash
    gh pr create --title "..." --body "..."
    ```
@@ -151,7 +158,8 @@ This script will:
 ### Example: Bad vs Good History
 
 **Bad (without squash):**
-```
+
+```text
 * fix typo in variable name
 * forgot to commit test file
 * update based on review feedback
@@ -160,12 +168,14 @@ This script will:
 ```
 
 **Good (with squash):**
-```
+
+```text
 * feat(auth): add user authentication with OAuth 2.0
 ```
 
 Or with discrete commits:
-```
+
+```text
 * feat(auth): add OAuth 2.0 frontend integration
 * feat(auth): add OAuth 2.0 API endpoints
 * feat(auth): add OAuth 2.0 database schema
