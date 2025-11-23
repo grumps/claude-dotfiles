@@ -31,10 +31,15 @@ if [ -f ".git/hooks/prepare-commit-msg" ]; then
 fi
 
 # Remove symlinks
-echo "🔗 Removing skill symlinks..."
+echo "🔗 Removing symlinks..."
 if [ -L "$CLAUDE_DIR/skills/shared" ]; then
   rm "$CLAUDE_DIR/skills/shared"
   echo "✅ Removed skills symlink"
+fi
+
+if [ -L "scripts" ]; then
+  rm scripts
+  echo "✅ Removed scripts symlink"
 fi
 
 # Ask before removing justfile (or auto-remove with --force)

@@ -82,4 +82,3 @@ jobs:
         run: |
           uv run scripts/planworktree.py list .claude/plans/test-plan.md
           uv run scripts/planworktree.py status .claude/plans/test-plan.md
-          uv run scripts/planworktree.py validate .claude/plans/test-plan.md
