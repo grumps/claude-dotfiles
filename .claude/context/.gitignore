@@ -1,0 +1,7 @@
+# Ignore cache directory for cloned repositories
+.cache/
+
+# Ignore all ingested repositories (except manifest)
+*
+!.gitignore
+!manifest.json

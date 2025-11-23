@@ -81,9 +81,25 @@ class FeedbackParser:
     # Severity levels
     SEVERITIES = ['CRITICAL', 'MAJOR', 'MINOR', 'NIT']
 
-    def __init__(self, repo_path: Path = Path('.')):
+    # Default paths to ignore (documentation examples)
+    DEFAULT_IGNORE_PATHS = [
+        'commands/',
+        'examples/',
+        '.claude/commands/',
+        'docs/examples/',
+    ]
+
+    def __init__(self, repo_path: Path = Path('.'), ignore_paths: Optional[List[str]] = None):
         self.repo_path = repo_path
         self.feedback_blocks: List[FeedbackBlock] = []
+        self.ignore_paths = ignore_paths if ignore_paths is not None else self.DEFAULT_IGNORE_PATHS
+
+    def should_ignore_file(self, file_path: str) -> bool:
+        """Check if file should be ignored based on ignore paths."""
+        for ignore_path in self.ignore_paths:
+            if file_path.startswith(ignore_path):
+                return True
+        return False
 
     def find_files_with_feedback(self) -> List[str]:
         """Use git grep to find all files containing feedback."""
@@ -96,7 +112,11 @@ class FeedbackParser:
                 check=False,
             )
             if result.returncode == 0:
-                return [line.strip() for line in result.stdout.strip().split('\n') if line.strip()]
+                all_files = [
+                    line.strip() for line in result.stdout.strip().split('\n') if line.strip()
+                ]
+                # Filter out ignored paths
+                return [f for f in all_files if not self.should_ignore_file(f)]
             return []
         except subprocess.CalledProcessError:
             return []
@@ -384,6 +404,13 @@ def main() -> None:
         epilog=__doc__,
     )
 
+    # Global arguments
+    parser.add_argument(
+        '--ignore-paths',
+        nargs='*',
+        help='Paths to ignore (default: commands/, examples/, .claude/commands/, docs/examples/)',
+    )
+
     subparsers = parser.add_subparsers(dest='command', help='Command to run')
 
     # List command
@@ -424,8 +451,9 @@ def main() -> None:
         parser.print_help()
         sys.exit(1)
 
-    # Initialize parser
-    fb_parser = FeedbackParser()
+    # Initialize parser with ignore paths
+    ignore_paths = args.ignore_paths if args.ignore_paths is not None else None
+    fb_parser = FeedbackParser(ignore_paths=ignore_paths)
     fb_parser.parse_repository()
 
     # Execute command

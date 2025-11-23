@@ -1,0 +1,103 @@
+{
+  "version": 1,
+  "description": "Security and quality filters for third-party repository ingestion",
+  "global_filters": {
+    "agent_tools": {
+      "enabled": true,
+      "description": "Agent and AI tooling configurations",
+      "patterns": [
+        ".claude/**",
+        ".cursor/**",
+        ".aider/**",
+        ".continue/**",
+        ".copilot/**",
+        ".github/copilot-instructions.md",
+        ".ai/**",
+        "**/.ai/**",
+        "**/ai-context.md"
+      ]
+    },
+    "credentials": {
+      "enabled": true,
+      "description": "Credentials and secrets",
+      "patterns": [
+        ".env",
+        ".env.*",
+        "**/*.pem",
+        "**/*.key",
+        "**/*.pfx",
+        "**/credentials.json",
+        "**/secrets.yaml",
+        "**/secrets.json",
+        "**/*-secret.yaml",
+        "**/token",
+        "**/.aws/**",
+        "**/.ssh/**",
+        "**/.docker/config.json"
+      ]
+    },
+    "symlinks": {
+      "enabled": true,
+      "description": "Symlinks (security risk if pointing outside repo)",
+      "check_symlinks": true
+    },
+    "build_artifacts": {
+      "enabled": true,
+      "description": "Build artifacts and dependencies",
+      "patterns": [
+        "node_modules/**",
+        "vendor/**",
+        "__pycache__/**",
+        "*.pyc",
+        ".pytest_cache/**",
+        ".mypy_cache/**",
+        "dist/**",
+        "build/**",
+        "*.egg-info/**",
+        "target/**",
+        ".gradle/**",
+        ".terraform/**",
+        "*.tfstate",
+        "*.tfstate.backup"
+      ]
+    },
+    "test_fixtures": {
+      "enabled": true,
+      "description": "Test fixtures and mock data (often large, not useful for context)",
+      "patterns": [
+        "**/fixtures/**/*.json",
+        "**/fixtures/**/*.xml",
+        "**/fixtures/**/*.csv",
+        "**/testdata/**/*.bin",
+        "**/mocks/**/*.json"
+      ]
+    },
+    "vcs_and_ide": {
+      "enabled": true,
+      "description": "Version control and IDE files",
+      "patterns": [
+        ".git/**",
+        ".svn/**",
+        ".hg/**",
+        ".idea/**",
+        ".vscode/**",
+        "*.swp",
+        "*.swo",
+        "*~"
+      ]
+    },
+    "large_binaries": {
+      "enabled": true,
+      "description": "Large binary files (>1MB)",
+      "max_file_size_mb": 1
+    }
+  },
+  "allowlist": [
+    "**/README.md",
+    "**/USAGE.md",
+    "**/EXAMPLES.md",
+    "**/docs/**/*.md",
+    "**/LICENSE",
+    "**/NOTICE"
+  ]
+}

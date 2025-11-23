@@ -1,8 +1,23 @@
 ---
 description: Review, respond to, and resolve inline feedback in code and markdown files
+allowed_tools:  Bash(uv run scripts/feedback_parser.py:*),
 ---
 
+# Context
+
+!uv run scripts/feedback_parser.py report --detailed
+
 You are helping review and manage inline feedback comments that were added using `/feedback-add`.
+
+The feedback parser output above contains all structured feedback data including:
+
+- Counts and categorization of all feedback items
+- Files with feedback
+- Status breakdown (open, responded, resolved)
+- Severity levels (CRITICAL, MAJOR, MINOR)
+- Full feedback content with line numbers
+
+Use this injected context to analyze and present feedback without manual searching.
 
 ## When to Use
 
@@ -53,32 +68,24 @@ Feedback can be in three states:
 
 ## Process
 
-### 1. Find All Feedback
+### 1. Analyze the Automatically Injected Feedback Data
 
-Search for feedback comments across the codebase:
+The feedback parser output has been automatically injected into your context (see `# Context` section above). The structured feedback data is immediately available. Use it to:
 
-```bash
-# Find all feedback comments
-git grep -n "FEEDBACK" | head -50
+- Count total feedback items
+- Identify which files have feedback
+- Group by status (open, responded, resolved)
+- Group by severity (CRITICAL, MAJOR, MINOR)
+- Extract full content and metadata for each feedback item
 
-# Or use Grep tool to find in specific paths
-```
+### 2. Categorize and Prioritize
 
-Common patterns to search:
+Organize feedback by priority:
 
-- `FEEDBACK(@` - All feedback with attribution
-- `# FEEDBACK` - Python/Shell/YAML feedback
-- `// FEEDBACK` - JavaScript/C/Go feedback
-- `<!-- FEEDBACK` - HTML/Markdown feedback
-
-### 2. Categorize Feedback
-
-Group feedback by:
-
-- **File**: Which files have feedback
-- **Severity**: CRITICAL, MAJOR, MINOR, NIT
-- **Status**: Open, Responded, Resolved
-- **Author**: Who left the feedback
+- **CRITICAL/MAJOR + Open**: Highest priority - needs immediate attention
+- **MINOR + Open**: Medium priority - address in this session
+- **Responded**: Review responses, may need resolution
+- **Resolved**: Can be ignored or cleaned up
 
 ### 3. Present Summary
 

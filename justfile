@@ -7,6 +7,9 @@ import? 'justfiles/_base.just'
 # Import CI/CD recipes
 import? 'justfiles/ci.just'
 
+# Import context management recipes
+import? 'justfiles/context.just'
+
 # === Required Recipes (for base protocol) ===
 
 # Run all linters

@@ -548,8 +548,6 @@ A: No. Hooks run asynchronously and don't block Claude Code's execution.
 - [Claude Code Hooks Guide](https://docs.claude.com/en/docs/claude-code/hooks-guide)
 - [Claude Code Hooks Reference](https://docs.claude.com/en/docs/claude-code/hooks)
 - [freedesktop Notifications Spec](https://specifications.freedesktop.org/notification/latest-single/)
-- [notify-send man page](https://manpages.debian.org/stable/libnotify-bin/notify-send.1.en.html)
-- [SwayNotificationCenter](https://github.com/ErikReider/SwayNotificationCenter)
 
 ## Contributing
 
