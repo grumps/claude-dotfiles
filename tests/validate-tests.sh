@@ -55,9 +55,9 @@ echo ""
 
 # Check if Docker/Podman available
 echo "✅ Checking container runtime..."
-if command -v docker &> /dev/null; then
+if command -v docker &>/dev/null; then
   echo "  ✓ Docker available - can run 'just test-install' locally"
-elif command -v podman &> /dev/null; then
+elif command -v podman &>/dev/null; then
   echo "  ✓ Podman available - can run 'just test-install' locally"
 else
   echo "  ⚠ Docker/Podman not available"

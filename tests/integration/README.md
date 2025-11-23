@@ -5,7 +5,9 @@ This directory contains BATS (Bash Automated Testing System) integration tests f
 ## Test Files
 
 ### test-install.bats (22 test cases)
+
 Tests the `install.sh` script functionality:
+
 - **Justfile Tests** (3 tests)
   - Justfile creation
   - Base recipe imports
@@ -28,7 +30,9 @@ Tests the `install.sh` script functionality:
   - Plan recipes available
 
 ### test-uninstall.bats (6 test cases)
+
 Tests the `uninstall.sh` script functionality:
+
 - Git hooks removal (2 tests)
 - File removal (2 tests)
 - Cleanup verification (2 tests)
@@ -36,12 +40,14 @@ Tests the `uninstall.sh` script functionality:
 ## Running Tests Locally
 
 ### Using Just (Recommended)
+
 ```bash
 # Run integration tests in Docker container
 just test-install
 ```
 
 This will:
+
 1. Start an Arch Linux container
 2. Install dependencies (git, bats, just)
 3. Create a test repository
@@ -51,6 +57,7 @@ This will:
 7. Verify cleanup
 
 ### Manual Testing with Docker
+
 ```bash
 docker run --rm -v "$(pwd):/workspace" -w /workspace archlinux:latest /bin/bash -c '
   pacman -Sy --noconfirm git bats just base-devel
@@ -65,6 +72,7 @@ docker run --rm -v "$(pwd):/workspace" -w /workspace archlinux:latest /bin/bash 
 ```
 
 ### Manual Testing with Podman
+
 Replace `docker` with `podman` in the above command.
 
 ## CI/CD Integration
@@ -80,6 +88,7 @@ These tests are automatically run in GitHub Actions via `.github/workflows/integ
 ## Test Coverage
 
 ### Covered Scenarios
+
 ✅ Fresh installation in clean repository
 ✅ Justfile creation and imports
 ✅ Directory structure creation
@@ -91,6 +100,7 @@ These tests are automatically run in GitHub Actions via `.github/workflows/integ
 ✅ Cleanup verification
 
 ### Not Yet Covered (Future Work)
+
 - Global installation mode (`install.sh --global`)
 - Notification hooks installation
 - Edge cases: Existing justfile, partial installations
@@ -100,6 +110,7 @@ These tests are automatically run in GitHub Actions via `.github/workflows/integ
 ## Writing New Tests
 
 BATS test syntax:
+
 ```bash
 @test "test description" {
   # Test code here
@@ -110,6 +121,7 @@ BATS test syntax:
 ```
 
 Each test should:
+
 1. Be independent (can run in any order)
 2. Test one specific behavior
 3. Have a clear, descriptive name
@@ -124,6 +136,6 @@ Each test should:
 
 ## References
 
-- BATS Documentation: https://github.com/bats-core/bats-core
+- BATS Documentation: <https://github.com/bats-core/bats-core>
 - GitHub Actions Integration: `.github/workflows/integration-tests.yml`
 - Just Recipe: `justfiles/ci.just` (test-install recipe)
