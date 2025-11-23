@@ -1,0 +1,132 @@
+# Helix Editor Snippets for Inline Code Feedback
+#
+# Installation:
+# 1. Copy this file to: ~/.config/helix/snippets/feedback.toml
+# 2. Or add these snippets to your language-specific snippet files
+# 3. Use: Type trigger text and press Tab/Ctrl+Space
+
+# Python/Shell/Ruby feedback
+[[python]]
+trigger = "fb"
+description = "Feedback block comment"
+body = """
+# FEEDBACK(@${1:username}, ${2:2025-11-23}):
+# ${3:Your feedback here}
+# /FEEDBACK
+$0
+"""
+
+[[python]]
+trigger = "fbr"
+description = "Response to feedback"
+body = """
+# RESPONSE(@${1:username}, ${2:2025-11-23}):
+# ${3:Your response here}
+# /RESPONSE
+$0
+"""
+
+[[python]]
+trigger = "fbs"
+description = "Resolve feedback"
+body = """
+# RESOLVED(@${1:username}, ${2:2025-11-23}):
+# ${3:Resolution explanation}
+# /RESOLVED
+$0
+"""
+
+# JavaScript/TypeScript/C/C++/Go/Java/Rust feedback
+[[javascript]]
+trigger = "fb"
+description = "Feedback block comment"
+body = """
+// FEEDBACK(@${1:username}, ${2:2025-11-23}):
+// ${3:Your feedback here}
+// /FEEDBACK
+$0
+"""
+
+[[javascript]]
+trigger = "fbr"
+description = "Response to feedback"
+body = """
+// RESPONSE(@${1:username}, ${2:2025-11-23}):
+// ${3:Your response here}
+// /RESPONSE
+$0
+"""
+
+[[javascript]]
+trigger = "fbs"
+description = "Resolve feedback"
+body = """
+// RESOLVED(@${1:username}, ${2:2025-11-23}):
+// ${3:Resolution explanation}
+// /RESOLVED
+$0
+"""
+
+# Markdown/HTML feedback
+[[markdown]]
+trigger = "fb"
+description = "Feedback block comment"
+body = """
+<!-- FEEDBACK(@${1:username}, ${2:2025-11-23}):
+${3:Your feedback here}
+/FEEDBACK -->
+$0
+"""
+
+[[markdown]]
+trigger = "fbr"
+description = "Response to feedback"
+body = """
+<!-- RESPONSE(@${1:username}, ${2:2025-11-23}):
+${3:Your response here}
+/RESPONSE -->
+$0
+"""
+
+[[markdown]]
+trigger = "fbs"
+description = "Resolve feedback"
+body = """
+<!-- RESOLVED(@${1:username}, ${2:2025-11-23}):
+${3:Resolution explanation}
+/RESOLVED -->
+$0
+"""
+
+# Simplified versions (no metadata)
+[[python]]
+trigger = "fbs"
+description = "Simple feedback (no metadata)"
+body = """
+# FEEDBACK:
+# ${1:Your feedback here}
+# /FEEDBACK
+$0
+"""
+
+[[javascript]]
+trigger = "fbs"
+description = "Simple feedback (no metadata)"
+body = """
+// FEEDBACK:
+// ${1:Your feedback here}
+// /FEEDBACK
+$0
+"""
+
+# Usage Instructions:
+#
+# In Helix, snippets work automatically when configured.
+# Type "fb" and press Tab to expand the feedback snippet.
+# Use Tab to move between placeholders (username, date, feedback text).
+#
+# Keybindings (add to ~/.config/helix/config.toml):
+# [keys.normal]
+# "space f b" = ":insert-output date '+# FEEDBACK(@username, %Y-%m-%d):\n# \n# /FEEDBACK'"
+#
+# Or create custom commands in config.toml for quick insertion.

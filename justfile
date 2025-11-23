@@ -10,12 +10,22 @@ import? 'justfiles/ci.just'
 # === Required Recipes (for base protocol) ===
 
 # Run all linters
-lint: lint-shell lint-python
+lint: lint-shell lint-python lint-markdown
 
-# Run tests (placeholder for now, will add integration tests later)
-test:
-  @echo "🧪 No tests defined yet"
-  @echo "✅ Tests passed"
+# Run tests (unit tests + integration tests)
+test: test-unit test-integration
+
+# Run unit tests with pytest
+test-unit:
+  @echo "🧪 Running unit tests..."
+  uv run --with pytest --with pytest-cov pytest tests/unit -v --tb=short
+  @echo "✅ Unit tests passed"
+
+# Run integration tests
+test-integration:
+  @echo "🧪 Running integration tests..."
+  @tests/validate-tests.sh
+  @echo "✅ Integration tests passed"
 
 # === Custom Recipes ===
 

@@ -20,9 +20,10 @@ This repository provides:
 
 1. You define `lint` and `test` recipes in your project's `justfile`
 2. Claude's slash commands call standardized Just recipes
-3. Git hooks run `just validate` before commits
-4. Desktop notifications alert you when Claude awaits input
-5. Everything works together seamlessly
+3. Claude Code hooks automatically run `just lint` and `just test` after code changes
+4. Git hooks run `just validate` before commits
+5. Desktop notifications alert you when Claude awaits input
+6. Everything works together seamlessly
 
 ```mermaid
 sequenceDiagram
@@ -83,6 +84,7 @@ This creates:
 
 - `justfile` - Imports shared recipes from `~/.claude-dotfiles/justfiles/`
 - `.claude/` directory in your project (for plans and local customization)
+- `.claude/settings.json` - Claude Code hooks that run `just lint` and `just test` automatically
 - Git hooks that run `just validate` before commits
 - Symlinks `~/.claude-dotfiles/commands/` → `~/.claude/commands/` (global Claude Code integration)
 
@@ -167,6 +169,56 @@ Structured templates for consistent outputs:
 - `commit.md` - Commit message format
 
 Customize in `.claude/prompts/` for your team.
+
+### Claude Code Hooks
+
+Automated quality checks run automatically when Claude makes code changes:
+
+**Configuration** (`.claude/settings.json`):
+
+```json
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd \"$CLAUDE_PROJECT_DIR\" && just lint test",
+            "timeout": 120
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+**How it works:**
+
+- Automatically runs `just lint test` after Edit/Write operations
+- Provides immediate feedback on code quality
+- Configurable timeout (default: 120 seconds)
+- Can be disabled by editing or removing `.claude/settings.json`
+
+**Customization:**
+
+```bash
+# Edit hooks configuration
+vim .claude/settings.json
+
+# Increase timeout for slow tests
+# Change "timeout": 120 to "timeout": 300
+
+# Run only linting (skip tests)
+# Change command to: "cd \"$CLAUDE_PROJECT_DIR\" && just lint"
+
+# Disable hooks entirely
+# Remove the hooks section or delete settings.json
+```
+
+See `examples/settings.json` for a complete example with permissions configuration.
 
 ### Git Hooks
 

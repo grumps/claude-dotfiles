@@ -8,6 +8,7 @@ lint-shell:
   echo "🔍 Running ShellCheck..."
   find . -type f \( -name "*.sh" -o -path "./hooks/*" -o -path "./scripts/*" \) \
     ! -path "./.git/*" \
+    ! -path "*/__pycache__/*" \
     ! -name "*.py" \
     -exec shellcheck --severity=warning {} +
   echo "✅ ShellCheck passed"
@@ -15,6 +16,7 @@ lint-shell:
   echo "🔍 Checking shell formatting..."
   find . -type f \( -name "*.sh" -o -path "./hooks/*" -o -path "./scripts/*" \) \
     ! -path "./.git/*" \
+    ! -path "*/__pycache__/*" \
     ! -name "*.py" \
     -exec shfmt -d -i 2 -ci -bn {} +
   echo "✅ Shell formatting check passed"
