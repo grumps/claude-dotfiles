@@ -172,7 +172,130 @@ fi
 # Create .gitkeep for plans directory
 touch "$CLAUDE_DIR/plans/.gitkeep"
 
-# 7. Create context file template
+# 7. Create/update settings.json with hooks configuration
+if [ "$GLOBAL_INSTALL" = true ]; then
+  # Global install: Update ~/.claude/settings.json
+  GLOBAL_SETTINGS_FILE="${CLAUDE_DIR}/settings.json"
+
+  # Create empty settings if it doesn't exist
+  if [ ! -f "$GLOBAL_SETTINGS_FILE" ]; then
+    echo '{}' >"$GLOBAL_SETTINGS_FILE"
+  fi
+
+  # Check if jq is available
+  if command -v jq &>/dev/null; then
+    # Backup existing settings
+    BACKUP_FILE="${GLOBAL_SETTINGS_FILE}.backup.$(date +%Y%m%d_%H%M%S)"
+    cp "$GLOBAL_SETTINGS_FILE" "$BACKUP_FILE"
+    echo "✅ Backed up global settings to: $BACKUP_FILE"
+
+    # Create hook configuration
+    HOOK_CONFIG=$(jq -n '{
+      "hooks": {
+        "PostToolUse": [
+          {
+            "matcher": "Edit|Write",
+            "hooks": [
+              {
+                "type": "command",
+                "command": "just lint test",
+                "timeout": 120
+              }
+            ]
+          }
+        ]
+      }
+    }')
+
+    # Merge with existing settings (deep merge for hooks)
+    # Strategy: upsert PostToolUse hook by matcher, preserve all other hooks
+    # Example: If existing has PostToolUse[Bash, Edit|Write] and new has PostToolUse[Edit|Write],
+    # result will be PostToolUse[Bash, Edit|Write(updated)]
+    TMP_FILE="${GLOBAL_SETTINGS_FILE}.tmp"
+    if ! jq -s '
+      .[0] as $existing |
+      .[1] as $new |
+      # Merge top-level settings
+      $existing * $new |
+      # Deep merge hooks
+      .hooks = (
+        ($existing.hooks // {}) as $eh |
+        ($new.hooks // {}) as $nh |
+        # Process each hook type
+        $eh |
+        to_entries |
+        map(
+          .key as $hook_type |
+          if ($nh | has($hook_type)) then
+            # Hook type exists in new config - merge arrays by matcher
+            .value = (
+              .value as $existing_hooks |
+              $nh[$hook_type] as $new_hooks |
+              # Get matchers from new hooks
+              ($new_hooks | map(.matcher)) as $new_matchers |
+              # Keep existing hooks that dont match new matchers, then add all new hooks
+              ($existing_hooks | map(select(.matcher as $m | $new_matchers | index($m) | not))) + $new_hooks
+            )
+          else
+            # Hook type not in new config - keep as is
+            .
+          end
+        ) |
+        from_entries |
+        # Add hook types that only exist in new config
+        . + (
+          $nh |
+          to_entries |
+          map(select(.key as $k | $eh | has($k) | not)) |
+          from_entries
+        )
+      )
+    ' "$GLOBAL_SETTINGS_FILE" <(echo "$HOOK_CONFIG") >"$TMP_FILE"; then
+      echo "❌ Failed to merge settings with hooks configuration"
+      echo "   Your settings file may have invalid JSON syntax: $GLOBAL_SETTINGS_FILE"
+      echo "   A backup was created at: $BACKUP_FILE"
+      echo "   You can restore it with: cp \"$BACKUP_FILE\" \"$GLOBAL_SETTINGS_FILE\""
+      exit 1
+    fi
+    mv "$TMP_FILE" "$GLOBAL_SETTINGS_FILE"
+
+    echo "✅ Updated global settings with hooks"
+    echo "   - Hooks will run 'just lint test' after Edit/Write operations"
+    echo "   - Settings file: $GLOBAL_SETTINGS_FILE"
+  else
+    echo "⚠️  jq not found - skipping global hooks configuration"
+    echo "   Install jq and re-run to configure hooks automatically"
+  fi
+else
+  # Local install: Create .claude/settings.json
+  if [ ! -f "$CLAUDE_DIR/settings.json" ]; then
+    cat >"$CLAUDE_DIR/settings.json" <<'EOF'
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd \"$CLAUDE_PROJECT_DIR\" && just lint test",
+            "timeout": 120
+          }
+        ]
+      }
+    ]
+  }
+}
+EOF
+    echo "✅ Created settings.json with hooks"
+    echo "   - Hooks will run 'just lint test' after Edit/Write operations"
+    echo "   - Customize timeout or disable hooks by editing .claude/settings.json"
+  else
+    echo "⏭️  settings.json already exists"
+  fi
+fi
+
+# 8. Create context file template
 if [ ! -f "$CLAUDE_DIR/context.yaml" ]; then
   cat >"$CLAUDE_DIR/context.yaml" <<'EOF'
 # Repository context for Claude
@@ -209,7 +332,7 @@ else
   echo "⏭️  context.yaml already exists"
 fi
 
-# 8. Optional: Notification hooks setup (Linux only, interactive mode only)
+# 9. Optional: Notification hooks setup (Linux only, interactive mode only)
 if [ "$(uname)" = "Linux" ] && [ -t 0 ] && [ -z "${CI:-}" ]; then
   echo ""
   read -p "🔔 Would you like to set up desktop notifications for Claude? (y/N) " -n 1 -r
@@ -233,7 +356,19 @@ elif [ "$(uname)" = "Linux" ]; then
   echo "   $DOTFILES_DIR/scripts/install-notification-hooks.sh"
 fi
 
-# 9. Summary
+# 9b. Note about hooks configuration
+echo ""
+echo "📝 Note about Claude Code hooks:"
+if [ "$GLOBAL_INSTALL" = true ]; then
+  echo "   Global hooks are configured in: ~/.claude/settings.json"
+  echo "   Use the notification install script above for additional hooks"
+else
+  echo "   Project hooks are configured in: .claude/settings.json"
+  echo "   These will automatically run 'just lint' and 'just test' after code changes"
+fi
+echo ""
+
+# 10. Summary
 echo ""
 echo "✨ Installation complete!"
 echo ""
@@ -276,16 +411,21 @@ else
   echo "4. Edit context file:"
   echo "   - Update .claude/context.yaml with your project details"
   echo ""
-  echo "5. Test the setup:"
+  echo "5. Review Claude Code hooks:"
+  echo "   - Hooks are configured in .claude/settings.json"
+  echo "   - Currently runs 'just lint' and 'just test' after Edit/Write"
+  echo "   - Adjust timeout or disable if needed"
+  echo ""
+  echo "6. Test the setup:"
   echo "   just --list          # See available recipes"
   echo "   just validate        # Test validation (will fail until lint/test implemented)"
   echo "   /plan <feature>      # Try a slash command"
   echo ""
-  echo "6. Enable auto-commit messages (optional):"
+  echo "7. Enable auto-commit messages (optional):"
   echo "   chmod +x .git/hooks/prepare-commit-msg"
   echo ""
   if [ "$(uname)" = "Linux" ]; then
-    echo "7. Set up desktop notifications (optional):"
+    echo "8. Set up desktop notifications (optional):"
     echo "   $DOTFILES_DIR/scripts/install-notification-hooks.sh"
     echo ""
   fi
