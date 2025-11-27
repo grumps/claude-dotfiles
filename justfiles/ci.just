@@ -6,19 +6,11 @@ lint-shell:
   #!/usr/bin/env bash
   set -euo pipefail
   echo "🔍 Running ShellCheck..."
-  find . -type f \( -name "*.sh" -o -path "./hooks/*" -o -path "./scripts/*" \) \
-    ! -path "./.git/*" \
-    ! -path "*/__pycache__/*" \
-    ! -name "*.py" \
-    -exec shellcheck --severity=warning {} +
+  shellcheck --severity=warning **/*.sh
   echo "✅ ShellCheck passed"
 
   echo "🔍 Checking shell formatting..."
-  find . -type f \( -name "*.sh" -o -path "./hooks/*" -o -path "./scripts/*" \) \
-    ! -path "./.git/*" \
-    ! -path "*/__pycache__/*" \
-    ! -name "*.py" \
-    -exec shfmt -d -i 2 -ci -bn {} +
+  shfmt -d -i 2 -ci -bn **/*.sh
   echo "✅ Shell formatting check passed"
 
 # Lint and type-check Python scripts

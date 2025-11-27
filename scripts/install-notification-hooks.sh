@@ -107,7 +107,7 @@ HOOK_CONFIG=$(jq -n \
     "hooks": {
       "Notification": [
         {
-          "matcher": "waiting for input|awaiting input",
+          "matcher": "*",
           "hooks": [
             {
               "type": "command",

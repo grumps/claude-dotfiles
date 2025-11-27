@@ -46,16 +46,6 @@ fmt-python:
 
 # Format shell scripts
 fmt-shell:
-  #!/usr/bin/env bash
-  set -euo pipefail
-  echo "🎨 Formatting shell scripts..."
-  find . -type f \( -name "*.sh" -o -path "./hooks/*" -o -path "./scripts/*" \) \
-    ! -path "./.git/*" \
-    ! -path "*/__pycache__/*" \
-    ! -name "*.py" \
-    ! -name "*.pyc" \
-    -exec shfmt -w -i 2 -ci -bn {} +
-  echo "✅ Shell scripts formatted"
-
-# Legacy alias for shell formatting
-format-shell: fmt-shell
+  @echo "🎨 Formatting shell scripts..."
+  shfmt -w -i 2 -ci -bn **/*.sh
+  @echo "✅ Shell scripts formatted"
