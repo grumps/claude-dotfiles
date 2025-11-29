@@ -2,136 +2,54 @@
 description: Review an implementation plan for completeness and feasibility
 ---
 
+# Review Implementation Plan
+
 You are reviewing implementation plans to ensure they are thorough, practical, and complete.
 
-## Review Checklist
+## Workflow
 
-### Completeness
+### 1. Read the Plan
 
-- [ ] Clear overview and objectives
-- [ ] All requirements listed (functional and non-functional)
-- [ ] Technical approach defined
-- [ ] Implementation steps are detailed
-- [ ] Testing strategy included
-- [ ] Deployment plan present
-- [ ] Risks identified with mitigations
+Thoroughly review the implementation plan file provided.
 
-### Clarity
+### 2. Apply Review Checklist
 
-- [ ] Steps are specific and actionable
-- [ ] Technical details are sufficient
-- [ ] Files to modify/create are listed
-- [ ] Dependencies are identified
-- [ ] Success criteria are clear
+Evaluate the plan against these dimensions:
 
-### Feasibility
+**Completeness**: Overview, requirements, technical approach, testing, deployment, risks
+**Clarity**: Specific steps, sufficient details, clear dependencies and success criteria
+**Feasibility**: Logical order, realistic scope, available resources
+**Technical Soundness**: Architecture, patterns, security, performance, error handling
+**Testing & Deployment**: Unit/integration tests, rollback plan, monitoring
 
-- [ ] Steps are in logical order
-- [ ] Dependencies are acknowledged
-- [ ] Timeline is realistic
-- [ ] Resources are available
-- [ ] Risks are reasonable
+### 3. Identify Issues
 
-### Technical Soundness
+**Critical**: Must address before implementation (missing requirements, technical flaws, security risks)
+**Suggestions**: Improvements and optimizations (better approaches, edge cases)
+**Questions**: Clarifications needed (unclear intent, decision points)
+**Missing**: Elements to add (monitoring, error handling, documentation)
 
-- [ ] Architecture makes sense
-- [ ] Follows existing patterns
-- [ ] Security considerations addressed
-- [ ] Performance implications considered
-- [ ] Error handling planned
-- [ ] Backwards compatibility addressed
+### 4. Generate Review
 
-### Testing & Deployment
+Use the template from `prompts/review-plan.md`.
 
-- [ ] Unit tests planned
-- [ ] Integration tests planned
-- [ ] Manual testing steps defined
-- [ ] Rollback plan exists
-- [ ] Monitoring strategy included
+Include:
 
-## Output Format
+- Status (APPROVED/NEEDS REVISION/BLOCKED)
+- Strengths (what's well done)
+- Critical issues with impact and suggestions
+- Improvement suggestions
+- Questions for clarification
+- Missing elements
+- Action items
 
-```text
-# Plan Review
-
-## Summary
-**Status**: [APPROVED ✅ / NEEDS REVISION ⚠️ / BLOCKED ❌]
-**Quick take**: [1-2 sentence summary of plan quality]
-
-## Strengths
-- [What's well done in the plan]
-- [Good architectural decisions]
-- [Thorough areas]
-
-## Critical Issues (must address before implementing)
-1. **[Issue title]**
-   - Problem: [What's missing or wrong]
-   - Impact: [Why this matters]
-   - Suggestion: [How to fix]
-
-## Suggestions (improvements)
-1. **[Suggestion title]**
-   - Current: [What plan says now]
-   - Suggestion: [How to improve]
-   - Benefit: [Why it's better]
-
-## Questions for Clarification
-- [ ] [Question that needs answering]
-- [ ] [Decision point needing resolution]
-
-## Missing Elements
-- [ ] [What should be added to the plan]
-- [ ] [Additional considerations]
-
-## Action Items
-- [ ] Address critical issue 1
-- [ ] Address critical issue 2
-- [ ] Answer clarification questions
-- [ ] Add missing elements
-```
-
-## What to Look For
-
-### In Technical Approach
-
-- Does it fit with existing architecture?
-- Are the right tools/frameworks chosen?
-- Is it overengineered or underengineered?
-- Are design patterns appropriate?
-
-### In Implementation Steps
-
-- Are steps granular enough?
-- Can each step be validated independently?
-- Are dependencies between steps clear?
-- Is there a logical progression?
-
-### In Testing Strategy
-
-- Is coverage adequate?
-- Are edge cases considered?
-- Is performance testing included if needed?
-- Are integration points tested?
-
-### In Deployment Plan
-
-- Are all environments considered?
-- Is rollback possible?
-- Are monitoring/alerts planned?
-- Is documentation updated?
-
-### In Risk Assessment
-
-- Are all major risks identified?
-- Are mitigations practical?
-- Is probability/impact realistic?
-- Are there hidden risks not mentioned?
-
-## Best Practices
+## Review Principles
 
 - Be constructive - offer solutions, not just criticism
 - Prioritize feedback - critical vs. nice-to-have
 - Ask questions when intent is unclear
 - Validate against project conventions
-- Consider the scope - is plan too ambitious or too narrow?
+- Consider scope - too ambitious or too narrow?
 - Check alignment with requirements
+
+See `prompts/review-plan.md` for the output template.

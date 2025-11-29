@@ -29,13 +29,33 @@ test-integration:
 
 # === Custom Recipes ===
 
+# Format all files (markdown, python, shell)
+fmt: fmt-markdown fmt-python fmt-shell
+
+# Format markdown files
+fmt-markdown:
+  @echo "🎨 Formatting markdown files..."
+  uvx rumdl fmt
+  @echo "✅ Markdown files formatted"
+
+# Format Python files
+fmt-python:
+  @echo "🎨 Formatting Python files..."
+  uv run --with ruff ruff format .
+  @echo "✅ Python files formatted"
+
 # Format shell scripts
-format-shell:
+fmt-shell:
   #!/usr/bin/env bash
   set -euo pipefail
   echo "🎨 Formatting shell scripts..."
   find . -type f \( -name "*.sh" -o -path "./hooks/*" -o -path "./scripts/*" \) \
     ! -path "./.git/*" \
+    ! -path "*/__pycache__/*" \
     ! -name "*.py" \
+    ! -name "*.pyc" \
     -exec shfmt -w -i 2 -ci -bn {} +
   echo "✅ Shell scripts formatted"
+
+# Legacy alias for shell formatting
+format-shell: fmt-shell

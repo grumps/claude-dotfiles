@@ -2,147 +2,64 @@
 description: Review staged code changes with automated checks
 ---
 
+# Code Review
+
 You are conducting thorough code reviews with focus on correctness, style, and maintainability.
 
-## Pre-Review Automated Checks
+## Workflow
 
-### 1. Run Linters
+### 1. Run Automated Checks
 
 ```bash
 just lint 2>&1 || true
-```
-
-Analyze linter output for style and quality issues (errors are captured, not fatal).
-
-### 2. Run Tests
-
-```bash
 just test 2>&1 || true
 ```
 
-Check if tests pass and review coverage (errors are captured, not fatal).
+Capture linter output and test results (non-fatal, used for analysis).
 
-### 3. Get Changes
+### 2. Get Staged Changes
 
 ```bash
 git diff --cached
 ```
 
-Review staged changes.
+Review what's being committed.
 
-## Review Checklist
+### 3. Apply Review Standards
 
-### Correctness
+Reference `skills/reviewing/SKILL.md` for:
 
-- Logic errors or bugs
-- Edge cases handled
-- Error handling appropriate
-- Null/nil checks where needed
-- Race conditions (for concurrent code)
+- Review checklist (correctness, quality, testing, performance, security, maintainability)
+- Language-specific checks (Go, Python, Kubernetes)
+- Best practices
 
-### Code Quality
+### 4. Conduct Review
 
-- Follows linter rules (already checked)
-- Clear variable/function names
-- Appropriate comments (why, not what)
-- No commented-out code
-- No debug statements left in
+Analyze the code using the checklist:
 
-### Testing
+- **Critical issues** - Must fix before merge (security, correctness)
+- **Suggestions** - Nice-to-haves (style, optimization)
+- **Positive notes** - What's done well
 
-- Adequate test coverage
-- Tests actually test the right things
-- Edge cases covered
-- Error cases tested
+### 5. Generate Review
 
-### Performance
+Use the template from `prompts/review-code.md`.
 
-- Obvious inefficiencies (N+1 queries, unnecessary loops)
-- Resource leaks (files, connections not closed)
-- Excessive memory allocation
+Include:
 
-### Security
+- Summary with status (APPROVE/NEEDS CHANGES/BLOCK)
+- Automated check results
+- Critical issues with file:line references
+- Suggestions for improvement
+- Positive notes
+- Action items
 
-- Input validation
-- SQL injection prevention
-- XSS prevention
-- Authentication/authorization checks
-- Secrets not hardcoded
+## Review Principles
 
-### Maintainability
-
-- Code is readable
-- Functions are focused (single responsibility)
-- Complexity is reasonable
-- Dependencies are justified
-
-## Language-Specific Checks
-
-### Go
-
-- Proper error handling (don't ignore errors)
-- Context passed to functions that need it
-- Defer for cleanup (close files/connections)
-- Use of sync primitives is correct
-- No goroutine leaks
-
-### Python
-
-- Type hints present
-- Exception handling appropriate
-- With statements for resources
-- List/dict comprehensions used appropriately
-- Async/await used correctly if applicable
-
-### Kubernetes Manifests
-
-- Resource limits defined
-- Liveness/readiness probes configured
-- Labels follow conventions
-- RBAC is least-privilege
-- Secrets not in plain text
-
-## Output Format
-
-Use the template from `.claude/prompts/review-code.md`:
-
-```text
-# Code Review
-
-## Summary
-**Status**: [APPROVE ✅ / NEEDS CHANGES ⚠️ / BLOCK ❌]
-**Quick take**: [1-2 sentence summary]
-
-## Automated Checks
-- **Lint**: [PASS/FAIL with count of issues]
-- **Tests**: [PASS/FAIL with coverage %]
-
-## Critical Issues (must fix before merge)
-1. **[Issue title]** (file:line)
-   - Problem: [What's wrong]
-   - Risk: [Why it matters]
-   - Fix: [How to fix, code example]
-
-## Suggestions (nice-to-haves)
-1. **[Suggestion title]**
-   - Current: [What it does now]
-   - Suggestion: [How to improve]
-   - Benefit: [Why it's better]
-
-## Positive Notes
-[What's done well - be specific and encouraging]
-
-## Action Items
-- [ ] Fix critical issue 1
-- [ ] Fix critical issue 2
-- [ ] Consider suggestion 1
-```
-
-## Best Practices
-
-- Start with positives when possible
 - Be specific with file/line references
 - Provide code examples for fixes
 - Explain WHY something is an issue
-- Distinguish between critical vs. nice-to-have
-- Consider the context (is this a quick fix or new feature?)
+- Distinguish critical vs. nice-to-have
+- Start with positives when possible
+
+See `skills/reviewing/SKILL.md` for detailed checklist and language-specific guidelines.

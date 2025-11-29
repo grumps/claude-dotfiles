@@ -55,6 +55,13 @@ import? '$DOTFILES_DIR/justfiles/plans.just'
 # === Required Recipes ===
 # The imported _base.just defines \`validate: lint test\`
 # You MUST implement lint and test, or validation will fail
+# You SHOULD implement fmt for auto-formatting (runs in hooks)
+
+# Placeholder fmt recipe - customize for your project
+fmt:
+  @echo "⚠️  No formatters configured yet"
+  @echo "   Add formatting commands for your project (gofmt, ruff format, etc.)"
+  @echo "✅ Formatting complete (no formatters configured)"
 
 # Placeholder lint recipe - customize for your project
 lint:
@@ -73,6 +80,10 @@ test:
 # Add your repository-specific recipes below
 
 # Example recipes (uncomment and customize):
+# fmt:
+#   gofmt -w .
+#   ruff format .
+#
 # lint:
 #   golangci-lint run ./...
 #   ruff check .
@@ -90,7 +101,7 @@ fi
 
 # 2. Create .claude directory structure
 echo "📁 Creating Claude directory..."
-mkdir -p "$CLAUDE_DIR"/{commands,prompts,plans}
+mkdir -p "$CLAUDE_DIR"/{commands,prompts,skills,plans}
 
 # 2a. Symlink scripts directory (local install only)
 if [ "$GLOBAL_INSTALL" = false ]; then
@@ -126,6 +137,21 @@ for template in "$DOTFILES_DIR/prompts"/*.md; do
     echo "✅ Linked $filename"
   else
     echo "⏭️  $filename already exists"
+  fi
+done
+
+# 4a. Symlink skills
+echo "🧠 Symlinking skills..."
+for skill_dir in "$DOTFILES_DIR/skills"/*/; do
+  if [ -d "$skill_dir" ]; then
+    skill_name=$(basename "$skill_dir")
+    target="$CLAUDE_DIR/skills/$skill_name"
+    if [ ! -e "$target" ]; then
+      ln -s "$skill_dir" "$target"
+      echo "✅ Linked $skill_name"
+    else
+      echo "⏭️  $skill_name already exists"
+    fi
   fi
 done
 
@@ -198,7 +224,7 @@ if [ "$GLOBAL_INSTALL" = true ]; then
             "hooks": [
               {
                 "type": "command",
-                "command": "just lint test",
+                "command": "just fmt lint test",
                 "timeout": 120
               }
             ]
@@ -260,7 +286,7 @@ if [ "$GLOBAL_INSTALL" = true ]; then
     mv "$TMP_FILE" "$GLOBAL_SETTINGS_FILE"
 
     echo "✅ Updated global settings with hooks"
-    echo "   - Hooks will run 'just lint test' after Edit/Write operations"
+    echo "   - Hooks will run 'just fmt lint test' after Edit/Write operations"
     echo "   - Settings file: $GLOBAL_SETTINGS_FILE"
   else
     echo "⚠️  jq not found - skipping global hooks configuration"
@@ -278,7 +304,7 @@ else
         "hooks": [
           {
             "type": "command",
-            "command": "cd \"$CLAUDE_PROJECT_DIR\" && just lint test",
+            "command": "cd \"$CLAUDE_PROJECT_DIR\" && just fmt lint test",
             "timeout": 120
           }
         ]
@@ -288,7 +314,7 @@ else
 }
 EOF
     echo "✅ Created settings.json with hooks"
-    echo "   - Hooks will run 'just lint test' after Edit/Write operations"
+    echo "   - Hooks will run 'just fmt lint test' after Edit/Write operations"
     echo "   - Customize timeout or disable hooks by editing .claude/settings.json"
   else
     echo "⏭️  settings.json already exists"
@@ -364,7 +390,7 @@ if [ "$GLOBAL_INSTALL" = true ]; then
   echo "   Use the notification install script above for additional hooks"
 else
   echo "   Project hooks are configured in: .claude/settings.json"
-  echo "   These will automatically run 'just lint' and 'just test' after code changes"
+  echo "   These will automatically run 'just fmt lint test' after code changes"
 fi
 echo ""
 
@@ -390,7 +416,8 @@ if [ "$GLOBAL_INSTALL" = true ]; then
 else
   echo "📚 Next steps:"
   echo ""
-  echo "1. Edit justfile to implement linting and testing:"
+  echo "1. Edit justfile to implement formatting, linting, and testing:"
+  echo "   - Uncomment and customize the fmt recipe"
   echo "   - Uncomment and customize the lint recipe"
   echo "   - Uncomment and customize the test recipe"
   echo "   - See examples/justfiles/ for language-specific recipe ideas"
@@ -413,7 +440,7 @@ else
   echo ""
   echo "5. Review Claude Code hooks:"
   echo "   - Hooks are configured in .claude/settings.json"
-  echo "   - Currently runs 'just lint' and 'just test' after Edit/Write"
+  echo "   - Currently runs 'just fmt lint test' after Edit/Write"
   echo "   - Adjust timeout or disable if needed"
   echo ""
   echo "6. Test the setup:"

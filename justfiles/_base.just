@@ -6,6 +6,9 @@ default:
 # Your justfile MUST define:
 #   lint - Run linters
 #   test - Run tests
+#
+# Your justfile SHOULD define:
+#   fmt - Auto-format code (runs before lint in hooks)
 
 # Validation entry point
 validate: lint test
