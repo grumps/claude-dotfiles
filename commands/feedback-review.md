@@ -1,11 +1,11 @@
 ---
 description: Review, respond to, and resolve inline feedback in code and markdown files
-allowed_tools:  Bash(uv run scripts/feedback_parser.py:*),
+allowed_tools:  Bash(uv run:*),
 ---
 
 # Context
 
-!uv run scripts/feedback_parser.py report --detailed
+!uv run "${HOME}/.claude/scripts/feedback_parser.py" report --detailed
 
 You are helping review and manage inline feedback comments that were added using `/feedback-add`.
 

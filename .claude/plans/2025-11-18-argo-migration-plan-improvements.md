@@ -185,15 +185,18 @@ TAG=v1.2.3 just release-notes  # Don't do this
 ## Outputs
 
 ### Exit Codes
+
 - `0` - Success
 - Non-zero - Failure (check stdout/stderr for details)
 
 ### Stdout/Stderr
+
 - Validation failures printed to stderr
 - Progress messages printed to stdout
 - Format: Emoji + message (e.g., `✅ Shell linting passed`)
 
 ### Artifacts
+
 Current tasks do NOT produce artifacts, but if added:
 
 | Task | Artifact | Path | Format |
@@ -356,9 +359,9 @@ env:
          value: lint-shell
    ```
 
-4. **Set up Argo Events** for GitHub webhooks
+1. **Set up Argo Events** for GitHub webhooks
 
-5. **Test in parallel** before switching
+2. **Test in parallel** before switching
 
 ### From Argo Workflows to Other CI
 
