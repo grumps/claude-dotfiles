@@ -103,14 +103,24 @@ fi
 echo "📁 Creating Claude directory..."
 mkdir -p "$CLAUDE_DIR"/{commands,prompts,skills,plans}
 
-# 2a. Symlink scripts directory (local install only)
+# 2a. Symlink scripts directory
 if [ "$GLOBAL_INSTALL" = false ]; then
+  # Local install: symlink to project root
   if [ ! -e "scripts" ]; then
     echo "🔗 Symlinking scripts directory..."
     ln -s "$DOTFILES_DIR/scripts" scripts
     echo "✅ Linked scripts directory"
   else
     echo "⏭️  scripts directory already exists"
+  fi
+else
+  # Global install: symlink to ~/.claude/scripts
+  if [ ! -e "$CLAUDE_DIR/scripts" ]; then
+    echo "🔗 Symlinking scripts directory..."
+    ln -s "$DOTFILES_DIR/scripts" "$CLAUDE_DIR/scripts"
+    echo "✅ Linked scripts directory to $CLAUDE_DIR/scripts"
+  else
+    echo "⏭️  scripts directory already exists at $CLAUDE_DIR/scripts"
   fi
 fi
 
@@ -216,7 +226,7 @@ if [ "$GLOBAL_INSTALL" = true ]; then
     echo "✅ Backed up global settings to: $BACKUP_FILE"
 
     # Create hook configuration
-    HOOK_CONFIG=$(jq -n '{
+    HOOK_CONFIG=$(jq -n --arg dotfiles "$DOTFILES_DIR" '{
       "hooks": {
         "PostToolUse": [
           {
@@ -224,7 +234,7 @@ if [ "$GLOBAL_INSTALL" = true ]; then
             "hooks": [
               {
                 "type": "command",
-                "command": "just fmt lint test",
+                "command": ($dotfiles + "/scripts/claude-hook-wrapper.sh just fmt lint test"),
                 "timeout": 120
               }
             ]
@@ -295,7 +305,7 @@ if [ "$GLOBAL_INSTALL" = true ]; then
 else
   # Local install: Create .claude/settings.json
   if [ ! -f "$CLAUDE_DIR/settings.json" ]; then
-    cat >"$CLAUDE_DIR/settings.json" <<'EOF'
+    cat >"$CLAUDE_DIR/settings.json" <<EOF
 {
   "hooks": {
     "PostToolUse": [
@@ -304,7 +314,7 @@ else
         "hooks": [
           {
             "type": "command",
-            "command": "cd \"$CLAUDE_PROJECT_DIR\" && just fmt lint test",
+            "command": "cd \"\$CLAUDE_PROJECT_DIR\" && ${DOTFILES_DIR}/scripts/claude-hook-wrapper.sh just fmt lint test",
             "timeout": 120
           }
         ]

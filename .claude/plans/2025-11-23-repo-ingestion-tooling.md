@@ -1298,6 +1298,7 @@ just ingest-repo <URL> <VERSION>
 ```
 
 This will:
+
 - Clone the repository to `.claude/context/.cache/`
 - Check out the specified version
 - Apply security filters (remove .env, credentials, agent files, symlinks, etc.)
