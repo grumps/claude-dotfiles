@@ -1298,6 +1298,7 @@ just ingest-repo <URL> <VERSION>
 ```
 
 This will:
+
 - Clone the repository to `.claude/context/.cache/`
 - Check out the specified version
 - Apply security filters (remove .env, credentials, agent files, symlinks, etc.)
@@ -1340,7 +1341,7 @@ Global filters are defined in `filters/ingestion-filters.json` (bundled with cla
 
 ## Examples
 
-**Example 1: Python library**
+### Example 1: Python library
 
 ```text
 User: "Add the click library to my context"
@@ -1356,7 +1357,7 @@ Claude: "✓ Ingested click @ 8.1.7
   You can now ask me how to use Click in your application!"
 ```
 
-**Example 2: Go library**
+### Example 2: Go library
 
 ```text
 User: "Ingest the cobra CLI library"

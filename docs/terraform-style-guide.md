@@ -497,7 +497,7 @@ resource "aws_instance" "web" {
 
 Include in module README.md:
 
-```markdown
+````markdown
 # VPC Module
 
 Creates a VPC with public and private subnets across multiple availability zones.
@@ -538,12 +538,7 @@ module "vpc" {
 | vpc_id | ID of the VPC |
 | public_subnet_ids | List of public subnet IDs |
 | private_subnet_ids | List of private subnet IDs |
-
-```text
-
-```text
----
-```
+````
 
 ## Security Best Practices
 

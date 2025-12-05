@@ -407,15 +407,19 @@ Add to `~/.config/claude-code/settings.json`:
 ## Customization Examples
 
 ### Silent Notifications
+
 [Example without sound]
 
 ### Custom Sound
+
 [Example with custom sound file]
 
 ### Different Timings
+
 [Examples with 5s, 15s, 30s expire times]
 
 ## Troubleshooting
+
 [Common issues and solutions]
 
 ```text
