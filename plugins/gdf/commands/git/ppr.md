@@ -1,8 +1,40 @@
 ---
 description: Prepare feature branch for PR with linear history workflow
+argument-hint: [base-branch]
 ---
 
-# Prepare Pull Request - Linear History Workflow
+# Prepare PR (ppr)
+
+> Quick command: `/gdf:ppr [base-branch]` or `/ppr [base-branch]`
+>
+> Prepares feature branch for pull request by ensuring linear history,
+> running tests, and creating PR with generated summary.
+
+## Quick Reference
+
+- **Usage**: `/ppr` or `/ppr main`
+- **Arguments**:
+  - `base-branch` (optional): Target branch for PR (defaults to main/master)
+- **Prerequisites**: Feature branch with commits
+- **Output**: Created pull request with summary and test plan
+
+## Error Handling
+
+- **Not on feature branch**: Shows error and current branch name
+- **No commits to PR**: Shows error about missing commits
+- **Rebase conflicts**: Guides through conflict resolution
+- **Force push fails**: Shows error and suggests checking remote permissions
+- **GH CLI not available**: Shows error about missing gh tool
+
+## Examples
+
+```bash
+# Use default base branch
+/ppr
+
+# Specify base branch
+/ppr develop
+```
 
 **CRITICAL: This repository requires a strict linear history workflow.**
 
@@ -153,7 +185,7 @@ This workflow ensures:
 - **Simple reverts**: Revert entire features with one command
 - **Linear timeline**: No merge commits cluttering history
 
-See [docs/git-workflow.md](../docs/git-workflow.md) for detailed explanation.
+See [docs/git-workflow.md](../../../../docs/git-workflow.md) for detailed explanation.
 
 ## Common Issues
 
@@ -176,6 +208,6 @@ See [docs/git-workflow.md](../docs/git-workflow.md) for detailed explanation.
 
 ## References
 
-- [Git Workflow Documentation](../docs/git-workflow.md)
+- [Git Workflow Documentation](../../../../docs/git-workflow.md)
 - [Commit Message Standards](commit.md)
-- [Contributing Guidelines](../CONTRIBUTING.md)
+- [Contributing Guidelines](../../../../CONTRIBUTING.md)

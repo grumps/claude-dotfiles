@@ -6,7 +6,7 @@
 respect-gitignore = true
 
 # Exclude patterns
-exclude = ["node_modules", ".git"]
+exclude = ["node_modules", ".git", "reference"]
 
 disable = [
   "MD013",  # Line length - allow long lines in documentation

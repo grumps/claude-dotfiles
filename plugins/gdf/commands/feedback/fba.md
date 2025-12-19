@@ -1,12 +1,31 @@
 ---
 description: Start inline feedback workflow with checkpoint commit
+argument-hint: (no arguments)
 ---
 
-You are helping set up an inline feedback workflow for code review without requiring remote VCS or PR systems.
+# Feedback Add (fba)
+
+> Quick command: `/gdf:fba` or `/fba`
+>
+> Starts inline feedback workflow by creating checkpoint commit and showing
+> files to review. You add feedback manually in your editor.
+
+## Quick Reference
+
+- **Usage**: `/fba`
+- **Purpose**: Create checkpoint before manual code review
+- **Output**: Shows changed files and feedback format examples
+- **Next Step**: Edit files to add feedback, then use `/fbr` to review
+
+## Error Handling
+
+- **No changes to commit**: Shows error message and exits
+- **Git not available**: Shows error about git requirement
+- **Already in feedback session**: Warns about existing checkpoint
 
 ## When to Use
 
-- User requests "/feedback-add" to start a feedback session
+- User requests "/fba" to start a feedback session
 - User wants to create a checkpoint before adding manual feedback
 - Need to identify which files to review
 
@@ -324,6 +343,6 @@ Summarize across all files:
 
 Guide user to:
 
-1. Use `/feedback-review` to see all feedback
+1. Use `/fbr` (or `/gdf:fbr`) to see all feedback
 2. Respond to or resolve feedback items
-3. Use `/feedback-clean` when done to remove all feedback
+3. Use `/fbc` (or `/gdf:fbc`) when done to remove all feedback

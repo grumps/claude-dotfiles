@@ -395,7 +395,6 @@ just test-install
 just release-notes v0.0.1
 ```
 
-
 ```text
 
 ## Maintainer Notes

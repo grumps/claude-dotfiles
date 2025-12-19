@@ -1,8 +1,27 @@
 ---
 description: Review staged code changes with automated checks
+argument-hint: (no arguments)
 ---
 
-# Code Review
+# Review Code (rvc)
+
+> Quick command: `/gdf:rvc` or `/rvc`
+>
+> Conducts thorough code review of staged changes with automated checks.
+
+## Quick Reference
+
+- **Usage**: `/rvc`
+- **Prerequisites**: Changes must be staged (`git add`)
+- **Output**: Code review with security, performance, and style checks
+
+## Error Handling
+
+- **No staged changes**: Shows error message and usage instructions
+- **Linters fail**: Reports failures and continues with review
+- **Not in git repository**: Shows error about git requirement
+
+## Code Review
 
 You are conducting thorough code reviews with focus on correctness, style, and maintainability.
 

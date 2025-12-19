@@ -1,8 +1,29 @@
 ---
 description: Create implementation plan for a feature
+argument-hint: [description]
 ---
 
-# Create Implementation Plan
+# Plan (pln)
+
+> Quick command: `/gdf:pln [description]` or `/pln [description]`
+>
+> Creates a structured implementation plan for software development tasks.
+
+## Quick Reference
+
+- **Usage**: `/pln create user authentication`
+- **Arguments**:
+  - `description`: Brief description of what to plan
+- **Output**: Structured plan in `.claude/plans/YYYY-MM-DD-description.md`
+- **Standards**: References `skills/planning/SKILL.md`
+
+## Error Handling
+
+- **Vague requirements**: Asks clarifying questions
+- **Plan directory missing**: Creates `.claude/plans/` directory
+- **Git not available**: Shows error about git requirement
+
+## Create Implementation Plan
 
 You are helping create implementation plans for software development tasks.
 

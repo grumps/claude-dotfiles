@@ -1,13 +1,35 @@
 ---
 description: Review, respond to, and resolve inline feedback in code and markdown files
-allowed_tools:  Bash(uv run:*),
+argument-hint: (no arguments)
+allowed-tools: Bash(uv run:*),
 ---
 
-# Context
+# Feedback Review (fbr)
+
+> Quick command: `/gdf:fbr` or `/fbr`
+>
+> Reviews all inline feedback added via `/fba`, showing status, severity,
+> and providing tools to respond and resolve feedback items.
+
+## Quick Reference
+
+- **Usage**: `/fbr`
+- **Purpose**: Review and manage inline feedback comments
+- **Output**: Structured report of all feedback with categorization
+- **Prerequisites**: Feedback added via `/fba` (or `/gdf:fba`)
+- **Next Step**: Respond to feedback, then use `/fbc` when resolved
+
+## Error Handling
+
+- **No feedback found**: Shows message that no feedback exists
+- **Parser script missing**: Shows error about missing feedback_parser.py
+- **Git not available**: Shows error about git requirement
+
+## Context
 
 !uv run "${HOME}/.claude/scripts/feedback_parser.py" report --detailed
 
-You are helping review and manage inline feedback comments that were added using `/feedback-add`.
+You are helping review and manage inline feedback comments that were added using `/fba`.
 
 The feedback parser output above contains all structured feedback data including:
 
@@ -21,7 +43,7 @@ Use this injected context to analyze and present feedback without manual searchi
 
 ## When to Use
 
-- User requests "/feedback-review"
+- User requests "/fbr"
 - User wants to see all pending feedback
 - User needs to respond to feedback comments
 - User wants to mark feedback as resolved
@@ -385,7 +407,7 @@ Files reviewed: 12
 3. **Test fixes**: Verify fixes work before resolving
 4. **Document decisions**: Explain why feedback accepted/rejected
 5. **Track progress**: Use resolved count to show progress
-6. **Clean up**: Use `/feedback-clean` when all resolved
+6. **Clean up**: Use `/fbc` (or `/gdf:fbc`) when all resolved
 
 ## Examples
 
@@ -431,5 +453,5 @@ def process_batch(items):
 User should:
 
 1. Commit any fixes made
-2. Use `/feedback-clean` if all feedback resolved
+2. Use `/fbc` (or `/gdf:fbc`) if all feedback resolved
 3. Or keep unresolved feedback for continued discussion

@@ -37,7 +37,7 @@ git rebase -i $(git merge-base HEAD main)
 
 - Keep (`pick`) the first commit
 - Squash (`squash` or `s`) subsequent commits into logical groups
-- Edit commit messages to follow [Conventional Commits](../commands/commit.md)
+- Edit commit messages to follow [Conventional Commits](https://www.conventionalcommits.org) (or use `/gdf:commit` for help)
 
 #### Step 2: Pull Latest Changes from Main
 
@@ -227,6 +227,6 @@ git rebase --abort
 
 ## References
 
-- [Conventional Commits](../commands/commit.md)
+- [Conventional Commits](https://www.conventionalcommits.org)
 - [Contributing Guidelines](../CONTRIBUTING.md)
 - [Git Rebase Documentation](https://git-scm.com/docs/git-rebase)

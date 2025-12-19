@@ -1,8 +1,28 @@
 ---
-description: Review an implementation plan for completeness and feasibility
+description: Review implementation plan for completeness and feasibility
+argument-hint: [plan-file]
 ---
 
-# Review Implementation Plan
+# Review Plan (rvp)
+
+> Quick command: `/gdf:rvp [plan-file]` or `/rvp [plan-file]`
+>
+> Reviews implementation plans to ensure they are thorough, practical, and complete.
+
+## Quick Reference
+
+- **Usage**: `/rvp .claude/plans/2025-12-14-feature.md`
+- **Arguments**:
+  - `plan-file` (optional): Path to plan file to review
+- **Output**: Review with status, issues, suggestions, and action items
+
+## Error Handling
+
+- **Plan file not found**: Shows error and lists available plans
+- **Invalid plan format**: Shows error about missing required sections
+- **No plans directory**: Shows error about missing `.claude/plans/`
+
+## Review Implementation Plan
 
 You are reviewing implementation plans to ensure they are thorough, practical, and complete.
 

@@ -1,8 +1,28 @@
 ---
 description: Get help with Just command runner and available recipes
+argument-hint: [recipe]
 ---
 
-# Just Command Runner Help
+# Just Help
+
+> Quick command: `/gdf:just-help [recipe]` or `/just-help [recipe]`
+>
+> Provides help for Just command runner and lists available recipes.
+
+## Quick Reference
+
+- **Usage**: `/just-help` or `/just-help test`
+- **Arguments**:
+  - `recipe` (optional): Specific recipe to get help for
+- **Purpose**: List available Just recipes or get help for specific recipe
+
+## Error Handling
+
+- **Just not available**: Shows error about missing just command
+- **Recipe not found**: Lists available recipes
+- **Justfile missing**: Shows error about missing justfile
+
+## Just Command Runner Help
 
 This project uses Just for task orchestration. All development tasks should go through Just recipes.
 

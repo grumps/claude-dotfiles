@@ -1,10 +1,27 @@
 ---
 description: Generate conventional commit message for staged changes
+argument-hint: (no arguments)
 ---
 
-# Generate Commit Message
+# Commit
 
-You are generating commit messages following Conventional Commits format.
+> Quick command: `/gdf:commit` or `/commit`
+>
+> Analyzes staged changes and generates a conventional commit message
+> following repository standards.
+
+## Quick Reference
+
+- **Usage**: `/commit`
+- **Prerequisites**: Changes must be staged (`git add`)
+- **Output**: Commit message following Conventional Commits format
+- **Standards**: References `skills/commits/SKILL.md`
+
+## Error Handling
+
+- **No staged changes**: Shows error message and usage instructions
+- **Not in git repository**: Shows error about git requirement
+- **Detached HEAD state**: Warns user about current git state
 
 ## Workflow
 
@@ -55,7 +72,7 @@ Structure:
 - Follows conventions in skills/commits/SKILL.md
 - Matches repository's commit style
 
-## Quick Reference
+## Commit Message Format
 
 **Types**: feat, fix, docs, style, refactor, perf, test, chore, ci
 

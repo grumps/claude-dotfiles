@@ -124,18 +124,36 @@ else
   fi
 fi
 
-# 3. Symlink slash commands
-echo "⚡ Symlinking slash commands..."
-for command in "$DOTFILES_DIR/commands"/*.md; do
-  filename=$(basename "$command")
-  target="$CLAUDE_DIR/commands/$filename"
-  if [ ! -e "$target" ]; then
-    ln -s "$command" "$target"
-    echo "✅ Linked $filename"
-  else
-    echo "⏭️  $filename already exists"
+# 3. Symlink gdf plugin
+echo "🔌 Installing gdf plugin..."
+
+# Create plugins directory if needed
+mkdir -p "$CLAUDE_DIR/plugins"
+
+# Check for conflicts with existing user commands
+echo "🔍 Checking for command conflicts..."
+CONFLICTS=""
+for cmd in fba fbr fbc ppr pln rvp rvc; do
+  if [ -f "$CLAUDE_DIR/commands/$cmd.md" ]; then
+    CONFLICTS="$CONFLICTS $cmd"
   fi
 done
+
+if [ -n "$CONFLICTS" ]; then
+  echo "⚠️  Warning: Found conflicting user commands:$CONFLICTS"
+  echo "   Plugin commands will take precedence over user commands with same names."
+  echo "   Consider renaming your user commands or using namespaced invocation (/gdf:cmd)."
+fi
+
+# Remove existing symlink if present
+if [ -L "$CLAUDE_DIR/plugins/gdf" ]; then
+  echo "🔄 Updating existing gdf plugin symlink..."
+  rm "$CLAUDE_DIR/plugins/gdf"
+fi
+
+# Symlink the individual plugin
+ln -s "$DOTFILES_DIR/plugins/gdf" "$CLAUDE_DIR/plugins/gdf"
+echo "✅ Installed gdf plugin"
 
 # 4. Symlink prompt templates
 echo "📋 Symlinking prompt templates..."

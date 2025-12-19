@@ -1,12 +1,32 @@
 ---
 description: Strip all inline feedback comments from code and markdown files
+argument-hint: (no arguments)
 ---
 
-You are helping remove inline feedback comments from files after the review process is complete.
+# Feedback Clean (fbc)
+
+> Quick command: `/gdf:fbc` or `/fbc`
+>
+> Removes resolved inline feedback comments from code and markdown files
+> after the review process is complete.
+
+## Quick Reference
+
+- **Usage**: `/fbc`
+- **Purpose**: Clean up feedback comments after resolution
+- **Output**: Summary of files cleaned and lines removed
+- **Prerequisites**: Feedback reviewed and resolved via `/fbr`
+- **Safety**: Offers options to clean only resolved or archive first
+
+## Error Handling
+
+- **No feedback found**: Shows message that no feedback exists
+- **Unresolved feedback exists**: Warns and offers options (clean resolved only, review first, clean all, cancel)
+- **Syntax errors after cleaning**: Reports errors and suggests rollback
 
 ## When to Use
 
-- User requests "/feedback-clean"
+- User requests "/fbc"
 - All feedback has been resolved
 - Ready to commit final changes
 - Need to clean up before deployment or PR
@@ -41,7 +61,7 @@ If unresolved feedback found, ask user:
   - docs/API.md:12 [MINOR] - Documentation
 
 Options:
-1. Review unresolved items first (/feedback-review)
+1. Review unresolved items first (/fbr)
 2. Clean only resolved feedback
 3. Clean all feedback (⚠️  will lose unresolved items)
 4. Cancel cleaning
@@ -348,10 +368,10 @@ Clean specific files only:
 
 ```bash
 # User specifies files
-/feedback-clean src/auth.py src/api.js
+/fbc src/auth.py src/api.js
 
 # Clean everything except specific files
-/feedback-clean --except docs/
+/fbc --except docs/
 ```
 
 ## Edge Cases
@@ -506,7 +526,7 @@ Next: Review changes with 'git diff'
 
 ## Tips
 
-- Run `/feedback-review` before `/feedback-clean`
+- Run `/fbr` (or `/gdf:fbr`) before `/fbc`
 - Create backup branch before bulk cleaning
 - Archive feedback for future reference
 - Clean regularly, don't let feedback accumulate

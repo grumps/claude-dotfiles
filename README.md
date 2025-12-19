@@ -121,13 +121,16 @@ just info          # Display repository information and status
 **Claude Code slash commands (available immediately):**
 
 ```text
-/plan <feature>        # Create implementation plan
-/review-code           # Review staged changes
-/review-plan <file>    # Review a plan file
-/commit                # Generate commit message
-/prepare-pr            # Prepare branch for PR with linear history
-/just-help             # Get help with Just
-/helm-render           # Work with Helm charts
+/gdf:pln <feature>     # Create implementation plan (or /pln)
+/gdf:rvc               # Review staged changes (or /rvc)
+/gdf:rvp <file>        # Review a plan file (or /rvp)
+/gdf:commit            # Generate commit message (or /commit)
+/gdf:ppr               # Prepare branch for PR with linear history (or /ppr)
+/gdf:just-help         # Get help with Just (or /just-help)
+/gdf:helm-render       # Work with Helm charts (or /helm-render)
+/gdf:fba               # Add inline feedback (or /fba)
+/gdf:fbr               # Review inline feedback (or /fbr)
+/gdf:fbc               # Clean inline feedback (or /fbc)
 ```
 
 ## Features
@@ -147,17 +150,20 @@ The `lint` and `test` recipes are **required** - you define what tools to run fo
 
 ### Slash Commands
 
-Built-in commands for Claude Code workflows:
+Built-in commands for Claude Code workflows (gdf plugin):
 
-- **/plan** - Create structured implementation plans
-- **/review-code** - Review staged changes with automated checks
-- **/review-plan** - Review implementation plans for completeness
-- **/commit** - Generate conventional commit messages
-- **/prepare-pr** - Prepare feature branch for PR with linear history workflow
-- **/just-help** - Get help with Just recipes and usage
-- **/helm-render** - Render and validate Helm charts with custom values
+- **/gdf:pln** (or **/pln**) - Create structured implementation plans
+- **/gdf:rvc** (or **/rvc**) - Review staged changes with automated checks
+- **/gdf:rvp** (or **/rvp**) - Review implementation plans for completeness
+- **/gdf:commit** (or **/commit**) - Generate conventional commit messages
+- **/gdf:ppr** (or **/ppr**) - Prepare feature branch for PR with linear history workflow
+- **/gdf:just-help** (or **/just-help**) - Get help with Just recipes and usage
+- **/gdf:helm-render** (or **/helm-render**) - Render and validate Helm charts with custom values
+- **/gdf:fba** (or **/fba**) - Add inline feedback to code for review
+- **/gdf:fbr** (or **/fbr**) - Review and respond to inline feedback
+- **/gdf:fbc** (or **/fbc**) - Clean all inline feedback from files
 
-Commands are immediately available after installation in `.claude/commands/`.
+Commands support dual invocation: use the namespaced format `/gdf:cmd` or the short form `/cmd`.
 
 ### Prompt Templates
 
@@ -303,12 +309,14 @@ See [docs/helm-guide.md](docs/helm-guide.md) for complete documentation.
 /helm-render
 ```
 
+Use the slash command to explore Helm charts interactively.
+
 ## Common Workflows
 
 ### Planning a Feature
 
 ```text
-In Claude: /plan add rate limiting to API
+In Claude: /pln add rate limiting to API
 ```
 
 Claude runs `just info` to understand your project, asks clarifying questions, then generates a structured plan saved to `.claude/plans/`.
@@ -320,7 +328,7 @@ git add .
 ```
 
 ```text
-In Claude: /review-code
+In Claude: /rvc
 ```
 
 Claude runs `just lint` and `just test`, reviews your `git diff`, and provides feedback on code quality, test coverage, and potential issues.
@@ -368,7 +376,7 @@ git push origin BRANCH --force-with-lease   # Force push
 **Via Claude:**
 
 ```text
-/prepare-pr
+/ppr
 
 Claude will guide you through the linear history workflow
 ```
@@ -427,10 +435,11 @@ Fork this repository and add:
 
 ```text
 ~/.claude-dotfiles/          # Cloned repository
-├── commands/                # Symlinked to ~/.claude/commands/
-│   ├── plan.md
-│   ├── review-code.md
-│   └── commit.md
+├── .claude/
+│   └── plugins/
+│       └── gdf/            # Symlinked to ~/.claude/plugins/gdf/
+│           ├── commands/   # Slash commands (pln, rvc, commit, etc.)
+│           └── plugin.json # Plugin metadata
 ├── justfiles/               # Shared Just recipes
 │   ├── _base.just          # Core: validate, info, check-clean
 │   └── plans.just          # Plan & worktree management
@@ -452,7 +461,7 @@ your-project/
     └── pre-commit          # Runs just validate
 ```
 
-**How Claude Code finds commands**: Reads from `~/.claude/commands/` (symlinked from repo)
+**How Claude Code finds commands**: Loads the gdf plugin from `~/.claude/plugins/gdf/` (symlinked from repo)
 
 ## Requirements
 
@@ -552,7 +561,12 @@ chmod +x .git/hooks/pre-commit
 
 ### Slash commands not working
 
-Slash commands are automatically available in Claude Code after installation. They are located in `.claude/commands/`. If commands aren't recognized, ensure you're using Claude Code (not claude.ai) and the `.claude/commands/` directory exists in your project.
+Slash commands are automatically available in Claude Code after installation via the gdf plugin. If commands aren't recognized:
+
+1. Ensure you're using Claude Code (not claude.ai)
+2. Check the plugin is installed: `ls -la ~/.claude/plugins/gdf`
+3. Try using the namespaced format: `/gdf:pln` instead of `/pln`
+4. Use `/help` in Claude Code to see available commands
 
 ## Documentation
 
