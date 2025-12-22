@@ -52,3 +52,24 @@ fmt-shell:
   @echo "🎨 Formatting shell scripts..."
   shfmt -w -i 2 -ci -bn **/*.sh
   @echo "✅ Shell scripts formatted"
+
+# === Version Management ===
+
+# Bump plugin version (usage: just bump-version [major|minor|patch])
+bump-version part="patch":
+  #!/usr/bin/env bash
+  set -euo pipefail
+  PLUGIN_JSON="plugins/gdf/plugin.json"
+  CURRENT=$(jq -r '.version' "$PLUGIN_JSON")
+  echo "📦 Current version: $CURRENT"
+  echo "📦 Bumping {{part}} version..."
+  NEW_VERSION=$(echo "$CURRENT" | bumpver {{part}} -)
+  echo "📦 New version: $NEW_VERSION"
+  # Update the version in plugin.json
+  jq --arg ver "$NEW_VERSION" '.version = $ver' "$PLUGIN_JSON" > "$PLUGIN_JSON.tmp"
+  mv "$PLUGIN_JSON.tmp" "$PLUGIN_JSON"
+  echo "✅ Version bumped: $CURRENT → $NEW_VERSION"
+  echo ""
+  echo "💡 Don't forget to commit the version change:"
+  echo "   git add $PLUGIN_JSON"
+  echo "   git commit -m 'chore: bump plugin version to $NEW_VERSION'"
