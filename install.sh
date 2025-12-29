@@ -133,7 +133,7 @@ mkdir -p "$CLAUDE_DIR/plugins"
 # Check for conflicts with existing user commands
 echo "🔍 Checking for command conflicts..."
 CONFLICTS=""
-for cmd in fba fbr fbc ppr pln rvp rvc; do
+for cmd in commit fba fbr fbc ppr pln rvp rvc helm-render just-help; do
   if [ -f "$CLAUDE_DIR/commands/$cmd.md" ]; then
     CONFLICTS="$CONFLICTS $cmd"
   fi
@@ -151,9 +151,9 @@ if [ -L "$CLAUDE_DIR/plugins/gdf" ]; then
   rm "$CLAUDE_DIR/plugins/gdf"
 fi
 
-# Symlink the individual plugin
-ln -s "$DOTFILES_DIR/plugins/gdf" "$CLAUDE_DIR/plugins/gdf"
-echo "✅ Installed gdf plugin"
+# Symlink the entire dotfiles directory as the gdf plugin/marketplace
+ln -s "$DOTFILES_DIR" "$CLAUDE_DIR/plugins/gdf"
+echo "✅ Installed gdf plugin to $CLAUDE_DIR/plugins/gdf"
 
 # 4. Symlink prompt templates
 echo "📋 Symlinking prompt templates..."
@@ -243,8 +243,19 @@ if [ "$GLOBAL_INSTALL" = true ]; then
     cp "$GLOBAL_SETTINGS_FILE" "$BACKUP_FILE"
     echo "✅ Backed up global settings to: $BACKUP_FILE"
 
-    # Create hook configuration
+    # Create hook configuration with plugin setup
     HOOK_CONFIG=$(jq -n --arg dotfiles "$DOTFILES_DIR" '{
+      "extraKnownMarketplaces": {
+        "gdf-marketplace": {
+          "source": {
+            "source": "directory",
+            "path": $dotfiles
+          }
+        }
+      },
+      "enabledPlugins": {
+        "gdf@gdf-marketplace": true
+      },
       "hooks": {
         "PostToolUse": [
           {
@@ -313,7 +324,9 @@ if [ "$GLOBAL_INSTALL" = true ]; then
     fi
     mv "$TMP_FILE" "$GLOBAL_SETTINGS_FILE"
 
-    echo "✅ Updated global settings with hooks"
+    echo "✅ Updated global settings with hooks and plugin marketplace"
+    echo "   - Configured 'gdf-marketplace' at $DOTFILES_DIR"
+    echo "   - Enabled gdf plugin (gdf@gdf-marketplace)"
     echo "   - Hooks will run 'just fmt lint test' after Edit/Write operations"
     echo "   - Settings file: $GLOBAL_SETTINGS_FILE"
   else

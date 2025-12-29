@@ -1,0 +1,20 @@
+{
+  "name": "gdf",
+  "version": "0.0.0",
+  "description": "Grumps dotfiles - personal workflow commands for git, planning, feedback, and development",
+  "author": {
+    "name": "grumps"
+  },
+  "commands": [
+    "./commands/commit.md",
+    "./commands/fba.md",
+    "./commands/fbc.md",
+    "./commands/fbr.md",
+    "./commands/helm-render.md",
+    "./commands/just-help.md",
+    "./commands/pln.md",
+    "./commands/ppr.md",
+    "./commands/rvc.md",
+    "./commands/rvp.md"
+  ]
+}

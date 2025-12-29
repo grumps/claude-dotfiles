@@ -1,0 +1,44 @@
+{
+  "name": "gdf-marketplace",
+  "owner": {
+    "name": "grumps"
+  },
+  "metadata": {
+    "description": "Personal dotfiles and workflow commands for Claude Code - git workflows, planning, feedback, and development tools",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "gdf",
+      "source": "./",
+      "description": "Grumps dotfiles - personal workflow commands for git, planning, feedback, and development",
+      "version": "1.0.0",
+      "author": {
+        "name": "grumps"
+      },
+      "homepage": "https://git.ofmax.li/claude-dotfiles",
+      "category": "productivity",
+      "keywords": [
+        "git",
+        "planning",
+        "feedback",
+        "workflow",
+        "development",
+        "helm",
+        "just"
+      ],
+      "commands": [
+        "./commands/commit.md",
+        "./commands/fba.md",
+        "./commands/fbc.md",
+        "./commands/fbr.md",
+        "./commands/helm-render.md",
+        "./commands/just-help.md",
+        "./commands/pln.md",
+        "./commands/ppr.md",
+        "./commands/rvc.md",
+        "./commands/rvp.md"
+      ]
+    }
+  ]
+}

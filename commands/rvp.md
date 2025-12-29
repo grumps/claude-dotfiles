@@ -51,7 +51,9 @@ Evaluate the plan against these dimensions:
 
 ### 4. Generate Review
 
-Use the template from `prompts/review-plan.md`.
+Use the template from:
+
+@../prompts/review-plan.md
 
 Include:
 
@@ -72,4 +74,4 @@ Include:
 - Consider scope - too ambitious or too narrow?
 - Check alignment with requirements
 
-See `prompts/review-plan.md` for the output template.
+See the output template above for the expected format.

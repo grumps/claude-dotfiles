@@ -2,7 +2,7 @@
 # https://github.com/lycheeverse/lychee
 
 # Paths to exclude from checking
-exclude_path = [".git", "node_modules", "reference"]
+exclude_path = [".git", "node_modules", "reference", "ref-plugin.md", "settings-ref.md", "marketplace.md"]
 
 # Don't check local file:// links
 exclude_link_local = true

@@ -16,6 +16,13 @@ log() {
   echo -e "${2:-}${1}${NC}" >&2
 }
 
+# Check for hook disable file
+# Repositories can create .gdf-hooks-disabled to opt-out of gdf plugin hooks
+if [ -f "${CLAUDE_PROJECT_DIR:-.}/.gdf-hooks-disabled" ]; then
+  log "ℹ gdf hooks disabled (.gdf-hooks-disabled found)" "${YELLOW}"
+  exit 0
+fi
+
 # Validate that a command was provided
 if [ $# -eq 0 ]; then
   log "✗ Error: No command provided" "${RED}"

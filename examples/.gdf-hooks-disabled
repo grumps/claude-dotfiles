@@ -1,0 +1,66 @@
+# gdf Plugin Hooks Disabled
+
+This file disables gdf plugin hooks for this repository.
+
+## What it does
+
+When this file (`.gdf-hooks-disabled`) exists in the repository root, the
+`claude-hook-wrapper.sh` script from the gdf plugin will exit immediately
+without running any validation commands (fmt, lint, test, etc.).
+
+This only affects hooks configured by the gdf (grumps dotfiles) plugin.
+Other Claude Code hooks will continue to work normally.
+
+## Usage
+
+To disable gdf hooks in a repository:
+
+```bash
+# Copy this file to your repository root
+cp ~/.claude-dotfiles/examples/.gdf-hooks-disabled .gdf-hooks-disabled
+
+# Or create it manually
+touch .gdf-hooks-disabled
+```
+
+## When to use this
+
+- **Legacy codebases**: Projects with existing code that doesn't pass linters
+- **Large repositories**: When validation takes too long in hooks
+- **Special workflows**: Projects with custom CI/CD that handles validation
+- **Temporary debugging**: Disable hooks while troubleshooting issues
+
+## Alternative: Customize validation
+
+Instead of disabling hooks entirely, you can customize the validation commands
+in your `justfile`:
+
+```just
+# Minimal validation for legacy code
+lint:
+  @echo "✅ Lint check skipped (legacy codebase)"
+
+test:
+  @echo "✅ Tests skipped (run in CI)"
+
+fmt:
+  # Only format new files
+  git diff --name-only --cached | xargs prettier --write
+```
+
+## Re-enabling hooks
+
+Simply remove this file:
+
+```bash
+rm .gdf-hooks-disabled
+```
+
+## Note
+
+This file can be committed to version control to disable gdf hooks for all
+contributors, or kept local (add to `.gitignore`) to disable only for yourself.
+
+Remember: This only disables the gdf plugin's hooks. If you have other Claude
+Code hooks configured in `.claude/settings.json` or globally in
+`~/.claude/settings.json`, those will continue to run.

@@ -185,7 +185,7 @@ This workflow ensures:
 - **Simple reverts**: Revert entire features with one command
 - **Linear timeline**: No merge commits cluttering history
 
-See [docs/git-workflow.md](../../../../docs/git-workflow.md) for detailed explanation.
+See [docs/git-workflow.md](../docs/git-workflow.md) for detailed explanation.
 
 ## Common Issues
 
@@ -208,6 +208,6 @@ See [docs/git-workflow.md](../../../../docs/git-workflow.md) for detailed explan
 
 ## References
 
-- [Git Workflow Documentation](../../../../docs/git-workflow.md)
+- [Git Workflow Documentation](../docs/git-workflow.md)
 - [Commit Message Standards](commit.md)
-- [Contributing Guidelines](../../../../CONTRIBUTING.md)
+- [Contributing Guidelines](../CONTRIBUTING.md)

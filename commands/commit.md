@@ -43,17 +43,15 @@ Follow the repository's existing commit message patterns.
 
 ### 3. Apply Commit Standards
 
-Reference `skills/commits/SKILL.md` for:
+Reference the commits skill for Conventional Commits format, guidelines, and examples:
 
-- Conventional Commits format
-- Type and scope guidelines
-- Subject line rules
-- Body and footer conventions
-- Examples
+@../skills/commits/SKILL.md
 
 ### 4. Generate Commit Message
 
-Use the template from `prompts/commit.md`.
+Use the template from:
+
+@../prompts/commit.md
 
 Structure:
 

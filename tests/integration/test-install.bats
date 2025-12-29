@@ -58,10 +58,10 @@ setup() {
 
 @test "gdf plugin symlinked" {
   [ -L "$TEST_REPO/.claude/plugins/gdf" ]
-  [ -f "$TEST_REPO/.claude/plugins/gdf/plugin.json" ]
-  [ -f "$TEST_REPO/.claude/plugins/gdf/commands/planning/pln.md" ]
-  [ -f "$TEST_REPO/.claude/plugins/gdf/commands/git/commit.md" ]
-  [ -f "$TEST_REPO/.claude/plugins/gdf/commands/review/rvc.md" ]
+  [ -f "$TEST_REPO/.claude/plugins/gdf/.claude-plugin/plugin.json" ]
+  [ -f "$TEST_REPO/.claude/plugins/gdf/commands/pln.md" ]
+  [ -f "$TEST_REPO/.claude/plugins/gdf/commands/commit.md" ]
+  [ -f "$TEST_REPO/.claude/plugins/gdf/commands/rvc.md" ]
 }
 
 @test "prompt templates symlinked" {

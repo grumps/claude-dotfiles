@@ -1,0 +1,46 @@
+# Cache directories
+.ruff_cache/
+.mypy_cache/
+.rumdl-cache/
+.lycheecache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Git files
+.git/
+.gitignore
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+
+# Test artifacts
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Documentation builds
+docs/_build/
+site/
+
+# Temporary files
+*.tmp
+*.bak
+.DS_Store
+
+# Log files
+*.log
+
+# Environment files
+.env
+.env.local

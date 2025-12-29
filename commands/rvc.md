@@ -46,11 +46,9 @@ Review what's being committed.
 
 ### 3. Apply Review Standards
 
-Reference `skills/reviewing/SKILL.md` for:
+Reference the reviewing skill for checklist, language-specific checks, and best practices:
 
-- Review checklist (correctness, quality, testing, performance, security, maintainability)
-- Language-specific checks (Go, Python, Kubernetes)
-- Best practices
+@../skills/reviewing/SKILL.md
 
 ### 4. Conduct Review
 
@@ -62,7 +60,9 @@ Analyze the code using the checklist:
 
 ### 5. Generate Review
 
-Use the template from `prompts/review-code.md`.
+Use the template from:
+
+@../prompts/review-code.md
 
 Include:
 

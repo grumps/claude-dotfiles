@@ -57,16 +57,15 @@ git log -5 --oneline --decorate
 
 ### 3. Apply Planning Standards
 
-Reference `skills/planning/SKILL.md` for:
+Reference the planning skill for methodology, structure, best practices, and platform engineering guidelines:
 
-- Planning methodology
-- Plan structure and sections
-- Best practices
-- Platform engineering guidelines
+@../skills/planning/SKILL.md
 
 ### 4. Create Structured Plan
 
-Use the template from `prompts/plan.md`.
+Use the template from:
+
+@../prompts/plan.md
 
 The template includes:
 
