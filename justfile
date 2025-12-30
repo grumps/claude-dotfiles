@@ -59,7 +59,7 @@ fmt-shell:
 bump-version part="patch":
   #!/usr/bin/env bash
   set -euo pipefail
-  PLUGIN_JSON="plugins/gdf/.claude-plugin/plugin.json"
+  PLUGIN_JSON=".claude-plugin/plugin.json"
   CURRENT=$(jq -r '.version' "$PLUGIN_JSON")
   echo "📦 Current version: $CURRENT"
   echo "📦 Bumping {{part}} version..."
